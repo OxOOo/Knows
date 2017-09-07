@@ -6,6 +6,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import com.java.g39.data.API;
+import com.java.g39.data.DetailNews;
 import com.java.g39.data.SimpleNews;
 
 import org.junit.Test;
@@ -52,5 +53,13 @@ public class APITest {
                             assertTrue(String.format("arg:(%s,%d,%d) tot:%d id:%s title:%s",a1,a2,a3,tot,s.news_ID,s.news_Title),s.news_Title.contains(a1.substring(j,j+1)));
                     }
                 }
+    }
+    @Test
+    public void TestGetDetailNews() throws Exception {
+        Iterable<DetailNews> news = API.GetDetailNews("201608090432c815a85453c34d8ca43a591258701e9b").subscribeOn(Schedulers.io()).blockingIterable();
+        int tot = 0;
+        for (DetailNews s : news) {
+            assertEquals("德媒：俄柔道运动员里约夺金与普京密切相关",s.news_Title);
+        }
     }
 }
