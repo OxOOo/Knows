@@ -49,23 +49,16 @@ public class API {
      * @param url 网页地址
      * @return 网页内容
      */
-    private static String GetBodyFromURL(String url)
+    private static String GetBodyFromURL(String url) throws IOException
     {
-        try {
-            URL cs = new URL(url);
-            BufferedReader in = new BufferedReader(new
-                    InputStreamReader(cs.openStream()));
-            String inputLine, body = "";
-            while ((inputLine = in.readLine()) != null)
-                body = body + inputLine;
-            in.close();
-            return body;
-        }
-        catch (Exception e)
-        {
-            Log.d("NetAPI",e.toString());
-            return "{}";
-        }
+        URL cs = new URL(url);
+        BufferedReader in = new BufferedReader(new
+                InputStreamReader(cs.openStream()));
+        String inputLine, body = "";
+        while ((inputLine = in.readLine()) != null)
+            body = body + inputLine;
+        in.close();
+        return body;
     }
 
 
@@ -90,14 +83,17 @@ public class API {
                     @Override
                     public Flowable<SimpleNews> apply(@NonNull String body) throws Exception {
                         List<SimpleNews> result = new ArrayList<SimpleNews>();
-                        JSONObject allData = new JSONObject(body);
-                        System.out.println("body:"+body);
-                        JSONArray list = allData.getJSONArray("list");
-                        System.out.println("body:"+body);
-                        for(int t=0;t<list.length();t++)
+                        try{
+                            JSONObject allData = new JSONObject(body);
+                            JSONArray list = allData.getJSONArray("list");
+                            for (int t = 0; t < list.length(); t++) {
+                                JSONObject json_news = list.getJSONObject(t);
+                                result.add(GetNewsFromJson(json_news));
+                            }
+                        }
+                        catch(Exception e)
                         {
-                            JSONObject json_news = list.getJSONObject(t);
-                            result.add(GetNewsFromJson(json_news));
+                            Log.e("error","error in API.GetSimpleNews Json_body:"+body);
                         }
                         return Flowable.fromIterable(result);
                     }
@@ -129,7 +125,7 @@ public class API {
                 .map(new Function<String, String>() {
                     @Override
                     public String apply(@NonNull String url) throws Exception {
-                        String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/search?keyword=%s&pageNo=1&pageSize=%d&category=%d", keyword, pageNo, pageSize));
+                        String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/search?keyword=%s&pageNo=%d&pageSize=%d", keyword, pageNo, pageSize));
                         if (category != -1)
                             URL_String = URL_String + String.format("&category=%d", category);
                         return GetBodyFromURL(URL_String);
@@ -138,12 +134,18 @@ public class API {
                     @Override
                     public Flowable<SimpleNews> apply(@NonNull String body) throws Exception {
                         List<SimpleNews> result = new ArrayList<SimpleNews>();
-                        JSONObject allData = new JSONObject(body);
-                        JSONArray list = allData.getJSONArray("list");
-                        for(int t=0;t<list.length();t++)
+                        JSONObject allData;
+                        try{
+                            allData = new JSONObject(body);
+                            JSONArray list = allData.getJSONArray("list");
+                            for (int t = 0; t < list.length(); t++) {
+                                JSONObject json_news = list.getJSONObject(t);
+                                result.add(GetNewsFromJson(json_news));
+                            }
+                        }
+                        catch(Exception e)
                         {
-                            JSONObject json_news = list.getJSONObject(t);
-                            result.add(GetNewsFromJson(json_news));
+                            Log.e("error","error in API.SearchNews Json_body:"+body);
                         }
                         return Flowable.fromIterable(result);
                     }
