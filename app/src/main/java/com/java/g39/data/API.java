@@ -8,6 +8,7 @@ import io.reactivex.Flowable;
 
 /**
  * Created by chenyu on 2017/9/7.
+ * 新闻API相关操作
  */
 
 public class API {

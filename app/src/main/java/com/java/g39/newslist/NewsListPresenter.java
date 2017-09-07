@@ -25,6 +25,7 @@ public class NewsListPresenter implements NewsListContract.Presenter {
 
     public NewsListPresenter(NewsListContract.View view) {
         this.view = view;
+        view.setPresenter(this);
     }
 
     @Override
@@ -61,6 +62,11 @@ public class NewsListPresenter implements NewsListContract.Presenter {
             }
         }
         view.setNewsList(list);
+    }
+
+    @Override
+    public void openNewsDetailUI(SimpleNews news) {
+        // FIXME
     }
 
     private SimpleNews createNews() throws JSONException {

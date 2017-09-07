@@ -28,13 +28,6 @@ public interface NewsListContract {
          * @param list 新闻列表
          */
         void appendNewsList(List<SimpleNews> list);
-
-        boolean isActive();
-
-        /**
-         * @return 当前的上下文
-         */
-        Context getContext();
     }
 
     interface Presenter extends BasePresenter {
@@ -48,5 +41,11 @@ public interface NewsListContract {
          * 上拉刷新，重新获取最新的新闻
          */
         void refreshNews();
+
+        /**
+         * 打开新闻详情
+         * @param news 被打开的新闻
+         */
+        void openNewsDetailUI(SimpleNews news);
     }
 }
