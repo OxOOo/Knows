@@ -2,8 +2,6 @@ package com.java.g39.data;
 
 import android.util.*;
 
-import com.java.g39.data.SimpleNews;
-
 import org.json.*;
 
 import java.io.*;
@@ -13,7 +11,6 @@ import java.util.*;
 import io.reactivex.Flowable;
 import io.reactivex.annotations.*;
 import io.reactivex.functions.*;
-import io.reactivex.schedulers.*;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -25,10 +22,90 @@ public class API {
 
     /**
      * @param json_news Json格式的SimpleNews
-     * @return  SimpleNews
+     * @return  DetailNews
      * @throws JSONException
      */
-    private  static SimpleNews GetNewsFromJson(JSONObject json_news) throws JSONException
+    private static DetailNews GetDetailNewsFromJson(JSONObject json_news) throws JSONException
+    {
+        JSONArray list;
+        DetailNews news = new DetailNews();
+        news.Keywords=new ArrayList<DetailNews.WordWithScore>();
+        list = json_news.getJSONArray("Keywords");
+        for (int t = 0; t < list.length(); t++) {
+            DetailNews.WordWithScore item = news.new WordWithScore();
+            JSONObject jobj = list.getJSONObject(t);
+            item.word=jobj.getString("word");
+            item.score=jobj.getDouble("score");
+            news.Keywords.add(item);
+        }
+        news.bagOfWords=new ArrayList<DetailNews.WordWithScore>();
+        list = json_news.getJSONArray("bagOfWords");
+        for (int t = 0; t < list.length(); t++) {
+            DetailNews.WordWithScore item = news.new WordWithScore();
+            JSONObject jobj = list.getJSONObject(t);
+            item.word=jobj.getString("word");
+            item.score=jobj.getDouble("score");
+            news.bagOfWords.add(item);
+        }
+        news.crawl_Source=json_news.getString("crawl_Source");
+        news.crawl_Time=json_news.getString("crawl_Time");
+        news.inborn_KeyWords=json_news.getString("inborn_KeyWords");
+        news.lang_Type=json_news.getString("lang_Type");
+        news.locations=new ArrayList<DetailNews.WordWithCount>();
+        list = json_news.getJSONArray("locations");
+        for (int t = 0; t < list.length(); t++) {
+            DetailNews.WordWithCount item = news.new WordWithCount();
+            JSONObject jobj = list.getJSONObject(t);
+            item.word=jobj.getString("word");
+            item.count=jobj.getInt("count");
+            news.locations.add(item);
+        }
+        news.newsClassTag=json_news.getString("newsClassTag");
+        news.news_Author=json_news.getString("news_Author");
+        news.news_Category=json_news.getString("news_Category");
+        news.news_Content=json_news.getString("news_Content");
+        news.news_ID=json_news.getString("news_ID");
+        news.news_Journal=json_news.getString("news_Journal");
+        news.news_Pictures=json_news.getString("news_Pictures");
+        news.news_Source=json_news.getString("news_Source");
+        news.news_Time=json_news.getString("news_Time");
+        news.news_Title=json_news.getString("news_Title");
+        news.news_URL=json_news.getString("news_URL");
+        news.news_Video=json_news.getString("news_Video");
+        news.organizations=new ArrayList<String>();
+        list = json_news.getJSONArray("organizations");
+        for (int t = 0; t < list.length(); t++) {
+            JSONObject jobj = list.getJSONObject(t);
+            news.organizations.add(jobj.toString());
+        }
+        news.persons=new ArrayList<DetailNews.WordWithCount>();
+        list = json_news.getJSONArray("persons");
+        for (int t = 0; t < list.length(); t++) {
+            DetailNews.WordWithCount item = news.new WordWithCount();
+            JSONObject jobj = list.getJSONObject(t);
+            item.word=jobj.getString("word");
+            item.count=jobj.getInt("count");
+            news.persons.add(item);
+        }
+        news.repeat_ID=json_news.getString("repeat_ID");
+        news.seggedPListOfContent=new ArrayList<String>();
+        list = json_news.getJSONArray("seggedPListOfContent");
+        for (int t = 0; t < list.length(); t++) {
+            JSONObject jobj = list.getJSONObject(t);
+            news.seggedPListOfContent.add(jobj.toString());
+        }
+        news.seggedTitle=json_news.getString("seggedTitle");
+        news.wordCountOfContent=json_news.getInt("wordCountOfContent");
+        news.wordCountOfTitle=json_news.getInt("wordCountOfTitle");
+        return news;
+    }
+
+    /**
+     * @param json_news Json格式的DetailNews
+     * @return  DetailNews
+     * @throws JSONException
+     */
+    private static SimpleNews GetNewsFromJson(JSONObject json_news) throws JSONException
     {
         SimpleNews news = new SimpleNews();
         news.lang_Type=json_news.getString("lang_Type");
@@ -44,7 +121,6 @@ public class API {
         news.news_Intro=json_news.getString("news_Intro");
         return news;
     }
-
     /**
      * @param url 网页地址
      * @return 网页内容
@@ -169,9 +245,25 @@ public class API {
      * @param newsId ID
      * @return 新闻详情
      */
-    public static Flowable<DetailNews> GetDetailNews(String newsId)
+    public static Flowable<DetailNews> GetDetailNews(final String newsId)
     {
-        // FIXME
-        return null;
+        return Flowable.just("")
+            .map(new Function<String, DetailNews>() {
+                @Override
+                public DetailNews apply(@NonNull String url) throws Exception {
+                    String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/detail?newsId=%s", newsId));
+                    String body = GetBodyFromURL(URL_String);List<SimpleNews> result = new ArrayList<SimpleNews>();
+                    JSONObject allData;
+                    try{
+                        allData = new JSONObject(body);
+                        return GetDetailNewsFromJson(allData);
+                    }
+                    catch(Exception e)
+                    {
+                        Log.e("error","error in API.SearchNews Json_body:"+body);
+                    }
+                    return null;
+                }
+            });
     }
 }
