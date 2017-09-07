@@ -30,30 +30,55 @@ public class API {
      * @param category 分类，-1表示不设置
      * @return 新闻列表
      */
+
+    //解析Json格式的SimpleNews
+    private  static SimpleNews GetNewsFromJson(JSONObject json_news) throws JSONException
+    {
+        SimpleNews news = new SimpleNews();
+        news.lang_Type=json_news.getString("lang_Type");
+        news.newsClassTag=json_news.getString("newsClassTag");
+        news.news_Author=json_news.getString("news_Author");
+        news.news_ID=json_news.getString("news_ID");
+        news.news_Pictures=json_news.getString("news_Pictures");
+        news.news_Source=json_news.getString("news_Source");
+        news.news_Time=json_news.getString("news_Time");
+        news.news_Title=json_news.getString("news_Title");
+        news.news_URL=json_news.getString("news_URL");
+        news.news_Video=json_news.getString("news_Video");
+        news.news_Intro=json_news.getString("news_Intro");
+        return news;
+    }
+
+    //通过
+    private static String GetBodyFromURL(String url)
+    {
+        try {
+            URL cs = new URL(url);
+            BufferedReader in = new BufferedReader(new
+                    InputStreamReader(cs.openStream()));
+            String inputLine, body = "";
+            while ((inputLine = in.readLine()) != null)
+                body = body + inputLine;
+            in.close();
+            return body;
+        }
+        catch (Exception e)
+        {
+            Log.d("NetAPI",e.toString());
+            return "{}";
+        }
+    }
+
     public static Flowable<SimpleNews> GetSimpleNews(final int pageNo,final int pageSize, final int category) {
         return Flowable.just("")
                 .subscribeOn(Schedulers.newThread())
                 .map(new Function<String, String>() {
                     @Override
                     public String apply(@NonNull String url) throws Exception {
-                        try {
                             String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/latest?pageNo=%d&pageSize=%d", pageNo, pageSize));
                             if (category != -1)
                                 URL_String = URL_String + String.format("&category=%d", category);
-                            URL cs = new URL(URL_String);
-                            BufferedReader in = new BufferedReader(new
-                                    InputStreamReader(cs.openStream()));
-                            String inputLine, body = "";
-                            while ((inputLine = in.readLine()) != null)
-                                body = body + inputLine;
-                            in.close();
-                            return body;
-                        }
-                        catch (Exception e)
-                        {
-                            Log.d("NetAPI",e.toString());
-                            return "{}";
-                        }
+                            return GetBodyFromURL(URL_String);
                     }
                 }).flatMap(new Function<String, Flowable<SimpleNews>>() {
                     @Override
@@ -64,19 +89,7 @@ public class API {
                         for(int t=0;t<list.length();t++)
                         {
                             JSONObject json_news = list.getJSONObject(t);
-                            SimpleNews news = new SimpleNews();
-                            news.lang_Type=json_news.getString("lang_Type");
-                            news.newsClassTag=json_news.getString("newsClassTag");
-                            news.news_Author=json_news.getString("news_Author");
-                            news.news_ID=json_news.getString("news_ID");
-                            news.news_Pictures=json_news.getString("news_Pictures");
-                            news.news_Source=json_news.getString("news_Source");
-                            news.news_Time=json_news.getString("news_Time");
-                            news.news_Title=json_news.getString("news_Title");
-                            news.news_URL=json_news.getString("news_URL");
-                            news.news_Video=json_news.getString("news_Video");
-                            news.news_Intro=json_news.getString("news_Intro");
-                            result.add(news);
+                            result.add(GetNewsFromJson(json_news));
                         }
                         return Flowable.fromIterable(result);
                     }
