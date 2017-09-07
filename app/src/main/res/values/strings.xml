@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">39_秦岳</string>
+    <string name="title_activity_news_list">NewsListActivity</string>
 </resources>
