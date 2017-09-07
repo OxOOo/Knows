@@ -42,6 +42,6 @@ public class NewsListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("DEBUG", "onResume");
+        Log.d("DEBUG", "onResume")
     }
 }
