@@ -115,10 +115,32 @@ public class API {
      * @param category 分类，-1表示不设置
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> SearchNews(String keyword, int pageNo, int pageSize, int category)
+    public static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category)
     {
-        // FIXME
-        return null;
+        return Flowable.just("")
+                .subscribeOn(Schedulers.newThread())
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(@NonNull String url) throws Exception {
+                        String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/search?keyword=%s&pageNo=1&pageSize=%d&category=%d", keyword, pageNo, pageSize));
+                        if (category != -1)
+                            URL_String = URL_String + String.format("&category=%d", category);
+                        return GetBodyFromURL(URL_String);
+                    }
+                }).flatMap(new Function<String, Flowable<SimpleNews>>() {
+                    @Override
+                    public Flowable<SimpleNews> apply(@NonNull String body) throws Exception {
+                        List<SimpleNews> result = new ArrayList<SimpleNews>();
+                        JSONObject allData = new JSONObject(body);
+                        JSONArray list = allData.getJSONArray("list");
+                        for(int t=0;t<list.length();t++)
+                        {
+                            JSONObject json_news = list.getJSONObject(t);
+                            result.add(GetNewsFromJson(json_news));
+                        }
+                        return Flowable.fromIterable(result);
+                    }
+                });
     }
 
     /**
