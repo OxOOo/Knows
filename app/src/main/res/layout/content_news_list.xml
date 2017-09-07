@@ -8,4 +8,11 @@
     tools:context="com.java.g39.newslist.NewsListActivity"
     tools:showIn="@layout/activity_news_list">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@mipmap/ic_launcher"
+        tools:layout_editor_absoluteX="175dp"
+        tools:layout_editor_absoluteY="221dp" />
 </android.support.constraint.ConstraintLayout>
