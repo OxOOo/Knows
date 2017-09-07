@@ -24,14 +24,10 @@ public class API {
     private API() { }
 
     /**
-     * 获取最近的新闻，不设置subscribeOn，只设置网络获取的字段
-     * @param pageNo 页码
-     * @param pageSize 每页新闻数量
-     * @param category 分类，-1表示不设置
-     * @return 新闻列表
+     * @param json_news Json格式的SimpleNews
+     * @return  SimpleNews
+     * @throws JSONException
      */
-
-    //解析Json格式的SimpleNews
     private  static SimpleNews GetNewsFromJson(JSONObject json_news) throws JSONException
     {
         SimpleNews news = new SimpleNews();
@@ -49,7 +45,10 @@ public class API {
         return news;
     }
 
-    //通过
+    /**
+     * @param url 网页地址
+     * @return 网页内容
+     */
     private static String GetBodyFromURL(String url)
     {
         try {
@@ -69,9 +68,16 @@ public class API {
         }
     }
 
+
+    /**
+     * 获取最近的新闻，不设置subscribeOn，只设置网络获取的字段
+     * @param pageNo 页码
+     * @param pageSize 每页新闻数量
+     * @param category 分类，-1表示不设置
+     * @return 新闻列表
+     */
     public static Flowable<SimpleNews> GetSimpleNews(final int pageNo,final int pageSize, final int category) {
         return Flowable.just("")
-                .subscribeOn(Schedulers.newThread())
                 .map(new Function<String, String>() {
                     @Override
                     public String apply(@NonNull String url) throws Exception {
@@ -85,7 +91,9 @@ public class API {
                     public Flowable<SimpleNews> apply(@NonNull String body) throws Exception {
                         List<SimpleNews> result = new ArrayList<SimpleNews>();
                         JSONObject allData = new JSONObject(body);
+                        System.out.println("body:"+body);
                         JSONArray list = allData.getJSONArray("list");
+                        System.out.println("body:"+body);
                         for(int t=0;t<list.length();t++)
                         {
                             JSONObject json_news = list.getJSONObject(t);
@@ -118,7 +126,6 @@ public class API {
     public static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category)
     {
         return Flowable.just("")
-                .subscribeOn(Schedulers.newThread())
                 .map(new Function<String, String>() {
                     @Override
                     public String apply(@NonNull String url) throws Exception {
