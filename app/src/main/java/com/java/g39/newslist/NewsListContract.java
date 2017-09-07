@@ -1,5 +1,7 @@
 package com.java.g39.newslist;
 
+import android.content.Context;
+
 import com.java.g39.BasePresenter;
 import com.java.g39.BaseView;
 import com.java.g39.data.SimpleNews;
@@ -28,6 +30,11 @@ public interface NewsListContract {
         void appendNewsList(List<SimpleNews> list);
 
         boolean isActive();
+
+        /**
+         * @return 当前的上下文
+         */
+        Context getContext();
     }
 
     interface Presenter extends BasePresenter {
