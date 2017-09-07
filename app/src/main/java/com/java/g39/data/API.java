@@ -20,8 +20,19 @@ public class API {
      * @param category -1表示不设置
      * @return 新闻列表，只需设置网络获取的字段
      */
-    public static Flowable<SimpleNews> GetSimpleNews(int pageNo, int pageSize, int category = -1)
+    public static Flowable<SimpleNews> GetSimpleNews(int pageNo, int pageSize, int category)
     {
         return null;
+    }
+
+    /**
+     * 获取新闻，不设置subscribeOn
+     * @param pageNo
+     * @param pageSize
+     * @return 新闻列表，只需设置网络获取的字段
+     */
+    public static Flowable<SimpleNews> GetSimpleNews(int pageNo, int pageSize)
+    {
+        return GetSimpleNews(pageNo, pageSize, -1);
     }
 }
