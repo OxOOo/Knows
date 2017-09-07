@@ -3,8 +3,6 @@ package com.java.g39.newsdetail;
 import com.java.g39.BasePresenter;
 import com.java.g39.BaseView;
 import com.java.g39.data.DetailNews;
-import com.java.g39.data.SimpleNews;
-import com.java.g39.newslist.NewsListContract;
 
 import java.util.List;
 
@@ -13,7 +11,8 @@ import java.util.List;
  */
 
 public interface NewsDetailContract {
-    interface View extends BaseView<NewsListContract.Presenter> {
+
+    interface View extends BaseView<NewsDetailContract.Presenter> {
 
         /**
          * 设置新闻

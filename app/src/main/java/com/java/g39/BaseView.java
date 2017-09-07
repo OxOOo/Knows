@@ -1,6 +1,7 @@
 package com.java.g39;
 
 import android.content.Context;
+import android.content.Intent;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -13,5 +14,10 @@ public interface BaseView<T extends BasePresenter> {
     /**
      * @return 当前的上下文
      */
-    Context getContext();
+    Context context();
+
+    /**
+     * @param intent 调用startActivity(intent)
+     */
+    void start(Intent intent);
 }

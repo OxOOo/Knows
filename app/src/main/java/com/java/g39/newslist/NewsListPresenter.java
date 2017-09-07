@@ -1,6 +1,7 @@
 package com.java.g39.newslist;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.util.JsonReader;
@@ -8,6 +9,7 @@ import android.util.Log;
 
 import com.java.g39.R;
 import com.java.g39.data.SimpleNews;
+import com.java.g39.newsdetail.NewsDetailActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,7 +68,9 @@ public class NewsListPresenter implements NewsListContract.Presenter {
 
     @Override
     public void openNewsDetailUI(SimpleNews news) {
-        // FIXME
+        Intent intent = new Intent(view.context(), NewsDetailActivity.class);
+        intent.putExtra(NewsDetailActivity.NEWS_ID, news.news_ID);
+        view.start(intent);
     }
 
     private SimpleNews createNews() throws JSONException {
@@ -85,7 +89,7 @@ public class NewsListPresenter implements NewsListContract.Presenter {
         news.news_Video = obj.getString("news_Video");
 
         news.has_read = false;
-        news.picture = BitmapFactory.decodeResource(view.getContext().getResources(), R.mipmap.ic_launcher);
+        news.picture = BitmapFactory.decodeResource(view.context().getResources(), R.mipmap.ic_launcher);
 
         return news;
     }

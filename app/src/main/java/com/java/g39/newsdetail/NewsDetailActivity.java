@@ -11,12 +11,17 @@ import com.java.g39.R;
 
 public class NewsDetailActivity extends AppCompatActivity {
 
+    public static final String NEWS_ID = "NEWS_ID";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Get the requested news id
+        String news_ID = getIntent().getStringExtra(NEWS_ID);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
