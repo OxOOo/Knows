@@ -1,3 +1,9 @@
+/**
+ * FIXME @equation314
+ * Deprecated
+ * Use NewsListFragment
+ */
+
 package com.java.g39.newslist;
 
 import android.graphics.Bitmap;
