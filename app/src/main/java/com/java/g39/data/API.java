@@ -1,10 +1,19 @@
 package com.java.g39.data;
 
+import android.util.*;
+
 import com.java.g39.data.SimpleNews;
 
-import java.util.List;
+import org.json.*;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.annotations.*;
+import io.reactivex.functions.*;
+import io.reactivex.schedulers.*;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -21,10 +30,57 @@ public class API {
      * @param category 分类，-1表示不设置
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> GetSimpleNews(int pageNo, int pageSize, int category)
-    {
-        // FIXME
-        return null;
+    public static Flowable<SimpleNews> GetSimpleNews(final int pageNo,final int pageSize, final int category) {
+        return Flowable.just("")
+                .subscribeOn(Schedulers.newThread())
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(@NonNull String url) throws Exception {
+                        try {
+                            String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/latest?pageNo=%d&pageSize=%d", pageNo, pageSize));
+                            if (category != -1)
+                                URL_String = URL_String + String.format("&category=%d", category);
+                            URL cs = new URL(URL_String);
+                            BufferedReader in = new BufferedReader(new
+                                    InputStreamReader(cs.openStream()));
+                            String inputLine, body = "";
+                            while ((inputLine = in.readLine()) != null)
+                                body = body + inputLine;
+                            in.close();
+                            return body;
+                        }
+                        catch (Exception e)
+                        {
+                            Log.d("NetAPI",e.toString());
+                            return "{}";
+                        }
+                    }
+                }).flatMap(new Function<String, Flowable<SimpleNews>>() {
+                    @Override
+                    public Flowable<SimpleNews> apply(@NonNull String body) throws Exception {
+                        List<SimpleNews> result = new ArrayList<SimpleNews>();
+                        JSONObject allData = new JSONObject(body);
+                        JSONArray list = allData.getJSONArray("list");
+                        for(int t=0;t<list.length();t++)
+                        {
+                            JSONObject json_news = list.getJSONObject(t);
+                            SimpleNews news = new SimpleNews();
+                            news.lang_Type=json_news.getString("lang_Type");
+                            news.newsClassTag=json_news.getString("newsClassTag");
+                            news.news_Author=json_news.getString("news_Author");
+                            news.news_ID=json_news.getString("news_ID");
+                            news.news_Pictures=json_news.getString("news_Pictures");
+                            news.news_Source=json_news.getString("news_Source");
+                            news.news_Time=json_news.getString("news_Time");
+                            news.news_Title=json_news.getString("news_Title");
+                            news.news_URL=json_news.getString("news_URL");
+                            news.news_Video=json_news.getString("news_Video");
+                            news.news_Intro=json_news.getString("news_Intro");
+                            result.add(news);
+                        }
+                        return Flowable.fromIterable(result);
+                    }
+                });
     }
 
     /**
