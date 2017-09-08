@@ -8,11 +8,6 @@ package com.java.g39.data;
 final public class Constant {
 
     /**
-     * 新闻分类总数
-     */
-    final public static int CATEGORY_COUNT = 13;
-
-    /**
      * 新闻分类
      */
     final public static String[] CATEGORYS = {
@@ -30,4 +25,9 @@ final public class Constant {
             "健康",
             "娱乐"
     };
+
+    /**
+     * 新闻分类总数
+     */
+    final public static int CATEGORY_COUNT = CATEGORYS.length;
 }

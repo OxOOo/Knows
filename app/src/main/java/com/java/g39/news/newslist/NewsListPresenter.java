@@ -1,26 +1,14 @@
-package com.java.g39.newslist;
+package com.java.g39.news.newslist;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.BitmapFactory;
-import android.util.JsonReader;
-import android.util.Log;
 
-import com.java.g39.R;
 import com.java.g39.data.Manager;
 import com.java.g39.data.SimpleNews;
-import com.java.g39.newsdetail.NewsDetailActivity;
+import com.java.g39.news.newsdetail.NewsDetailActivity;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenyu on 2017/9/7.
