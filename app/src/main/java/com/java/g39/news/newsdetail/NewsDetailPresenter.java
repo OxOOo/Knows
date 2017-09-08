@@ -25,8 +25,6 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
     @Override
     public void subscribe() {
         Manager.I.fetchDetailNews(mNews_ID)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<DetailNews>() {
                     @Override
                     public void accept(DetailNews detailNews) throws Exception {

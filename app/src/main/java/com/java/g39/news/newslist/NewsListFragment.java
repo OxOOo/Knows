@@ -87,6 +87,8 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void setNewsList(List<SimpleNews> list) {
         Log.d("LIST", list.size() + "");
+        // FIXME
+        // mPresenter.openNewsDetailUI(list.get(0));
     }
 
     @Override

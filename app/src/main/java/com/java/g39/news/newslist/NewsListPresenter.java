@@ -24,14 +24,13 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     public NewsListPresenter(NewsListContract.View view, int category) {
         this.mView = view;
         this.mCategory = category;
-        this.mPageNo = 1;
 
         view.setPresenter(this);
     }
 
     @Override
     public void subscribe() {
-        this.refreshNews();
+        refreshNews();
     }
 
     @Override
@@ -41,13 +40,13 @@ public class NewsListPresenter implements NewsListContract.Presenter {
 
     @Override
     public void requireMoreNews() {
-        mPageNo = 1;
+        mPageNo ++;
         fetchNews();
     }
 
     @Override
     public void refreshNews() {
-        mPageNo ++;
+        mPageNo = 1;
         fetchNews();
     }
 
@@ -65,7 +64,8 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                     @Override
                     public void accept(List<SimpleNews> simpleNewses) throws Exception {
                         System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
-                        mView.setNewsList(simpleNewses);
+                        if (mPageNo == 1) mView.setNewsList(simpleNewses);
+                        else mView.appendNewsList(simpleNewses);
                     }
                 });
     }

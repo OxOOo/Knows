@@ -31,10 +31,10 @@ class FS {
     private static final String TABLE_NAME_SIMPLE = "news_simple";
     private static final String TABLE_NAME_DETAIL = "news_detail";
     private static final String TABLE_NAME_READ = "news_read";
-    private static final String KEY_ID = "news_id";
-    private static final String KEY_SIMPLE = "simple_json";
-    private static final String KEY_CATEGORY = "category";
-    private static final String KEY_DETAIL = "detail_json";
+    private static final String KEY_ID = "news_id"; // string
+    private static final String KEY_SIMPLE = "simple_json"; // text
+    private static final String KEY_CATEGORY = "category"; // integer
+    private static final String KEY_DETAIL = "detail_json"; //text
 
     FS(Context context) {
         this.db = SQLiteDatabase.openOrCreateDatabase(context.getFilesDir().getPath() + "/data.db",null);
@@ -54,7 +54,7 @@ class FS {
         db.execSQL(read_table);
     }
 
-    public void dropTables() {
+    void dropTables() {
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_SIMPLE));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_DETAIL));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_READ));

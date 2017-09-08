@@ -253,9 +253,7 @@ class API {
                     List<SimpleNews> result = new ArrayList<SimpleNews>();
                     try {
                         JSONObject allData;
-                        Log.d("tag", "body:" + body);
                         allData = new JSONObject(body);
-                        Log.d("tag", "body:" + body);
                         return GetDetailNewsFromJson(allData, false);
 
                     } catch (Exception e) {

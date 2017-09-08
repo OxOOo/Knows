@@ -22,7 +22,6 @@ import io.reactivex.SingleSource;
 import io.reactivex.SingleTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -139,12 +138,13 @@ public class Manager {
         return Single.fromCallable(new Callable<DetailNews>() {
             @Override
             public DetailNews call() throws Exception {
-                return fs.fetchDetail(news_ID); // load from disk
+                DetailNews news = fs.fetchDetail(news_ID); // load from disk
+                return news != null ? news : new DetailNews();
             }
         }).flatMap(new Function<DetailNews, SingleSource<? extends DetailNews>>() {
             @Override
             public SingleSource<? extends DetailNews> apply(@NonNull DetailNews detailNews) throws Exception {
-                if (detailNews != null) return Single.just(detailNews);
+                if (detailNews.news_ID != null) return Single.just(detailNews);
                 return API.GetDetailNews(news_ID); // load from web
             }
         }).compose(this.liftAllDetail).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
