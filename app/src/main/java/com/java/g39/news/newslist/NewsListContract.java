@@ -29,8 +29,9 @@ public interface NewsListContract {
 
         /**
          * 获取新闻成功
+         * @param loadCompleted 是否加载完成
          */
-        void onSuccess();
+        void onSuccess(boolean loadCompleted);
 
         /**
          * 获取新闻失败

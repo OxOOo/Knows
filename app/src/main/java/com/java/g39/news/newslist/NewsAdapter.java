@@ -21,8 +21,13 @@ import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_HEADER = 1;
+    private static final int TYPE_FOOTER = 2;
+
     private Context mContext;
     private List<SimpleNews> mData = new ArrayList<SimpleNews>();
+    private boolean mIsShowFooter = true;
 
     public NewsAdapter() {
     }
@@ -41,25 +46,47 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.notifyDataSetChanged();
     }
 
+    public boolean isShowFooter() {
+        return mIsShowFooter;
+    }
+
+    public void setFooterVisible(boolean visible) {
+        mIsShowFooter = visible;
+    }
+
     @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news, parent, false);
-        ItemViewHolder holder = new ItemViewHolder(view);
-        return holder;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ITEM) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_news, parent, false);
+            return new ItemViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.footer, parent, false);
+            return new FooterViewHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        SimpleNews news = mData.get(position);
-        ItemViewHolder item = (ItemViewHolder) holder;
-        item.mTitle.setText(news.news_Title);
-        item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
-        item.mDate.setText(news.news_Time);
+        if (holder instanceof  ItemViewHolder) {
+            SimpleNews news = mData.get(position);
+            ItemViewHolder item = (ItemViewHolder) holder;
+            item.mTitle.setText(news.news_Title);
+            item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
+            item.mDate.setText(news.news_Time);
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == mData.size() && mIsShowFooter)
+            return TYPE_FOOTER;
+        else
+            return TYPE_ITEM;
     }
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mData.size() + (mIsShowFooter ? 1 : 0);
     }
 
     /**
@@ -76,6 +103,16 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mAuthor = (TextView) view.findViewById(R.id.text_author);
             mDate = (TextView) view.findViewById(R.id.text_date);
             mImage = (ImageView) view.findViewById(R.id.image_view);
+        }
+    }
+
+    /**
+     * 列表底部
+     */
+    public class FooterViewHolder extends RecyclerView.ViewHolder {
+
+        public FooterViewHolder(View view) {
+            super(view);
         }
     }
 }

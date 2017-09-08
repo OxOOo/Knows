@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.java.g39.R;
 import com.java.g39.data.SimpleNews;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +35,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     private SwipeRefreshLayout mSwipeRefreshWidget;
     private RecyclerView mRecyclerView;
     private NewsAdapter mAdapter;
+    private LinearLayoutManager mLayoutManager;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -82,9 +82,29 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         });
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
+        mLayoutManager = new LinearLayoutManager(this.getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            private int lastVisibleItem;
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem == mAdapter.getItemCount() - 1
+                        && mAdapter.isShowFooter()) {
+                    mPresenter.requireMoreNews();
+                }
+            }
+        });
 
         mAdapter = new NewsAdapter();
         mRecyclerView.setAdapter(mAdapter);
@@ -120,7 +140,8 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     }
 
     @Override
-    public void onSuccess() {
+    public void onSuccess(boolean loadCompleted) {
+        mAdapter.setFooterVisible(!loadCompleted);
         mSwipeRefreshWidget.setRefreshing(false);
     }
 

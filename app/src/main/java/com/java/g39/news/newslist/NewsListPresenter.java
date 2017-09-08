@@ -64,10 +64,10 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                     @Override
                     public void accept(List<SimpleNews> simpleNewses) throws Exception {
                         System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
+                        mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
+                        // TODO onError
                         if (mPageNo == 1) mView.setNewsList(simpleNewses);
                         else mView.appendNewsList(simpleNewses);
-                        mView.onSuccess();
-                        // TODO onError
                     }
                 });
     }

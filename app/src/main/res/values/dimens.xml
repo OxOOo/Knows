@@ -7,5 +7,5 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="text_margin">16dp</dimen>
 
-    <dimen name="list_image_size">64dp</dimen>
+    <dimen name="list_image_size">72dp</dimen>
 </resources>
