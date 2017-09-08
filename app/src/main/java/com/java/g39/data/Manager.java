@@ -47,56 +47,75 @@ public class Manager {
 
     private FS fs;
     private FlowableTransformer<SimpleNews, SimpleNews> liftAllSimple;
-    private SingleTransformer<DetailNews, DetailNews> liftAllDetail;
+    private FlowableTransformer<DetailNews, DetailNews> liftAllDetail;
 
     private Manager(Context context) {
         this.fs = new FS(context);
         this.liftAllSimple = new FlowableTransformer<SimpleNews, SimpleNews>() {
             @Override
             public Publisher<SimpleNews> apply(@NonNull Flowable<SimpleNews> upstream) {
-                return upstream.map(new Function<SimpleNews, SimpleNews>() {
-                    @Override
-                    public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-                        simpleNews.has_read = fs.fetchRead(simpleNews.news_ID);
-                        return simpleNews;
-                    }
-                }).map(new Function<SimpleNews, SimpleNews>() {
-                    @Override
-                    public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-                        simpleNews.picture_url = null;
-                        if (simpleNews.news_Pictures.trim().length() > 0) {
-                            simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
-                        }
-                        return simpleNews;
-                    }
-                });
+                return upstream
+                        .map(new Function<SimpleNews, SimpleNews>() {
+                            @Override
+                            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
+                                simpleNews.has_read = fs.hasRead(simpleNews.news_ID);
+                                return simpleNews;
+                            }
+                        })
+                        .map(new Function<SimpleNews, SimpleNews>() {
+                            @Override
+                            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
+                                simpleNews.is_favorite = fs.isFavorite(simpleNews.news_ID);
+                                return simpleNews;
+                            }
+                        })
+                        .map(new Function<SimpleNews, SimpleNews>() {
+                            @Override
+                            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
+                                simpleNews.picture_url = null;
+                                if (simpleNews.news_Pictures.trim().length() > 0) {
+                                    simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
+                                }
+                                return simpleNews;
+                            }
+                        });
             }
         };
-        this.liftAllDetail = new SingleTransformer<DetailNews, DetailNews>() {
+        this.liftAllDetail = new FlowableTransformer<DetailNews, DetailNews>() {
             @Override
-            public SingleSource<DetailNews> apply(@NonNull Single<DetailNews> upstream) {
-                return upstream.map(new Function<DetailNews, DetailNews>() {
-                    @Override
-                    public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
-                    fs.insertDetail(detailNews);
-                    return detailNews;
-                    }
-                }).map(new Function<DetailNews, DetailNews>() {
-                    @Override
-                    public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
-                    detailNews.has_read = fs.fetchRead(detailNews.news_ID);
-                    return detailNews;
-                    }
-                }).map(new Function<DetailNews, DetailNews>() {
-                    @Override
-                    public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
-                        detailNews.picture_url = null;
-                        if (detailNews.news_Pictures.trim().length() > 0) {
-                            detailNews.picture_url = detailNews.news_Pictures.trim().split(";")[0].split(" ")[0];
-                        }
-                        return detailNews;
-                    }
-                });
+            public Publisher<DetailNews> apply(@NonNull Flowable<DetailNews> upstream) {
+                return upstream
+                        .map(new Function<DetailNews, DetailNews>() {
+                            @Override
+                            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+                                fs.insertDetail(detailNews);
+                                return detailNews;
+                            }
+                        })
+                        .map(new Function<DetailNews, DetailNews>() {
+                            @Override
+                            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+                                detailNews.has_read = fs.hasRead(detailNews.news_ID);
+                                return detailNews;
+                            }
+                        })
+                        .map(new Function<DetailNews, DetailNews>() {
+                            @Override
+                            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+                                detailNews.is_favorite = fs.isFavorite(detailNews.news_ID);
+                                return detailNews;
+                            }
+                        })
+                        .map(new Function<DetailNews, DetailNews>() {
+                            @Override
+                            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+                                detailNews.picture_url = null;
+                                if (detailNews.news_Pictures.trim().length() > 0) {
+                                    detailNews.picture_url = detailNews.news_Pictures.trim().split(";")[0].split(" ")[0];
+                                }
+                                return detailNews;
+                            }
+                        });
             }
         };
     }
@@ -135,19 +154,19 @@ public class Manager {
      * @return
      */
     public Single<DetailNews> fetchDetailNews(final String news_ID) {
-        return Single.fromCallable(new Callable<DetailNews>() {
+        return Flowable.fromCallable(new Callable<DetailNews>() {
             @Override
             public DetailNews call() throws Exception {
                 DetailNews news = fs.fetchDetail(news_ID); // load from disk
                 return news != null ? news : new DetailNews();
             }
-        }).flatMap(new Function<DetailNews, SingleSource<? extends DetailNews>>() {
+        }).flatMap(new Function<DetailNews, Publisher<DetailNews>>() {
             @Override
-            public SingleSource<? extends DetailNews> apply(@NonNull DetailNews detailNews) throws Exception {
-                if (detailNews.news_ID != null) return Single.just(detailNews);
+            public Publisher<DetailNews> apply(@NonNull DetailNews detailNews) throws Exception {
+                if (detailNews.news_ID != null) return Flowable.just(detailNews);
                 return API.GetDetailNews(news_ID); // load from web
             }
-        }).compose(this.liftAllDetail).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        }).compose(this.liftAllDetail).firstOrError().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     /**
@@ -175,9 +194,62 @@ public class Manager {
             @Override
             public Object call() throws Exception {
                 fs.insertRead(news_ID);
-                return null;
+                return new Object();
             }
         }).subscribeOn(Schedulers.io()).subscribe();
+    }
+
+    /**
+     * 添加收藏
+     * @param news_ID
+     */
+    public void insertFavorite(final String news_ID) {
+        Single.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                fs.insertFavorite(news_ID);
+                return new Object();
+            }
+        }).subscribeOn(Schedulers.io()).subscribe();
+    }
+
+    /**
+     * 取消收藏
+     * @param news_ID
+     */
+    public void removeFavorite(final String news_ID) {
+        Single.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                fs.removeFavorite(news_ID);
+                return new Object();
+            }
+        }).subscribeOn(Schedulers.io()).subscribe();
+    }
+
+    /**
+     *
+     * @return 收藏列表
+     */
+    public Single<List<DetailNews>> favorites() {
+        return Flowable.fromCallable(new Callable<List<String>>() {
+            @Override
+            public List<String> call() throws Exception {
+                return fs.fetchFavorite();
+            }
+        }).flatMap(new Function<List<String>, Publisher<String>>() { // 展开
+            @Override
+            public Publisher<String> apply(@NonNull List<String> strings) throws Exception {
+                return Flowable.fromIterable(strings);
+            }
+        }).flatMap(new Function<String, Publisher<DetailNews>>() { // 获取
+            @Override
+            public Publisher<DetailNews> apply(@NonNull String news_ID) throws Exception {
+                DetailNews news = fs.fetchDetail(news_ID);
+                if (news != null) return Flowable.just(news);
+                return API.GetDetailNews(news_ID);
+            }
+        }).compose(this.liftAllDetail).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     private Bitmap fetchBitmap(String news_Pictures) {
