@@ -56,6 +56,7 @@ public class NewsFragment extends Fragment {
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
         mPagerAdapter = new MyPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         for (int i = 0; i < Constant.CATEGORY_COUNT; i++)
@@ -68,6 +69,7 @@ public class NewsFragment extends Fragment {
         return view;
     }
 
+    // TODO Optimize performance
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
 
         public MyPagerAdapter(FragmentManager fm) {

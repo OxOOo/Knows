@@ -116,7 +116,7 @@ class API {
         news.news_ID = json_news.getString("news_ID");
         news.news_Pictures = json_news.getString("news_Pictures");
         news.news_Source = json_news.getString("news_Source");
-        news.news_Time = json_news.getString("news_Time");
+        news.news_Time = json_news.getString("news_Time"); // TODO format time
         news.news_Title = json_news.getString("news_Title");
         news.news_URL = json_news.getString("news_URL");
         news.news_Video = json_news.getString("news_Video");
