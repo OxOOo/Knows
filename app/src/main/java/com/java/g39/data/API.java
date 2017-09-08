@@ -28,10 +28,11 @@ class API {
      * @return DetailNews
      * @throws JSONException
      */
-    private static DetailNews GetDetailNewsFromJson(JSONObject json_news) throws JSONException {
+    static DetailNews GetDetailNewsFromJson(JSONObject json_news, boolean from_disk) throws JSONException {
         JSONArray list;
         DetailNews news = new DetailNews();
         news.plain_json = json_news.toString();
+        news.from_disk = from_disk;
 
         news.Keywords = new ArrayList<DetailNews.WordWithScore>();
         list = json_news.getJSONArray("Keywords");
@@ -105,9 +106,10 @@ class API {
      * @return DetailNews
      * @throws JSONException
      */
-    private static SimpleNews GetNewsFromJson(JSONObject json_news) throws JSONException {
+    static SimpleNews GetNewsFromJson(JSONObject json_news, boolean from_disk) throws JSONException {
         SimpleNews news = new SimpleNews();
         news.plain_json = json_news.toString();
+        news.from_disk = from_disk;
 
         news.lang_Type = json_news.getString("lang_Type");
         news.newsClassTag = json_news.getString("newsClassTag");
@@ -165,7 +167,7 @@ class API {
                         JSONArray list = allData.getJSONArray("list");
                         for (int t = 0; t < list.length(); t++) {
                             JSONObject json_news = list.getJSONObject(t);
-                            result.add(GetNewsFromJson(json_news));
+                            result.add(GetNewsFromJson(json_news, false));
                         }
                     } catch (Exception e) {
                         Log.e("error", "error in API.GetSimpleNews Json_body:" + body);
@@ -214,7 +216,7 @@ class API {
                         JSONArray list = allData.getJSONArray("list");
                         for (int t = 0; t < list.length(); t++) {
                             JSONObject json_news = list.getJSONObject(t);
-                            result.add(GetNewsFromJson(json_news));
+                            result.add(GetNewsFromJson(json_news, false));
                         }
                     } catch (Exception e) {
                         Log.e("error", "error in API.SearchNews Json_body:" + body);
@@ -254,7 +256,7 @@ class API {
                         Log.d("tag", "body:" + body);
                         allData = new JSONObject(body);
                         Log.d("tag", "body:" + body);
-                        return GetDetailNewsFromJson(allData);
+                        return GetDetailNewsFromJson(allData, false);
 
                     } catch (Exception e) {
                         Log.e("error", "error in API.GetDetailNews Json_body:" + body);

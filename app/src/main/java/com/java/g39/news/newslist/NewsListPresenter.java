@@ -1,6 +1,7 @@
 package com.java.g39.news.newslist;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.java.g39.data.Manager;
 import com.java.g39.data.SimpleNews;

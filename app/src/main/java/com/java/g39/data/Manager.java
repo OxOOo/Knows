@@ -8,10 +8,15 @@ import android.util.Log;
 
 import com.java.g39.R;
 
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -45,47 +50,65 @@ public class Manager {
     }
 
     public Single<List<SimpleNews>> fetchSimpleNews(final int pageNo, final int pageSize, final int category) {
-        return API.GetSimpleNews(pageNo, pageSize, category)
-                .map(new Function<SimpleNews, SimpleNews>() {
+        return Flowable.fromCallable(new Callable<List<SimpleNews>>() {
+            @Override
+            public List<SimpleNews> call() throws Exception {
+                return fs.fetchSimple(pageNo, pageSize, category);
+            }
+        }).flatMap(new Function<List<SimpleNews>, Publisher<SimpleNews>>() {
+            @Override
+            public Publisher<SimpleNews> apply(@NonNull List<SimpleNews> simpleNewses) throws Exception {
+                if (simpleNewses.size() == pageSize) return Flowable.fromIterable(simpleNewses);
+                return API.GetSimpleNews(pageNo, pageSize, category);
+            }
+        }).map(new Function<SimpleNews, SimpleNews>() {
+            @Override
+            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
+            fs.insertSimple(simpleNews, category);
+            return simpleNews;
+            }
+        }).map(new Function<SimpleNews, SimpleNews>() {
                     @Override
                     public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-                        fs.insertSimple(simpleNews, category);
-                        return simpleNews;
-                    }
-                })
-                .map(new Function<SimpleNews, SimpleNews>() {
-                    @Override
-                    public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-                        simpleNews.has_read = false;
-                        simpleNews.from_disk = false;
-                        simpleNews.picture_url = null;
-                        if (simpleNews.news_Pictures.trim().length() > 0) {
-                            simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
-                        }
-                        return simpleNews;
-                    }
-                })
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+            simpleNews.has_read = false;
+            simpleNews.picture_url = null;
+            if (simpleNews.news_Pictures.trim().length() > 0) {
+                simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
+            }
+            return simpleNews;
+            }
+        }).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public Single<DetailNews> fetchDetailNews(final String news_ID) {
-        return API.GetDetailNews(news_ID)
-                .map(new Function<DetailNews, DetailNews>() {
-                    @Override
-                    public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
-                        detailNews.has_read = false;
-                        detailNews.from_disk = false;
-                        detailNews.picture_url = null;
-                        if (detailNews.news_Pictures.trim().length() > 0) {
-                            detailNews.picture_url = detailNews.news_Pictures.trim().split(";")[0].split(" ")[0];
-                        }
-                        return detailNews;
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return Single.fromCallable(new Callable<DetailNews>() {
+            @Override
+            public DetailNews call() throws Exception {
+                return fs.fetchDetail(news_ID); // load from disk
+            }
+        }).flatMap(new Function<DetailNews, SingleSource<? extends DetailNews>>() {
+            @Override
+            public SingleSource<? extends DetailNews> apply(@NonNull DetailNews detailNews) throws Exception {
+                if (detailNews != null) return Single.just(detailNews);
+                return API.GetDetailNews(news_ID); // load from web
+            }
+        }).map(new Function<DetailNews, DetailNews>() {
+            @Override
+            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+            fs.insertDetail(detailNews);
+            return detailNews;
+            }
+        }).map(new Function<DetailNews, DetailNews>() {
+            @Override
+            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+            detailNews.has_read = false;
+            detailNews.picture_url = null;
+            if (detailNews.news_Pictures.trim().length() > 0) {
+                detailNews.picture_url = detailNews.news_Pictures.trim().split(";")[0].split(" ")[0];
+            }
+            return detailNews;
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public Single<List<SimpleNews>> searchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
@@ -94,7 +117,6 @@ public class Manager {
                     @Override
                     public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
                         simpleNews.has_read = false;
-                        simpleNews.from_disk = false;
                         simpleNews.picture_url = null;
                         if (simpleNews.news_Pictures.trim().length() > 0) {
                             simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
