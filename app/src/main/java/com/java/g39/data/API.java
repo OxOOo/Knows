@@ -7,6 +7,7 @@ import org.json.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
 import io.reactivex.annotations.*;
@@ -142,32 +143,31 @@ public class API {
      * @return 新闻列表
      */
     public static Flowable<SimpleNews> GetSimpleNews(final int pageNo, final int pageSize, final int category) {
-        return Flowable.just("")
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(@NonNull String url) throws Exception {
-                        String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/latest?pageNo=%d&pageSize=%d", pageNo, pageSize));
-                        if (category != -1)
-                            URL_String = URL_String + String.format("&category=%d", category);
-                        return GetBodyFromURL(URL_String);
-                    }
-                }).flatMap(new Function<String, Flowable<SimpleNews>>() {
+        return Flowable.fromCallable(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/latest?pageNo=%d&pageSize=%d", pageNo, pageSize));
+                    if (category != -1)
+                        URL_String = URL_String + String.format("&category=%d", category);
+                    return GetBodyFromURL(URL_String);
+                }
+            }).flatMap(new Function<String, Flowable<SimpleNews>>() {
                     @Override
                     public Flowable<SimpleNews> apply(@NonNull String body) throws Exception {
-                        List<SimpleNews> result = new ArrayList<SimpleNews>();
-                        try {
-                            JSONObject allData = new JSONObject(body);
-                            JSONArray list = allData.getJSONArray("list");
-                            for (int t = 0; t < list.length(); t++) {
-                                JSONObject json_news = list.getJSONObject(t);
-                                result.add(GetNewsFromJson(json_news));
-                            }
-                        } catch (Exception e) {
-                            Log.e("error", "error in API.GetSimpleNews Json_body:" + body);
+                    List<SimpleNews> result = new ArrayList<SimpleNews>();
+                    try {
+                        JSONObject allData = new JSONObject(body);
+                        JSONArray list = allData.getJSONArray("list");
+                        for (int t = 0; t < list.length(); t++) {
+                            JSONObject json_news = list.getJSONObject(t);
+                            result.add(GetNewsFromJson(json_news));
                         }
-                        return Flowable.fromIterable(result);
+                    } catch (Exception e) {
+                        Log.e("error", "error in API.GetSimpleNews Json_body:" + body);
                     }
-                });
+                    return Flowable.fromIterable(result);
+                }
+            });
     }
 
     /**
@@ -191,33 +191,32 @@ public class API {
      * @return 新闻列表
      */
     public static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
-        return Flowable.just("")
-                .map(new Function<String, String>() {
-                    @Override
-                    public String apply(@NonNull String url) throws Exception {
-                        String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/search?keyword=%s&pageNo=%d&pageSize=%d", keyword, pageNo, pageSize));
-                        if (category != -1)
-                            URL_String = URL_String + String.format("&category=%d", category);
-                        return GetBodyFromURL(URL_String);
-                    }
-                }).flatMap(new Function<String, Flowable<SimpleNews>>() {
+        return Flowable.fromCallable(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/search?keyword=%s&pageNo=%d&pageSize=%d", keyword, pageNo, pageSize));
+                    if (category != -1)
+                        URL_String = URL_String + String.format("&category=%d", category);
+                    return GetBodyFromURL(URL_String);
+                }
+            }).flatMap(new Function<String, Flowable<SimpleNews>>() {
                     @Override
                     public Flowable<SimpleNews> apply(@NonNull String body) throws Exception {
-                        List<SimpleNews> result = new ArrayList<SimpleNews>();
-                        JSONObject allData;
-                        try {
-                            allData = new JSONObject(body);
-                            JSONArray list = allData.getJSONArray("list");
-                            for (int t = 0; t < list.length(); t++) {
-                                JSONObject json_news = list.getJSONObject(t);
-                                result.add(GetNewsFromJson(json_news));
-                            }
-                        } catch (Exception e) {
-                            Log.e("error", "error in API.SearchNews Json_body:" + body);
+                    List<SimpleNews> result = new ArrayList<SimpleNews>();
+                    JSONObject allData;
+                    try {
+                        allData = new JSONObject(body);
+                        JSONArray list = allData.getJSONArray("list");
+                        for (int t = 0; t < list.length(); t++) {
+                            JSONObject json_news = list.getJSONObject(t);
+                            result.add(GetNewsFromJson(json_news));
                         }
-                        return Flowable.fromIterable(result);
+                    } catch (Exception e) {
+                        Log.e("error", "error in API.SearchNews Json_body:" + body);
                     }
-                });
+                    return Flowable.fromIterable(result);
+                }
+            });
     }
 
     /**
@@ -239,26 +238,25 @@ public class API {
      * @return 新闻详情
      */
     public static Flowable<DetailNews> GetDetailNews(final String newsId) {
-        return Flowable.just("")
-                .map(new Function<String, DetailNews>() {
-                    @Override
-                    public DetailNews apply(@NonNull String url) throws Exception {
-                        String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/detail?newsId=%s", newsId));
-                        String body = GetBodyFromURL(URL_String);
-                        List<SimpleNews> result = new ArrayList<SimpleNews>();
-                        try {
-                            JSONObject allData;
-                            Log.d("tag", "body:" + body);
-                            allData = new JSONObject(body);
-                            Log.d("tag", "body:" + body);
-                            return GetDetailNewsFromJson(allData);
+        return Flowable.fromCallable(new Callable<DetailNews>() {
+                @Override
+                public DetailNews call() throws Exception {
+                    String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/detail?newsId=%s", newsId));
+                    String body = GetBodyFromURL(URL_String);
+                    List<SimpleNews> result = new ArrayList<SimpleNews>();
+                    try {
+                        JSONObject allData;
+                        Log.d("tag", "body:" + body);
+                        allData = new JSONObject(body);
+                        Log.d("tag", "body:" + body);
+                        return GetDetailNewsFromJson(allData);
 
-                        } catch (Exception e) {
-                            Log.e("error", "error in API.GetDetailNews Json_body:" + body);
-                            Log.e("error", e.toString());
-                        }
-                        return null;
+                    } catch (Exception e) {
+                        Log.e("error", "error in API.GetDetailNews Json_body:" + body);
+                        Log.e("error", e.toString());
                     }
-                });
+                    return null;
+                }
+            });
     }
 }
