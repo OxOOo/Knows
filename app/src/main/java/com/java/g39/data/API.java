@@ -149,7 +149,7 @@ class API {
      * @param category 分类，0表示不设置
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> GetSimpleNews(final int pageNo, final int pageSize, final int category) {
+    static Flowable<SimpleNews> GetSimpleNews(final int pageNo, final int pageSize, final int category) {
         return Flowable.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
@@ -197,7 +197,7 @@ class API {
      * @param category 分类，0表示不设置
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
+    static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
         return Flowable.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
@@ -234,7 +234,7 @@ class API {
      * @param pageSize 每页新闻数量
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> SearchNews(String keyword, int pageNo, int pageSize) {
+    static Flowable<SimpleNews> SearchNews(String keyword, int pageNo, int pageSize) {
         return SearchNews(keyword, pageNo, pageSize, 0);
     }
 
@@ -244,7 +244,7 @@ class API {
      * @param newsId ID
      * @return 新闻详情
      */
-    public static Single<DetailNews> GetDetailNews(final String newsId) {
+    static Single<DetailNews> GetDetailNews(final String newsId) {
         return Single.fromCallable(new Callable<DetailNews>() {
                 @Override
                 public DetailNews call() throws Exception {

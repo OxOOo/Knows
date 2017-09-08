@@ -28,8 +28,9 @@ import java.util.List;
 class FS {
     private SQLiteDatabase db;
 
-    private static final String TABLE_NAME_CATEGORY = "news_category";
+    private static final String TABLE_NAME_SIMPLE = "news_simple";
     private static final String TABLE_NAME_DETAIL = "news_detail";
+    private static final String TABLE_NAME_READ = "news_read";
     private static final String KEY_ID = "news_id";
     private static final String KEY_SIMPLE = "simple_json";
     private static final String KEY_CATEGORY = "category";
@@ -37,25 +38,31 @@ class FS {
 
     FS(Context context) {
         this.db = SQLiteDatabase.openOrCreateDatabase(context.getFilesDir().getPath() + "/data.db",null);
-        // dropTables(); // FIXME
+        dropTables(); // FIXME
         createTables();
     }
 
-    public void createTables() {
-        final String category_table = String.format("create table if not exists `%s`(%s string primary key, %s text, %s integer)", TABLE_NAME_CATEGORY, KEY_ID, KEY_SIMPLE, KEY_CATEGORY);
-        final String detail_table = String.format("create table if not exists `%s`(%s string primary key, %s text)", TABLE_NAME_DETAIL, KEY_ID, KEY_DETAIL);
+    void createTables() {
+        final String category_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string, %s integer, %s text, PRIMARY KEY(%s, %s))",
+                TABLE_NAME_SIMPLE, KEY_ID, KEY_CATEGORY, KEY_SIMPLE, KEY_ID, KEY_CATEGORY);
         db.execSQL(category_table);
+        final String detail_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key, %s text)",
+                TABLE_NAME_DETAIL, KEY_ID, KEY_DETAIL);
         db.execSQL(detail_table);
+        final String read_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key)",
+                TABLE_NAME_READ, KEY_ID);
+        db.execSQL(read_table);
     }
 
     public void dropTables() {
-        db.execSQL(String.format("drop table if exists `%s`", TABLE_NAME_CATEGORY));
-        db.execSQL(String.format("drop table if exists `%s`", TABLE_NAME_DETAIL));
+        db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_SIMPLE));
+        db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_DETAIL));
+        db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_READ));
     }
 
-    public void insertSimple(SimpleNews simpleNews, int category) {
+    void insertSimple(SimpleNews simpleNews, int category) {
         String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s, %s, %s) VALUES(%s, %s, %s)",
-                TABLE_NAME_CATEGORY,
+                TABLE_NAME_SIMPLE,
                 KEY_ID, KEY_SIMPLE, KEY_CATEGORY,
                 DatabaseUtils.sqlEscapeString(simpleNews.news_ID),
                 DatabaseUtils.sqlEscapeString(simpleNews.plain_json),
@@ -63,9 +70,9 @@ class FS {
         db.execSQL(cmd);
     }
 
-    public List<SimpleNews> fetchSimple(int pageNo, int pageSize, int category) throws JSONException {
-        String cmd = String.format("SELECT * FROM `%s` ORDER BY %s DESC LIMIT %s OFFSET %s",
-                TABLE_NAME_CATEGORY, KEY_ID, String.valueOf(pageSize), String.valueOf(pageSize*pageNo-pageSize));
+    List<SimpleNews> fetchSimple(int pageNo, int pageSize, int category) throws JSONException {
+        String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s ORDER BY %s DESC LIMIT %s OFFSET %s",
+                TABLE_NAME_SIMPLE, KEY_CATEGORY, String.valueOf(category), KEY_ID, String.valueOf(pageSize), String.valueOf(pageSize*pageNo-pageSize));
         Cursor cursor = db.rawQuery(cmd, null);
         List<SimpleNews> list = new ArrayList<SimpleNews>();
         while(cursor.moveToNext()) {
@@ -75,7 +82,7 @@ class FS {
         return list;
     }
 
-    public void insertDetail(DetailNews detailNews) {
+    void insertDetail(DetailNews detailNews) {
         String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s, %s) VALUES(%s, %s)",
                 TABLE_NAME_DETAIL, KEY_ID, KEY_DETAIL,
                 DatabaseUtils.sqlEscapeString(detailNews.news_ID),
@@ -83,7 +90,7 @@ class FS {
         db.execSQL(cmd);
     }
 
-    public DetailNews fetchDetail(String news_ID) throws JSONException {
+    DetailNews fetchDetail(String news_ID) throws JSONException {
         String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s",
                 TABLE_NAME_DETAIL, KEY_ID, DatabaseUtils.sqlEscapeString(news_ID));
         Cursor cursor = db.rawQuery(cmd, null);
@@ -95,12 +102,28 @@ class FS {
         return detailNews;
     }
 
+    void insertRead(String news_ID) {
+        String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s) VALUES(%s)",
+                TABLE_NAME_READ, KEY_ID,
+                DatabaseUtils.sqlEscapeString(news_ID));
+        db.execSQL(cmd);
+    }
+
+    boolean fetchRead(String news_ID) {
+        String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s",
+                TABLE_NAME_READ, KEY_ID, DatabaseUtils.sqlEscapeString(news_ID));
+        Cursor cursor = db.rawQuery(cmd, null);
+        boolean read = cursor.moveToFirst();
+        cursor.close();
+        return read;
+    }
+
     /**
      * 下载图片，尝试3次，如果3次均不能正常下载，则返回null
      * @param url 图片链接
      * @return 图片
      */
-    public Bitmap downloadImage(String url) {
+    Bitmap downloadImage(String url) {
         for(int times = 3; times > 0; times --) {
             try {
                 URL imgUrl = new URL(url);
