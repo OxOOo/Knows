@@ -15,7 +15,7 @@ public interface NewsDetailContract {
     interface View extends BaseView<NewsDetailContract.Presenter> {
 
         /**
-         * 设置新闻
+         * 设置新闻，只设置
          * @param news 新闻
          */
         public void setNewsDetail(DetailNews news);

@@ -1,23 +1,38 @@
 package com.java.g39.newsdetail;
 
+import com.java.g39.data.API;
+import com.java.g39.data.DetailNews;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**
  * Created by chenyu on 2017/9/7.
  */
 
 public class NewsDetailPresenter implements NewsDetailContract.Presenter {
 
-    private String news_ID;
-    private NewsDetailContract.View view;
+    private String mNews_ID;
+    private NewsDetailContract.View mView;
 
-    public NewsDetailPresenter(String news_ID, NewsDetailContract.View view) {
-        this.news_ID = news_ID;
-        this.view = view;
+    public NewsDetailPresenter(NewsDetailContract.View view, String news_ID) {
+        this.mNews_ID = news_ID;
+        this.mView = view;
         view.setPresenter(this);
     }
 
     @Override
     public void subscribe() {
-        // FIXME
+        API.GetDetailNews(mNews_ID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<DetailNews>() {
+                    @Override
+                    public void accept(DetailNews detailNews) throws Exception {
+                        mView.setNewsDetail(detailNews);
+                    }
+                });
     }
 
     @Override
