@@ -1,11 +1,10 @@
-package com.java.g39;
+package com.java.g39.data;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
-import com.java.g39.data.API;
 import com.java.g39.data.DetailNews;
 import com.java.g39.data.SimpleNews;
 
@@ -56,10 +55,8 @@ public class APITest {
     }
     @Test
     public void TestGetDetailNews() throws Exception {
-        Iterable<DetailNews> news = API.GetDetailNews("201608090432c815a85453c34d8ca43a591258701e9b").subscribeOn(Schedulers.io()).blockingIterable();
+        DetailNews news = API.GetDetailNews("201608090432c815a85453c34d8ca43a591258701e9b").subscribeOn(Schedulers.io()).blockingGet();
         int tot = 0;
-        for (DetailNews s : news) {
-            assertEquals("德媒：俄柔道运动员里约夺金与普京密切相关",s.news_Title);
-        }
+        assertEquals("德媒：俄柔道运动员里约夺金与普京密切相关", news.news_Title);
     }
 }

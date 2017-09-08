@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.java.g39.R;
-import com.java.g39.data.FS;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -54,22 +53,6 @@ public class NewsListActivity extends AppCompatActivity {
                 Log.d("DEBUG", s);
             }
         });
-
-        Flowable.just("http://himg2.huanqiu.com/attachment2010/2016/0912/13/16/20160912011630240.png")
-                .map(new Function<String, Bitmap>() {
-                    @Override
-                    public Bitmap apply(@NonNull String s) throws Exception {
-                        return FS.DownloadImage(s);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Bitmap>() {
-                    @Override
-                    public void accept(Bitmap bitmap) throws Exception {
-                        image_view.setImageBitmap(bitmap);
-                    }
-                });
     }
 
     @Override

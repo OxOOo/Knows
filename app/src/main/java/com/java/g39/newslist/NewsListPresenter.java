@@ -8,7 +8,7 @@ import android.util.JsonReader;
 import android.util.Log;
 
 import com.java.g39.R;
-import com.java.g39.data.API;
+import com.java.g39.data.Manager;
 import com.java.g39.data.SimpleNews;
 import com.java.g39.newsdetail.NewsDetailActivity;
 
@@ -70,10 +70,7 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     private void fetchNews() {
-        API.GetSimpleNews(mPageNo, 20, mCategory)
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        Manager.I.fetchSimpleNews(mPageNo, 20, mCategory, mView.context())
                 .subscribe(new Consumer<List<SimpleNews>>() {
                     @Override
                     public void accept(List<SimpleNews> simpleNewses) throws Exception {

@@ -1,7 +1,7 @@
 package com.java.g39.newsdetail;
 
-import com.java.g39.data.API;
 import com.java.g39.data.DetailNews;
+import com.java.g39.data.Manager;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -24,7 +24,7 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
 
     @Override
     public void subscribe() {
-        API.GetDetailNews(mNews_ID)
+        Manager.I.fetchDetailNews(mNews_ID, mView.context())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<DetailNews>() {

@@ -1,5 +1,7 @@
 package com.java.g39.data;
 
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 /**
@@ -42,4 +44,9 @@ public class DetailNews {
     public String seggedTitle;
     public int wordCountOfContent;
     public int wordCountOfTitle;
+
+    public Bitmap picture; // 图片对象，不为null
+    public boolean has_read; // 是否已读
+
+    public boolean from_disk; // 是否是从磁盘上读取的
 }

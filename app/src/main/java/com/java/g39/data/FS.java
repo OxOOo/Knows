@@ -14,7 +14,7 @@ import java.net.URL;
  * 磁盘
  */
 
-public class FS {
+class FS {
     private FS() {}
 
     /**

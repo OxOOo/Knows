@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 import io.reactivex.annotations.*;
 import io.reactivex.functions.*;
 
@@ -18,7 +19,7 @@ import io.reactivex.functions.*;
  * 新闻API相关操作
  */
 
-public class API {
+class API {
     private API() {
     }
 
@@ -237,8 +238,8 @@ public class API {
      * @param newsId ID
      * @return 新闻详情
      */
-    public static Flowable<DetailNews> GetDetailNews(final String newsId) {
-        return Flowable.fromCallable(new Callable<DetailNews>() {
+    public static Single<DetailNews> GetDetailNews(final String newsId) {
+        return Single.fromCallable(new Callable<DetailNews>() {
                 @Override
                 public DetailNews call() throws Exception {
                     String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/detail?newsId=%s", newsId));
