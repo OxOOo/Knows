@@ -1,7 +1,9 @@
 package com.java.g39.data;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.java.g39.R;
 
@@ -34,11 +36,7 @@ public class Manager {
                     public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
                         simpleNews.has_read = false;
                         simpleNews.from_disk = false;
-                        if (simpleNews.news_Pictures.length() > 0) {
-                            simpleNews.picture = FS.DownloadImage(simpleNews.news_Pictures.split(";")[0]);
-                        } else {
-                            simpleNews.picture = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher); // default picture
-                        }
+                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures, context);
                         return simpleNews;
                     }
                 })
@@ -54,15 +52,41 @@ public class Manager {
                     public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
                         detailNews.has_read = false;
                         detailNews.from_disk = false;
-                        if (detailNews.news_Pictures.length() > 0) {
-                            detailNews.picture = FS.DownloadImage(detailNews.news_Pictures.split(";")[0]);
-                        } else {
-                            detailNews.picture = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher); // default picture
-                        }
+                        detailNews.picture = fetchBitmap(detailNews.news_Pictures, context);
                         return detailNews;
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<List<SimpleNews>> searchNews(final String keyword, final int pageNo, final int pageSize, final int category, final Context context) {
+        return API.SearchNews(keyword, pageNo, pageSize, category)
+                .map(new Function<SimpleNews, SimpleNews>() {
+                    @Override
+                    public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
+                        simpleNews.has_read = false;
+                        simpleNews.from_disk = false;
+                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures, context);
+                        return simpleNews;
+                    }
+                })
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Bitmap fetchBitmap(String news_Pictures, final Context context) {
+        news_Pictures = news_Pictures.trim();
+        Bitmap picture = null;
+
+        if (news_Pictures.length() > 0) {
+            picture = FS.DownloadImage(news_Pictures.split(";")[0].split(" ")[0]);
+        }
+        if (picture == null) {
+            picture = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher); // default picture
+        }
+
+        return picture;
     }
 }
