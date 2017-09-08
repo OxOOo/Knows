@@ -66,6 +66,8 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                         System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
                         if (mPageNo == 1) mView.setNewsList(simpleNewses);
                         else mView.appendNewsList(simpleNewses);
+                        mView.onSuccess();
+                        // TODO onError
                     }
                 });
     }

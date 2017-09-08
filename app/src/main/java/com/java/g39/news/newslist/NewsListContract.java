@@ -26,6 +26,16 @@ public interface NewsListContract {
          * @param list 新闻列表
          */
         void appendNewsList(List<SimpleNews> list);
+
+        /**
+         * 获取新闻成功
+         */
+        void onSuccess();
+
+        /**
+         * 获取新闻失败
+         */
+        void onError();
     }
 
     interface Presenter extends BasePresenter {

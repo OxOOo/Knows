@@ -12,6 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import com.java.g39.R;
 import com.java.g39.data.SimpleNews;
@@ -74,8 +75,13 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         View view = inflater.inflate(R.layout.fragment_news_list, container, false);
 
         mSwipeRefreshWidget = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_widget);
+        mSwipeRefreshWidget.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        mSwipeRefreshWidget.setOnRefreshListener(() -> {
+            mSwipeRefreshWidget.setRefreshing(true);
+            mPresenter.refreshNews();
+        });
 
-        mRecyclerView = (RecyclerView)view.findViewById(R.id.recycle_view);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -84,6 +90,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         mRecyclerView.setAdapter(mAdapter);
 
         mPresenter = new NewsListPresenter(this, mCategory);
+        mPresenter.refreshNews();
         return view;
     }
 
@@ -110,5 +117,16 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void appendNewsList(List<SimpleNews> list) {
         mAdapter.appendData(list);
+    }
+
+    @Override
+    public void onSuccess() {
+        mSwipeRefreshWidget.setRefreshing(false);
+    }
+
+    @Override
+    public void onError() {
+        mSwipeRefreshWidget.setRefreshing(false);
+        Toast.makeText(getContext(), "获取新闻失败，请稍后再试", Toast.LENGTH_SHORT).show();
     }
 }
