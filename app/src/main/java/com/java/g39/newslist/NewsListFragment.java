@@ -58,11 +58,12 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
 
     @Override
     public Context context() {
-        return null;
+        return getContext();
     }
 
     @Override
     public void start(Intent intent) {
+        startActivity(intent);
     }
 
     @Override

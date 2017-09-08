@@ -108,11 +108,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Context context() {
-        return null;
+        return this;
     }
 
     @Override
     public void start(Intent intent) {
+        startActivity(intent);
     }
 
     @Override
