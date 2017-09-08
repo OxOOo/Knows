@@ -54,8 +54,12 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mPresenter = new MainPresenter(this);
+    }
 
-        this.switchToNews();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.subscribe();
     }
 
     @Override
