@@ -70,11 +70,11 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     private void fetchNews() {
-        Manager.I.fetchSimpleNews(mPageNo, 20, mCategory, mView.context())
+        Manager.I.fetchSimpleNews(mPageNo, 20, mCategory)
                 .subscribe(new Consumer<List<SimpleNews>>() {
                     @Override
                     public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                        mView.appendNewsList(simpleNewses);
+                        mView.setNewsList(simpleNewses);
                     }
                 });
     }

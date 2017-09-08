@@ -31,6 +31,8 @@ class API {
     private static DetailNews GetDetailNewsFromJson(JSONObject json_news) throws JSONException {
         JSONArray list;
         DetailNews news = new DetailNews();
+        news.plain_json = json_news.toString();
+
         news.Keywords = new ArrayList<DetailNews.WordWithScore>();
         list = json_news.getJSONArray("Keywords");
         for (int t = 0; t < list.length(); t++) {
@@ -105,6 +107,8 @@ class API {
      */
     private static SimpleNews GetNewsFromJson(JSONObject json_news) throws JSONException {
         SimpleNews news = new SimpleNews();
+        news.plain_json = json_news.toString();
+
         news.lang_Type = json_news.getString("lang_Type");
         news.newsClassTag = json_news.getString("newsClassTag");
         news.news_Author = json_news.getString("news_Author");

@@ -18,6 +18,8 @@ public class DetailNews {
         public int count;
     }
 
+    public String plain_json; // 原始json字符串
+
     public List<WordWithScore> Keywords;
     public List<WordWithScore> bagOfWords;
     public String crawl_Source;

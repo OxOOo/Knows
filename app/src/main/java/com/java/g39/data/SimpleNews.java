@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
  */
 
 public class SimpleNews {
+    public String plain_json; // 原始json字符串
+
     public String lang_Type;
     public String newsClassTag;
     public String news_Author;

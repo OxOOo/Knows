@@ -1,6 +1,7 @@
 package com.java.g39.data;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -13,6 +14,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -23,20 +25,40 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class Manager {
-    public static Manager I = new Manager();
+    public static Manager I = null;
 
-    private Manager() {
-
+    /**
+     * 创建单例，全局只能调用一次
+     * @param context 上下文
+     */
+    public static void CreateI(Context context) {
+        assert (I == null);
+        I = new Manager(context);
     }
 
-    public Single<List<SimpleNews>> fetchSimpleNews(final int pageNo, final int pageSize, final int category, final Context context) {
+    private Context context;
+    private FS fs;
+
+    private Manager(Context context) {
+        this.context = context;
+        this.fs = new FS(context);
+    }
+
+    public Single<List<SimpleNews>> fetchSimpleNews(final int pageNo, final int pageSize, final int category) {
         return API.GetSimpleNews(pageNo, pageSize, category)
+                .map(new Function<SimpleNews, SimpleNews>() {
+                    @Override
+                    public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
+                        fs.insertSimple(simpleNews, category);
+                        return simpleNews;
+                    }
+                })
                 .map(new Function<SimpleNews, SimpleNews>() {
                     @Override
                     public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
                         simpleNews.has_read = false;
                         simpleNews.from_disk = false;
-                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures, context);
+                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures);
                         return simpleNews;
                     }
                 })
@@ -45,14 +67,14 @@ public class Manager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<DetailNews> fetchDetailNews(final String news_ID, final Context context) {
+    public Single<DetailNews> fetchDetailNews(final String news_ID) {
         return API.GetDetailNews(news_ID)
                 .map(new Function<DetailNews, DetailNews>() {
                     @Override
                     public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
                         detailNews.has_read = false;
                         detailNews.from_disk = false;
-                        detailNews.picture = fetchBitmap(detailNews.news_Pictures, context);
+                        detailNews.picture = fetchBitmap(detailNews.news_Pictures);
                         return detailNews;
                     }
                 })
@@ -60,14 +82,14 @@ public class Manager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<List<SimpleNews>> searchNews(final String keyword, final int pageNo, final int pageSize, final int category, final Context context) {
+    public Single<List<SimpleNews>> searchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
         return API.SearchNews(keyword, pageNo, pageSize, category)
                 .map(new Function<SimpleNews, SimpleNews>() {
                     @Override
                     public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
                         simpleNews.has_read = false;
                         simpleNews.from_disk = false;
-                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures, context);
+                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures);
                         return simpleNews;
                     }
                 })
@@ -76,12 +98,12 @@ public class Manager {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private Bitmap fetchBitmap(String news_Pictures, final Context context) {
+    private Bitmap fetchBitmap(String news_Pictures) {
         news_Pictures = news_Pictures.trim();
         Bitmap picture = null;
 
         if (news_Pictures.length() > 0) {
-            picture = FS.DownloadImage(news_Pictures.split(";")[0].split(" ")[0]);
+            picture = fs.downloadImage(news_Pictures.split(";")[0].split(" ")[0]);
         }
         if (picture == null) {
             picture = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher); // default picture
