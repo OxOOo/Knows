@@ -4,14 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
 import com.java.g39.R;
 import com.java.g39.data.SimpleNews;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +31,10 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
 
     private NewsListContract.Presenter mPresenter;
     private int mCategory;
+
+    private SwipeRefreshLayout mSwipeRefreshWidget;
+    private RecyclerView mRecyclerView;
+    private NewsAdapter mAdapter;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -50,7 +59,6 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCategory = getArguments().getInt("category");
-        mPresenter = new NewsListPresenter(this, mCategory);
     }
 
     @Override
@@ -64,7 +72,18 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_list, container, false);
-        ((TextView) view.findViewById(R.id.text_view)).setText("NewsListFragment " + mCategory);
+
+        mSwipeRefreshWidget = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_widget);
+
+        mRecyclerView = (RecyclerView)view.findViewById(R.id.recycle_view);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        mAdapter = new NewsAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+
+        mPresenter = new NewsListPresenter(this, mCategory);
         return view;
     }
 
@@ -85,9 +104,11 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
 
     @Override
     public void setNewsList(List<SimpleNews> list) {
+        mAdapter.setData(list);
     }
 
     @Override
     public void appendNewsList(List<SimpleNews> list) {
+        mAdapter.appendData(list);
     }
 }

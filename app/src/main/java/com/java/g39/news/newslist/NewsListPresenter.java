@@ -1,6 +1,7 @@
 package com.java.g39.news.newslist;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.java.g39.data.Manager;
 import com.java.g39.data.SimpleNews;
@@ -23,14 +24,13 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     public NewsListPresenter(NewsListContract.View view, int category) {
         this.mView = view;
         this.mCategory = category;
-        this.mPageNo = 1;
 
         view.setPresenter(this);
     }
 
     @Override
     public void subscribe() {
-        this.refreshNews();
+        refreshNews();
     }
 
     @Override
@@ -40,13 +40,13 @@ public class NewsListPresenter implements NewsListContract.Presenter {
 
     @Override
     public void requireMoreNews() {
-        mPageNo = 1;
+        mPageNo ++;
         fetchNews();
     }
 
     @Override
     public void refreshNews() {
-        mPageNo ++;
+        mPageNo = 1;
         fetchNews();
     }
 
@@ -58,11 +58,14 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     private void fetchNews() {
-        Manager.I.fetchSimpleNews(mPageNo, 20, mCategory, mView.context())
+        final long start = System.currentTimeMillis();
+        Manager.I.fetchSimpleNews(mPageNo, 20, mCategory)
                 .subscribe(new Consumer<List<SimpleNews>>() {
                     @Override
                     public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                        mView.appendNewsList(simpleNewses);
+                        System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
+                        if (mPageNo == 1) mView.setNewsList(simpleNewses);
+                        else mView.appendNewsList(simpleNewses);
                     }
                 });
     }

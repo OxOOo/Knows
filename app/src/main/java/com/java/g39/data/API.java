@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 import io.reactivex.annotations.*;
 import io.reactivex.functions.*;
 
@@ -28,9 +27,12 @@ class API {
      * @return DetailNews
      * @throws JSONException
      */
-    private static DetailNews GetDetailNewsFromJson(JSONObject json_news) throws JSONException {
+    static DetailNews GetDetailNewsFromJson(JSONObject json_news, boolean from_disk) throws JSONException {
         JSONArray list;
         DetailNews news = new DetailNews();
+        news.plain_json = json_news.toString();
+        news.from_disk = from_disk;
+
         news.Keywords = new ArrayList<DetailNews.WordWithScore>();
         list = json_news.getJSONArray("Keywords");
         for (int t = 0; t < list.length(); t++) {
@@ -103,15 +105,18 @@ class API {
      * @return DetailNews
      * @throws JSONException
      */
-    private static SimpleNews GetNewsFromJson(JSONObject json_news) throws JSONException {
+    static SimpleNews GetNewsFromJson(JSONObject json_news, boolean from_disk) throws JSONException {
         SimpleNews news = new SimpleNews();
+        news.plain_json = json_news.toString();
+        news.from_disk = from_disk;
+
         news.lang_Type = json_news.getString("lang_Type");
         news.newsClassTag = json_news.getString("newsClassTag");
         news.news_Author = json_news.getString("news_Author");
         news.news_ID = json_news.getString("news_ID");
         news.news_Pictures = json_news.getString("news_Pictures");
         news.news_Source = json_news.getString("news_Source");
-        news.news_Time = json_news.getString("news_Time");
+        news.news_Time = json_news.getString("news_Time"); // TODO format time
         news.news_Title = json_news.getString("news_Title");
         news.news_URL = json_news.getString("news_URL");
         news.news_Video = json_news.getString("news_Video");
@@ -143,7 +148,7 @@ class API {
      * @param category 分类，0表示不设置
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> GetSimpleNews(final int pageNo, final int pageSize, final int category) {
+    static Flowable<SimpleNews> GetSimpleNews(final int pageNo, final int pageSize, final int category) {
         return Flowable.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
@@ -161,7 +166,7 @@ class API {
                         JSONArray list = allData.getJSONArray("list");
                         for (int t = 0; t < list.length(); t++) {
                             JSONObject json_news = list.getJSONObject(t);
-                            result.add(GetNewsFromJson(json_news));
+                            result.add(GetNewsFromJson(json_news, false));
                         }
                     } catch (Exception e) {
                         Log.e("error", "error in API.GetSimpleNews Json_body:" + body);
@@ -191,7 +196,7 @@ class API {
      * @param category 分类，0表示不设置
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
+    static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
         return Flowable.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
@@ -210,7 +215,7 @@ class API {
                         JSONArray list = allData.getJSONArray("list");
                         for (int t = 0; t < list.length(); t++) {
                             JSONObject json_news = list.getJSONObject(t);
-                            result.add(GetNewsFromJson(json_news));
+                            result.add(GetNewsFromJson(json_news, false));
                         }
                     } catch (Exception e) {
                         Log.e("error", "error in API.SearchNews Json_body:" + body);
@@ -228,7 +233,7 @@ class API {
      * @param pageSize 每页新闻数量
      * @return 新闻列表
      */
-    public static Flowable<SimpleNews> SearchNews(String keyword, int pageNo, int pageSize) {
+    static Flowable<SimpleNews> SearchNews(String keyword, int pageNo, int pageSize) {
         return SearchNews(keyword, pageNo, pageSize, 0);
     }
 
@@ -238,8 +243,8 @@ class API {
      * @param newsId ID
      * @return 新闻详情
      */
-    public static Single<DetailNews> GetDetailNews(final String newsId) {
-        return Single.fromCallable(new Callable<DetailNews>() {
+    static Flowable<DetailNews> GetDetailNews(final String newsId) {
+        return Flowable.fromCallable(new Callable<DetailNews>() {
                 @Override
                 public DetailNews call() throws Exception {
                     String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/detail?newsId=%s", newsId));
@@ -247,10 +252,8 @@ class API {
                     List<SimpleNews> result = new ArrayList<SimpleNews>();
                     try {
                         JSONObject allData;
-                        Log.d("tag", "body:" + body);
                         allData = new JSONObject(body);
-                        Log.d("tag", "body:" + body);
-                        return GetDetailNewsFromJson(allData);
+                        return GetDetailNewsFromJson(allData, false);
 
                     } catch (Exception e) {
                         Log.e("error", "error in API.GetDetailNews Json_body:" + body);

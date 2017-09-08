@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorTabSelectedText">#FFFFFF</color>
+    <color name="colorTabText">#CCCCCC</color>
+
+    <color name="colorCard">#FFFFFF</color>
+    <color name="colorBackground">#E5E5E5</color>
+    <color name="colorTitle">#333333</color>
+    <color name="colorDetail">#999999</color>
 </resources>

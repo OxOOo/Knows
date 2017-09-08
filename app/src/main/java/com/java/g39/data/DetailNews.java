@@ -18,6 +18,8 @@ public class DetailNews {
         public int count;
     }
 
+    public String plain_json; // 原始json字符串
+
     public List<WordWithScore> Keywords;
     public List<WordWithScore> bagOfWords;
     public String crawl_Source;
@@ -45,8 +47,9 @@ public class DetailNews {
     public int wordCountOfContent;
     public int wordCountOfTitle;
 
-    public Bitmap picture; // 图片对象，不为null
+    public String picture_url; // 解析出的图片链接，可能为null
     public boolean has_read; // 是否已读
+    public boolean is_favorite; // 是否已收藏
 
     public boolean from_disk; // 是否是从磁盘上读取的
 }
