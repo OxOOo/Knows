@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.java.g39">
-    <!--可能的应用签名：tsinghua_g39-->
+    <!--应用签名微信：tsinghua_g39-->
+    <!--应用签名微博：caaf693c1c7fbd76a2d404bcaa234063-->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
