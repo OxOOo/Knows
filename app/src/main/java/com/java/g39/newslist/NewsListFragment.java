@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.java.g39.R;
 import com.java.g39.data.SimpleNews;
@@ -14,6 +15,7 @@ import com.java.g39.data.SimpleNews;
 import java.util.List;
 
 /**
+ * 新闻列表，带分类
  * Created by equation on 9/7/17.
  * A simple {@link Fragment} subclass.
  * Use the {@link NewsListFragment#newInstance} factory method to
@@ -22,6 +24,7 @@ import java.util.List;
 public class NewsListFragment extends Fragment implements NewsListContract.View {
 
     private NewsListContract.Presenter mPresenter;
+    private int mCategory;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -33,22 +36,28 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
      *
      * @return A new instance of fragment NewsListFragment.
      */
-    public static NewsListFragment newInstance() {
+    public static NewsListFragment newInstance(int category) {
+        Bundle args = new Bundle();
         NewsListFragment fragment = new NewsListFragment();
-        NewsListPresenter presenter = new NewsListPresenter(fragment);
+        args.putInt("category", category);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPresenter = new NewsListPresenter(this);
+        mCategory = getArguments().getInt("category");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_news_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_news_list, container, false);
+        ((TextView) view.findViewById(R.id.text_view)).setText("NewsListFragment " + mCategory);
+        return view;
     }
 
     @Override

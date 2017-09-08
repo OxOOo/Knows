@@ -9,6 +9,7 @@ import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,7 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.java.g39.R;
-import com.java.g39.newslist.NewsListFragment;
+import com.java.g39.newslist.NewsFragment;
 
 /**
  * Created by equation on 9/7/17.
@@ -122,25 +123,25 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void switchToNews() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, NewsListFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, NewsFragment.newInstance()).commit();
         this.mToolbar.setTitle(R.string.nav_news_title);
     }
 
     @Override
     public void switchToFavorites() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, NewsListFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Fragment()).commit();
         this.mToolbar.setTitle(R.string.nav_favorites_title);
     }
 
     @Override
     public void switchToSettings() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, NewsListFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Fragment()).commit();
         this.mToolbar.setTitle(R.string.nav_settings_title);
     }
 
     @Override
     public void switchToAbout() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, NewsListFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Fragment()).commit();
         this.mToolbar.setTitle(R.string.nav_about_title);
     }
 }
