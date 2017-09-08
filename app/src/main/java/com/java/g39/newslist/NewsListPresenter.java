@@ -8,6 +8,7 @@ import android.util.JsonReader;
 import android.util.Log;
 
 import com.java.g39.R;
+import com.java.g39.data.API;
 import com.java.g39.data.SimpleNews;
 import com.java.g39.newsdetail.NewsDetailActivity;
 
@@ -17,16 +18,25 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 /**
  * Created by chenyu on 2017/9/7.
  */
 
 public class NewsListPresenter implements NewsListContract.Presenter {
 
-    private NewsListContract.View view;
+    private NewsListContract.View mView;
+    private int mCategory;
+    private int mPageNo = 1;
 
-    public NewsListPresenter(NewsListContract.View view) {
-        this.view = view;
+    public NewsListPresenter(NewsListContract.View view, int category) {
+        this.mView = view;
+        this.mCategory = category;
+        this.mPageNo = 1;
+
         view.setPresenter(this);
     }
 
@@ -42,55 +52,33 @@ public class NewsListPresenter implements NewsListContract.Presenter {
 
     @Override
     public void requireMoreNews() {
-        List<SimpleNews> list = new ArrayList<SimpleNews>();
-        for(int i = 0; i < 10; i ++) {
-            try {
-                list.add(createNews());
-            } catch(JSONException e) {
-                Log.e("JSONException", e.getMessage());
-            }
-        }
-        view.appendNewsList(list);
+        mPageNo = 1;
+        fetchNews();
     }
 
     @Override
     public void refreshNews() {
-        List<SimpleNews> list = new ArrayList<SimpleNews>();
-        for(int i = 0; i < 10; i ++) {
-            try {
-                list.add(createNews());
-            } catch(JSONException e) {
-                Log.e("JSONException", e.getMessage());
-            }
-        }
-        view.setNewsList(list);
+        mPageNo ++;
+        fetchNews();
     }
 
     @Override
     public void openNewsDetailUI(SimpleNews news) {
-        Intent intent = new Intent(view.context(), NewsDetailActivity.class);
+        Intent intent = new Intent(mView.context(), NewsDetailActivity.class);
         intent.putExtra(NewsDetailActivity.NEWS_ID, news.news_ID);
-        view.start(intent);
+        mView.start(intent);
     }
 
-    private SimpleNews createNews() throws JSONException {
-        SimpleNews news = new SimpleNews();
-        JSONObject obj = new JSONObject("{\"lang_Type\":\"zh-CN\",\"newsClassTag\":\"科技\",\"news_Author\":\"创事记 微博 作者： 广州阿超\",\"news_ID\":\"20160913041301d5fc6a41214a149cd8a0581d3a014f\",\"news_Pictures\":\"\",\"news_Source\":\"新浪新闻\",\"news_Time\":\"20160912000000\",\"news_Title\":\"iPhone 7归来，友商们吊打苹果的姿势正确吗？\",\"news_URL\":\"http://tech.sina.com.cn/zl/post/detail/mobile/2016-09-12/pid_8508491.htm\",\"news_Video\":\"\",\"news_Intro\":\"　　欢迎关注“创事记”的微信订阅号：sinachuangshiji 文/罗超...\"}");
-        news.lang_Type = obj.getString("lang_Type");
-        news.newsClassTag = obj.getString("newsClassTag");
-        news.news_Author = obj.getString("news_Author");
-        news.news_ID = obj.getString("news_ID");
-        news.news_Intro = obj.getString("news_Intro");
-        news.news_Pictures = obj.getString("news_Pictures");
-        news.news_Source = obj.getString("news_Source");
-        news.news_Time = obj.getString("news_Time");
-        news.news_Title = obj.getString("news_Title");
-        news.news_URL = obj.getString("news_URL");
-        news.news_Video = obj.getString("news_Video");
-
-        news.has_read = false;
-        news.picture = BitmapFactory.decodeResource(view.context().getResources(), R.mipmap.ic_launcher);
-
-        return news;
+    private void fetchNews() {
+        API.GetSimpleNews(mPageNo, 20, mCategory)
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<SimpleNews>>() {
+                    @Override
+                    public void accept(List<SimpleNews> simpleNewses) throws Exception {
+                        mView.appendNewsList(simpleNewses);
+                    }
+                });
     }
 }

@@ -47,8 +47,14 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new NewsListPresenter(this);
         mCategory = getArguments().getInt("category");
+        mPresenter = new NewsListPresenter(this, mCategory);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.subscribe();
     }
 
     @Override

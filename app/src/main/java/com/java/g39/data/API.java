@@ -139,7 +139,7 @@ public class API {
      *
      * @param pageNo   页码
      * @param pageSize 每页新闻数量
-     * @param category 分类，-1表示不设置
+     * @param category 分类，0表示不设置
      * @return 新闻列表
      */
     public static Flowable<SimpleNews> GetSimpleNews(final int pageNo, final int pageSize, final int category) {
@@ -147,7 +147,7 @@ public class API {
                 @Override
                 public String call() throws Exception {
                     String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/latest?pageNo=%d&pageSize=%d", pageNo, pageSize));
-                    if (category != -1)
+                    if (category > 0)
                         URL_String = URL_String + String.format("&category=%d", category);
                     return GetBodyFromURL(URL_String);
                 }
@@ -178,7 +178,7 @@ public class API {
      * @return 新闻列表
      */
     public static Flowable<SimpleNews> GetSimpleNews(int pageNo, int pageSize) {
-        return GetSimpleNews(pageNo, pageSize, -1);
+        return GetSimpleNews(pageNo, pageSize, 0);
     }
 
     /**
@@ -187,7 +187,7 @@ public class API {
      * @param keyword  关键字
      * @param pageNo   页码
      * @param pageSize 每页新闻数量
-     * @param category 分类，-1表示不设置
+     * @param category 分类，0表示不设置
      * @return 新闻列表
      */
     public static Flowable<SimpleNews> SearchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
@@ -195,7 +195,7 @@ public class API {
                 @Override
                 public String call() throws Exception {
                     String URL_String = new String(String.format("http://166.111.68.66:2042/news/action/query/search?keyword=%s&pageNo=%d&pageSize=%d", keyword, pageNo, pageSize));
-                    if (category != -1)
+                    if (category > 0)
                         URL_String = URL_String + String.format("&category=%d", category);
                     return GetBodyFromURL(URL_String);
                 }
@@ -228,7 +228,7 @@ public class API {
      * @return 新闻列表
      */
     public static Flowable<SimpleNews> SearchNews(String keyword, int pageNo, int pageSize) {
-        return SearchNews(keyword, pageNo, pageSize, -1);
+        return SearchNews(keyword, pageNo, pageSize, 0);
     }
 
     /**
