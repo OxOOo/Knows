@@ -58,7 +58,10 @@ public class Manager {
                     public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
                         simpleNews.has_read = false;
                         simpleNews.from_disk = false;
-                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures);
+                        simpleNews.picture_url = null;
+                        if (simpleNews.news_Pictures.trim().length() > 0) {
+                            simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
+                        }
                         return simpleNews;
                     }
                 })
@@ -74,7 +77,10 @@ public class Manager {
                     public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
                         detailNews.has_read = false;
                         detailNews.from_disk = false;
-                        detailNews.picture = fetchBitmap(detailNews.news_Pictures);
+                        detailNews.picture_url = null;
+                        if (detailNews.news_Pictures.trim().length() > 0) {
+                            detailNews.picture_url = detailNews.news_Pictures.trim().split(";")[0].split(" ")[0];
+                        }
                         return detailNews;
                     }
                 })
@@ -89,7 +95,10 @@ public class Manager {
                     public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
                         simpleNews.has_read = false;
                         simpleNews.from_disk = false;
-                        simpleNews.picture = fetchBitmap(simpleNews.news_Pictures);
+                        simpleNews.picture_url = null;
+                        if (simpleNews.news_Pictures.trim().length() > 0) {
+                            simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
+                        }
                         return simpleNews;
                     }
                 })

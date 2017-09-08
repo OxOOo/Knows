@@ -58,10 +58,12 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     private void fetchNews() {
+        final long start = System.currentTimeMillis();
         Manager.I.fetchSimpleNews(mPageNo, 20, mCategory)
                 .subscribe(new Consumer<List<SimpleNews>>() {
                     @Override
                     public void accept(List<SimpleNews> simpleNewses) throws Exception {
+                        System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
                         mView.setNewsList(simpleNewses);
                     }
                 });

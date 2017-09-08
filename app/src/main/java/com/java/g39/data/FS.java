@@ -33,7 +33,7 @@ class FS {
     FS(Context context) {
         this.context = context;
         this.db = SQLiteDatabase.openOrCreateDatabase(context.getFilesDir().getPath() + "/data.db",null);
-        dropTables();
+        dropTables(); // FIXME
         createTables();
     }
 
@@ -85,7 +85,7 @@ class FS {
                 return bitmap;
             } catch(IOException e) {
                 Log.d("URL_ERROR", url);
-                e.printStackTrace();
+                // e.printStackTrace();
             }
         }
 

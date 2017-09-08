@@ -21,7 +21,7 @@ public class SimpleNews {
     public String news_URL;
     public String news_Video;
 
-    public Bitmap picture; // 图片对象，不为null
+    public String picture_url; // 解析出的图片链接，可能为null
     public boolean has_read; // 是否已读
 
     public boolean from_disk; // 是否是从磁盘上读取的
