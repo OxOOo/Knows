@@ -1,4 +1,4 @@
-package com.java.g39.newslist;
+package com.java.g39.news.newslist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +22,7 @@ import java.util.List;
  * Use the {@link NewsListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
 public class NewsListFragment extends Fragment implements NewsListContract.View {
 
     private NewsListContract.Presenter mPresenter;
@@ -35,6 +36,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
+     * @param category 新闻分类 code
      * @return A new instance of fragment NewsListFragment.
      */
     public static NewsListFragment newInstance(int category) {

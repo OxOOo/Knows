@@ -18,7 +18,7 @@ import android.view.MenuItem;
 
 import com.java.g39.R;
 import com.java.g39.data.Manager;
-import com.java.g39.newslist.NewsFragment;
+import com.java.g39.news.NewsFragment;
 
 /**
  * Created by equation on 9/7/17.

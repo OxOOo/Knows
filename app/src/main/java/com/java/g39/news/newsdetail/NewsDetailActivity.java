@@ -1,4 +1,4 @@
-package com.java.g39.newsdetail;
+package com.java.g39.news.newsdetail;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;

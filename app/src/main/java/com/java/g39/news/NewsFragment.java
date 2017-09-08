@@ -1,4 +1,4 @@
-package com.java.g39.newslist;
+package com.java.g39.news;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.java.g39.R;
 import com.java.g39.data.Constant;
+import com.java.g39.news.newslist.NewsListFragment;
 
 /**
  * 新闻主页面

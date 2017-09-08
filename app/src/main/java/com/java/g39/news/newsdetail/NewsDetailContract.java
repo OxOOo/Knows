@@ -1,10 +1,8 @@
-package com.java.g39.newsdetail;
+package com.java.g39.news.newsdetail;
 
 import com.java.g39.BasePresenter;
 import com.java.g39.BaseView;
 import com.java.g39.data.DetailNews;
-
-import java.util.List;
 
 /**
  * Created by chenyu on 2017/9/7.

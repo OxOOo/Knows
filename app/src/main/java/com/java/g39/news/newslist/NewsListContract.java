@@ -1,6 +1,4 @@
-package com.java.g39.newslist;
-
-import android.content.Context;
+package com.java.g39.news.newslist;
 
 import com.java.g39.BasePresenter;
 import com.java.g39.BaseView;

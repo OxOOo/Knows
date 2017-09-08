@@ -1,4 +1,4 @@
-package com.java.g39.newsdetail;
+package com.java.g39.news.newsdetail;
 
 import com.java.g39.data.DetailNews;
 import com.java.g39.data.Manager;
