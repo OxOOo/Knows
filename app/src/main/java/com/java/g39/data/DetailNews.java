@@ -2,7 +2,10 @@ package com.java.g39.data;
 
 import android.graphics.Bitmap;
 
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.regex.*;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -52,4 +55,21 @@ public class DetailNews {
     public boolean is_favorite; // 是否已收藏
 
     public boolean from_disk; // 是否是从磁盘上读取的
+
+    /**
+     * @return 返回所有有必要添加超链接的词，以及其对应的超链接
+     */
+    public Map<String,String> getKeywordHyperlink() throws UnsupportedEncodingException {
+        HashMap<String,String> result = new HashMap<String,String>();
+        Pattern p = Pattern.compile(" *(.*?)(/PER|/LOC)");
+        for(String s : seggedPListOfContent)
+        {
+            Matcher m = p.matcher(s);
+            while (m.find()) {
+                String key=m.group(1);
+                result.put(key,"http://baike.baidu.com/item/"+ URLEncoder.encode(key, "UTF-8"));
+            }
+        }
+        return result;
+    }
 }
