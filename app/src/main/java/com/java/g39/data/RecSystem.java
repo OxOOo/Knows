@@ -112,6 +112,8 @@ public class RecSystem {
                 return arg0.first.compareTo(arg1.first);
             }
         });
+        for(Pair<Double,DetailNews> p : sortList)
+            result.add(p.second);
         return result;
     }
 
