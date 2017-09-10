@@ -10,6 +10,7 @@ import com.java.g39.news.newsdetail.NewsDetailActivity;
 
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -69,6 +70,16 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                         // TODO onError
                         if (mPageNo == 1) mView.setNewsList(simpleNewses);
                         else mView.appendNewsList(simpleNewses);
+
+                        final long pic_start = System.currentTimeMillis();
+                        simpleNewses.get(0).picture_url
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<String>() {
+                                    @Override
+                                    public void accept(String s) throws Exception {
+                                        System.out.println(System.currentTimeMillis() - start + " | " + s);
+                                    }
+                                });
                     }
                 });
     }

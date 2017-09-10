@@ -2,6 +2,8 @@ package com.java.g39.data;
 
 import android.graphics.Bitmap;
 
+import io.reactivex.Single;
+
 /**
  * Created by chenyu on 2017/9/7.
  */
@@ -21,7 +23,7 @@ public class SimpleNews {
     public String news_URL;
     public String news_Video;
 
-    public String picture_url; // 解析出的图片链接，可能为null
+    public Single<String> picture_url; // 解析出的图片链接，已设置subscribeOn(Schedulers.io())，未设置observeOn
     public boolean has_read; // 是否已读
     public boolean is_favorite; // 是否已收藏
 

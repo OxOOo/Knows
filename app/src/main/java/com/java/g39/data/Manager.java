@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.SingleSource;
 import io.reactivex.SingleTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -49,36 +50,66 @@ public class Manager {
     private FlowableTransformer<SimpleNews, SimpleNews> liftAllSimple;
     private FlowableTransformer<DetailNews, DetailNews> liftAllDetail;
 
+    class FetchRead<T extends SimpleNews> implements Function<T, T> {
+        @Override
+        public T apply(@NonNull T t) throws Exception {
+            t.has_read = fs.hasRead(t.news_ID);
+            return t;
+        }
+    }
+    class FetchFavorite<T extends SimpleNews> implements Function<T, T> {
+        @Override
+        public T apply(@NonNull T t) throws Exception {
+            t.has_read = fs.hasRead(t.news_ID);
+            return t;
+        }
+    }
+    class FetchPicture<T extends SimpleNews> implements Function<T, T> {
+        @Override
+        public T apply(@NonNull final T t) throws Exception {
+            t.picture_url = Single.fromCallable(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    String picture_url = null;
+
+                    if (t.news_Pictures.trim().length() > 0) { // 新闻中的图片
+                        String url = t.news_Pictures.trim().split(";")[0].split(" ")[0];
+                        if (fs.downloadImage(url) != null) picture_url = url; // 如果第一个链接不可用，则从网络上选取
+                    }
+                    if (picture_url == null) { // 磁盘载入
+                        picture_url = fs.fetchPictureUrl(t.news_ID);
+                    }
+                    if (picture_url == null) { // 搜索
+                        DetailNews news = fs.fetchDetail(t.news_ID);
+                        if (news == null) news = API.GetDetailNews(t.news_ID);
+                        fs.insertDetail(news);
+
+                        DetailNews.WordWithScore key = null;
+                        for(DetailNews.WordWithScore k : news.Keywords) {
+                            if (key == null || key.score < k.score) key = k;
+                        }
+                        if (key != null) picture_url = ImageSearch.search(key.word);
+                    }
+
+                    if (picture_url != null) {
+                        fs.insertPictureUrl(t.news_ID, picture_url);
+                    }
+                    return picture_url;
+                }
+            }).subscribeOn(Schedulers.io());
+            return t;
+        }
+    }
+
     private Manager(Context context) {
         this.fs = new FS(context);
         this.liftAllSimple = new FlowableTransformer<SimpleNews, SimpleNews>() {
             @Override
             public Publisher<SimpleNews> apply(@NonNull Flowable<SimpleNews> upstream) {
                 return upstream
-                        .map(new Function<SimpleNews, SimpleNews>() {
-                            @Override
-                            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-                                simpleNews.has_read = fs.hasRead(simpleNews.news_ID);
-                                return simpleNews;
-                            }
-                        })
-                        .map(new Function<SimpleNews, SimpleNews>() {
-                            @Override
-                            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-                                simpleNews.is_favorite = fs.isFavorite(simpleNews.news_ID);
-                                return simpleNews;
-                            }
-                        })
-                        .map(new Function<SimpleNews, SimpleNews>() {
-                            @Override
-                            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-                                simpleNews.picture_url = null;
-                                if (simpleNews.news_Pictures.trim().length() > 0) {
-                                    simpleNews.picture_url = simpleNews.news_Pictures.trim().split(";")[0].split(" ")[0];
-                                }
-                                return simpleNews;
-                            }
-                        });
+                        .map(new FetchRead<SimpleNews>())
+                        .map(new FetchFavorite<SimpleNews>())
+                        .map(new FetchPicture<SimpleNews>());
             }
         };
         this.liftAllDetail = new FlowableTransformer<DetailNews, DetailNews>() {
@@ -92,30 +123,9 @@ public class Manager {
                                 return detailNews;
                             }
                         })
-                        .map(new Function<DetailNews, DetailNews>() {
-                            @Override
-                            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
-                                detailNews.has_read = fs.hasRead(detailNews.news_ID);
-                                return detailNews;
-                            }
-                        })
-                        .map(new Function<DetailNews, DetailNews>() {
-                            @Override
-                            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
-                                detailNews.is_favorite = fs.isFavorite(detailNews.news_ID);
-                                return detailNews;
-                            }
-                        })
-                        .map(new Function<DetailNews, DetailNews>() {
-                            @Override
-                            public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
-                                detailNews.picture_url = null;
-                                if (detailNews.news_Pictures.trim().length() > 0) {
-                                    detailNews.picture_url = detailNews.news_Pictures.trim().split(";")[0].split(" ")[0];
-                                }
-                                return detailNews;
-                            }
-                        });
+                        .map(new FetchRead<DetailNews>())
+                        .map(new FetchFavorite<DetailNews>())
+                        .map(new FetchPicture<DetailNews>());
             }
         };
     }
@@ -137,13 +147,13 @@ public class Manager {
             @Override
             public Publisher<SimpleNews> apply(@NonNull List<SimpleNews> simpleNewses) throws Exception {
                 if (simpleNewses.size() == pageSize) return Flowable.fromIterable(simpleNewses);
-                return API.GetSimpleNews(pageNo, pageSize, category);
+                return Flowable.fromIterable(API.GetSimpleNews(pageNo, pageSize, category));
             }
         }).map(new Function<SimpleNews, SimpleNews>() {
             @Override
             public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
-            fs.insertSimple(simpleNews, category);
-            return simpleNews;
+                fs.insertSimple(simpleNews, category);
+                return simpleNews;
             }
         }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -164,7 +174,7 @@ public class Manager {
             @Override
             public Publisher<DetailNews> apply(@NonNull DetailNews detailNews) throws Exception {
                 if (detailNews.news_ID != null) return Flowable.just(detailNews);
-                return API.GetDetailNews(news_ID); // load from web
+                return Flowable.just(API.GetDetailNews(news_ID)); // load from web
             }
         }).compose(this.liftAllDetail).firstOrError().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -178,11 +188,17 @@ public class Manager {
      * @return
      */
     public Single<List<SimpleNews>> searchNews(final String keyword, final int pageNo, final int pageSize, final int category) {
-        return API.SearchNews(keyword, pageNo, pageSize, category)
-                .compose(this.liftAllSimple)
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        return Flowable.fromCallable(new Callable<List<SimpleNews>>() {
+            @Override
+            public List<SimpleNews> call() throws Exception {
+                return API.SearchNews(keyword, pageNo, pageSize, category);
+            }
+        }).flatMap(new Function<List<SimpleNews>, Publisher<? extends SimpleNews>>() {
+            @Override
+            public Publisher<? extends SimpleNews> apply(@NonNull List<SimpleNews> simpleNewses) throws Exception {
+                return Flowable.fromIterable(simpleNewses);
+            }
+        }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     /**
@@ -247,7 +263,7 @@ public class Manager {
             public Publisher<DetailNews> apply(@NonNull String news_ID) throws Exception {
                 DetailNews news = fs.fetchDetail(news_ID);
                 if (news != null) return Flowable.just(news);
-                return API.GetDetailNews(news_ID);
+                return Flowable.just(API.GetDetailNews(news_ID));
             }
         }).compose(this.liftAllDetail).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
