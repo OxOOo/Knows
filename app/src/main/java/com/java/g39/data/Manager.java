@@ -42,10 +42,7 @@ public class Manager {
      * 创建单例，全局只能调用一次
      * @param context 上下文
      */
-    public static void CreateI(Context context) {
-        if (BuildConfig.DEBUG && I != null) {
-            throw new AssertionError();
-        }
+    public static synchronized void CreateI(Context context) {
         try {
             I = new Manager(context);
         } catch (IOException e) {

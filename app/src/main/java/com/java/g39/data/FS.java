@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +31,7 @@ import java.util.List;
 class FS {
     private SQLiteDatabase db, sdb;
     private String db_path, sdb_path;
+    private Thread sdb_thread;
 
     private static final String TABLE_NAME_SIMPLE = "news_simple";
     private static final String TABLE_NAME_DETAIL = "news_detail";
@@ -49,26 +51,47 @@ class FS {
 
         createSDB(context);
 
-        dropTables(); // FIXME
+        // dropTables(); // FIXME
         createTables();
     }
 
-    private void createSDB(Context context) throws IOException {
-        sdb_path = context.getFilesDir().getPath() + "/sdata.db";
+    private void createSDB(final Context context) {
+        sdb_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sdb_path = context.getFilesDir().getPath() + "/sdata.db";
 
-        InputStream input = context.getAssets().open("sample.db");
-        OutputStream output = new FileOutputStream(sdb_path);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = input.read(buffer))>0) {
-            output.write(buffer,0,length);
-        }
+                InputStream input = null;
+                OutputStream output = null;
+                try {
+                    input = context.getAssets().open("sample.db");
+                    output = new FileOutputStream(sdb_path);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        input.close();
-        output.flush();
-        output.close();
+                byte[] buffer = new byte[1024];
+                int length;
+                try {
+                    while ((length = input.read(buffer))>0) {
+                        output.write(buffer,0,length);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        sdb = SQLiteDatabase.openOrCreateDatabase(sdb_path, null);
+                try {
+                    input.close();
+                    output.flush();
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                sdb = SQLiteDatabase.openOrCreateDatabase(sdb_path, null);
+            }
+        });
+        sdb_thread.start();
     }
 
     void createTables() {
@@ -214,7 +237,9 @@ class FS {
         return url;
     }
 
-    List<DetailNews> fetchSimpleALL() throws JSONException {
+    List<DetailNews> fetchSimpleALL() throws JSONException, InterruptedException {
+        if (sdb_thread.isAlive()) sdb_thread.join();
+
         String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_DETAIL);
         Cursor cursor = sdb.rawQuery(cmd, null);
 
