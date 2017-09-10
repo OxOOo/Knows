@@ -53,7 +53,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 .build();
     }
 
-    public SimpleNews getData(int position) {
+    public SimpleNews getNews(int position) {
         return mData.get(position);
     }
 
@@ -63,8 +63,17 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void appendData(List<SimpleNews> data) {
+        int pos = mData.size();
         mData.addAll(data);
-        this.notifyDataSetChanged();
+        this.notifyItemInserted(pos);
+    }
+
+    public void setRead(int position) {
+        SimpleNews news = getNews(position);
+        if (!news.has_read) {
+            news.has_read = true;
+            mData.set(position, news);
+        }
     }
 
     public boolean isShowFooter() {
@@ -98,6 +107,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             item.mTitle.setText(news.news_Title);
             item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
             item.mDate.setText(news.news_Time);
+            item.mImage.setImageBitmap(null);
+            item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
             news.picture_url
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<String>() {
@@ -134,16 +145,22 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        View mView;
         TextView mTitle, mAuthor, mDate;
         ImageView mImage;
 
         public ItemViewHolder(View view) {
             super(view);
+            mView = view;
             mTitle = (TextView) view.findViewById(R.id.text_title);
             mAuthor = (TextView) view.findViewById(R.id.text_author);
             mDate = (TextView) view.findViewById(R.id.text_date);
             mImage = (ImageView) view.findViewById(R.id.image_view);
             view.setOnClickListener(this);
+        }
+
+        public void setBackgroundColor(int color) {
+            mView.setBackgroundColor(color);
         }
 
         @Override

@@ -7,7 +7,9 @@
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="2dp"
-    app:cardBackgroundColor="@color/colorCard"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:stateListAnimator="@drawable/anim_item_news"
     app:cardCornerRadius="2dp"
     app:cardElevation="2dp"
     app:contentPadding="8dp">
