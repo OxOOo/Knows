@@ -106,7 +106,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
             }
         });
 
-        mAdapter = new NewsAdapter();
+        mAdapter = new NewsAdapter(getContext());
         mAdapter.setOnItemClickListener((View itemView, int position) -> {
             SimpleNews news = mAdapter.getData(position);
             View transitionView = itemView.findViewById(R.id.image_view);

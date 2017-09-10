@@ -22,7 +22,8 @@
             android:id="@+id/image_view"
             android:layout_width="@dimen/list_image_size"
             android:layout_height="@dimen/list_image_size"
-            android:background="@color/colorBackground" />
+            android:background="@color/colorBackground"
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="wrap_content"

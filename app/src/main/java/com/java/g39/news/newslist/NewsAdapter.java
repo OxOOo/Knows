@@ -9,6 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import com.java.g39.R;
 import com.java.g39.data.SimpleNews;
 
@@ -26,15 +30,23 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 1;
     private static final int TYPE_FOOTER = 2;
 
+    private Context mContext;
     private List<SimpleNews> mData = new ArrayList<SimpleNews>();
     private boolean mIsShowFooter = true;
     private OnItemClickListener mOnItemClickListener;
+    private ImageLoader mImageLoader = ImageLoader.getInstance();
+    private DisplayImageOptions mDisplayOptions;
 
-    public NewsAdapter() {
-    }
-
-    public NewsAdapter(List<SimpleNews> data) {
-        mData = data;
+    public NewsAdapter(Context context) {
+        mContext = context;
+        mImageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
+        // FIXME add showImage*()
+        mDisplayOptions = new DisplayImageOptions.Builder()
+                .showImageOnLoading(null)
+                .showImageForEmptyUri(R.mipmap.logo)
+                .showImageOnFail(R.mipmap.logo)
+                .cacheOnDisk(true)
+                .build();
     }
 
     public SimpleNews getData(int position) {
@@ -76,12 +88,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof  ItemViewHolder) {
+        if (holder instanceof ItemViewHolder) {
             SimpleNews news = mData.get(position);
             ItemViewHolder item = (ItemViewHolder) holder;
             item.mTitle.setText(news.news_Title);
             item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
             item.mDate.setText(news.news_Time);
+            mImageLoader.displayImage(news.picture_url, item.mImage, mDisplayOptions);
         }
     }
 
