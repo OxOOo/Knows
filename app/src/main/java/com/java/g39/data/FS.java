@@ -31,14 +31,17 @@ class FS {
     private static final String TABLE_NAME_DETAIL = "news_detail";
     private static final String TABLE_NAME_READ = "news_read";
     private static final String TABLE_NAME_FAVORITE = "news_favorite";
+    private static final String TABLE_NAME_PICTURE = "news_picture";
+
     private static final String KEY_ID = "news_id"; // string
     private static final String KEY_SIMPLE = "simple_json"; // text
     private static final String KEY_CATEGORY = "category"; // integer
     private static final String KEY_DETAIL = "detail_json"; //text
+    private static final String KEY_PICTURE = "picture_url"; //text
 
     FS(Context context) {
         this.db = SQLiteDatabase.openOrCreateDatabase(context.getFilesDir().getPath() + "/data.db",null);
-        dropTables(); // FIXME
+        // dropTables(); // FIXME
         createTables();
     }
 
@@ -58,6 +61,10 @@ class FS {
         final String favorite_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key)",
                 TABLE_NAME_FAVORITE, KEY_ID);
         db.execSQL(favorite_table);
+
+        final String picture_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key, %s text)",
+                TABLE_NAME_PICTURE, KEY_ID, KEY_PICTURE);
+        db.execSQL(picture_table);
     }
 
     void dropTables() {
@@ -65,6 +72,7 @@ class FS {
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_DETAIL));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_READ));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_FAVORITE));
+        db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_PICTURE));
     }
 
     void insertSimple(SimpleNews simpleNews, int category) {
@@ -157,6 +165,26 @@ class FS {
         }
         cursor.close();
         return list;
+    }
+
+    void insertPictureUrl(String news_ID, String url) {
+        String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s,%s) VALUES(%s,%s)",
+                TABLE_NAME_PICTURE, KEY_ID, KEY_PICTURE,
+                DatabaseUtils.sqlEscapeString(news_ID),
+                DatabaseUtils.sqlEscapeString(url));
+        db.execSQL(cmd);
+    }
+
+    String fetchPictureUrl(String news_ID) {
+        String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s",
+                TABLE_NAME_PICTURE, KEY_ID, DatabaseUtils.sqlEscapeString(news_ID));
+        Cursor cursor = db.rawQuery(cmd, null);
+        String url = null;
+        if (cursor.moveToFirst()) {
+            url = cursor.getString(cursor.getColumnIndex(KEY_PICTURE));
+        }
+        cursor.close();
+        return url;
     }
 
     /**
