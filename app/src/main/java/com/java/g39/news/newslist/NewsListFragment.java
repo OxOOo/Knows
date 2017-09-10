@@ -32,6 +32,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     private NewsListContract.Presenter mPresenter;
     private int mCategory;
 
+    private int mLastClickPosition = -1;
     private SwipeRefreshLayout mSwipeRefreshWidget;
     private RecyclerView mRecyclerView;
     private NewsAdapter mAdapter;
@@ -65,6 +66,9 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void onResume() {
         super.onResume();
+        // FIXME notify other view page
+        if (mLastClickPosition >= 0)
+            mAdapter.notifyItemChanged(mLastClickPosition);
     }
 
     @Override
@@ -108,7 +112,11 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         mAdapter = new NewsAdapter(getContext());
         mAdapter.setOnItemClickListener((View itemView, int position) -> {
             SimpleNews news = mAdapter.getNews(position);
-            mAdapter.setRead(position); // FIXME notify other view page
+            if (!news.has_read) {
+                mAdapter.setRead(position);
+                this.mLastClickPosition = position;
+            } else
+                this.mLastClickPosition = -1;
             View transitionView = itemView.findViewById(R.id.image_view);
 
             ActivityOptionsCompat options =

@@ -73,7 +73,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (!news.has_read) {
             news.has_read = true;
             mData.set(position, news);
-            this.notifyItemChanged(position);
         }
     }
 
@@ -108,6 +107,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             item.mTitle.setText(news.news_Title);
             item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
             item.mDate.setText(news.news_Time);
+            item.mImage.setImageBitmap(null);
             item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
             news.picture_url
                     .observeOn(AndroidSchedulers.mainThread())
