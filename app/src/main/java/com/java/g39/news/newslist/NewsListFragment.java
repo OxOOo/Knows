@@ -3,6 +3,7 @@ package com.java.g39.news.newslist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,7 +66,6 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.subscribe();
     }
 
     @Override
@@ -107,6 +107,16 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         });
 
         mAdapter = new NewsAdapter();
+        mAdapter.setOnItemClickListener((View itemView, int position) -> {
+            SimpleNews news = mAdapter.getData(position);
+            View transitionView = itemView.findViewById(R.id.image_view);
+
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                            transitionView, getString(R.string.transition_news_img));
+
+            this.mPresenter.openNewsDetailUI(news, options.toBundle());
+        });
         mRecyclerView.setAdapter(mAdapter);
 
         mPresenter = new NewsListPresenter(this, mCategory);
@@ -125,8 +135,8 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     }
 
     @Override
-    public void start(Intent intent) {
-        startActivity(intent);
+    public void start(Intent intent, Bundle options) {
+        startActivity(intent, options);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.java.g39.news.newslist;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.java.g39.data.Manager;
@@ -51,10 +52,10 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     @Override
-    public void openNewsDetailUI(SimpleNews news) {
+    public void openNewsDetailUI(SimpleNews news, Bundle options) {
         Intent intent = new Intent(mView.context(), NewsDetailActivity.class);
         intent.putExtra(NewsDetailActivity.NEWS_ID, news.news_ID);
-        mView.start(intent);
+        mView.start(intent, options);
     }
 
     private void fetchNews() {

@@ -59,12 +59,12 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mPresenter = new MainPresenter(this);
+        mPresenter.subscribe();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mPresenter.subscribe();
     }
 
     @Override
@@ -121,8 +121,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void start(Intent intent) {
-        startActivity(intent);
+    public void start(Intent intent, Bundle options) {
+        startActivity(intent, options);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.java.g39.news.newslist;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +26,19 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_HEADER = 1;
     private static final int TYPE_FOOTER = 2;
 
-    private Context mContext;
     private List<SimpleNews> mData = new ArrayList<SimpleNews>();
     private boolean mIsShowFooter = true;
+    private OnItemClickListener mOnItemClickListener;
 
     public NewsAdapter() {
     }
 
     public NewsAdapter(List<SimpleNews> data) {
         mData = data;
+    }
+
+    public SimpleNews getData(int position) {
+        return mData.get(position);
     }
 
     public void setData(List<SimpleNews> data) {
@@ -52,6 +57,10 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setFooterVisible(boolean visible) {
         mIsShowFooter = visible;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
     }
 
     @Override
@@ -90,9 +99,16 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
+     * 新闻点击 Listener
+     */
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    /**
      * 新闻单元格
      */
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
+    public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView mTitle, mAuthor, mDate;
         ImageView mImage;
@@ -103,6 +119,14 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             mAuthor = (TextView) view.findViewById(R.id.text_author);
             mDate = (TextView) view.findViewById(R.id.text_date);
             mImage = (ImageView) view.findViewById(R.id.image_view);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(view, this.getLayoutPosition());
+            }
         }
     }
 

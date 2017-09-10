@@ -1,5 +1,7 @@
 package com.java.g39.news.newslist;
 
+import android.os.Bundle;
+
 import com.java.g39.BasePresenter;
 import com.java.g39.BaseView;
 import com.java.g39.data.SimpleNews;
@@ -55,6 +57,6 @@ public interface NewsListContract {
          * 打开新闻详情
          * @param news 被打开的新闻
          */
-        void openNewsDetailUI(SimpleNews news);
+        void openNewsDetailUI(SimpleNews news, Bundle options);
     }
 }
