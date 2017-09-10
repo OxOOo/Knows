@@ -15,7 +15,7 @@ public class SimpleNews {
     public String newsClassTag;
     public String news_Author;
     public String news_ID;
-    public String news_Intro;
+    public String news_Intro = "";
     public String news_Pictures;
     public String news_Source;
     public String news_Time;

@@ -34,25 +34,6 @@ public class NewsDetailActivity extends AppCompatActivity {
         TextView text = (TextView)findViewById(R.id.textViewDetail);
         text.setText(news_ID);
         Manager.I.touchRead(news_ID);
-        Manager.I.insertFavorite(news_ID);
-        Manager.I.fetchDetailNews(news_ID)
-                .subscribe(new Consumer<DetailNews>() {
-                    @Override
-                    public void accept(DetailNews detailNews) throws Exception {
-                        System.out.println(detailNews.news_Content);
-                        System.out.println(detailNews.has_read);
-                        System.out.println(detailNews.is_favorite);
-                    }
-                });
-        Manager.I.favorites()
-                .subscribe(new Consumer<List<DetailNews>>() {
-                    @Override
-                    public void accept(List<DetailNews> detailNewses) throws Exception {
-                        for(DetailNews news: detailNewses) {
-                            System.out.println("favorites:" + news.news_Title);
-                        }
-                    }
-                });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
