@@ -12,6 +12,8 @@ import java.util.regex.*;
  */
 
 public class DetailNews extends SimpleNews {
+    public static DetailNews NULL = new DetailNews();
+
     public class WordWithScore {
         public String word;
         public double score;

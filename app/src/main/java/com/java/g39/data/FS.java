@@ -12,8 +12,12 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,7 +29,9 @@ import java.util.List;
  */
 
 class FS {
-    private SQLiteDatabase db;
+    private SQLiteDatabase db, sdb;
+    private String db_path, sdb_path;
+    private Thread sdb_thread;
 
     private static final String TABLE_NAME_SIMPLE = "news_simple";
     private static final String TABLE_NAME_DETAIL = "news_detail";
@@ -39,10 +45,53 @@ class FS {
     private static final String KEY_DETAIL = "detail_json"; //text
     private static final String KEY_PICTURE = "picture_url"; //text
 
-    FS(Context context) {
-        this.db = SQLiteDatabase.openOrCreateDatabase(context.getFilesDir().getPath() + "/data.db",null);
+    FS(Context context) throws IOException {
+        db_path = context.getFilesDir().getPath() + "/data.db";
+        db = SQLiteDatabase.openOrCreateDatabase(db_path, null);
+
+        createSDB(context);
+
         // dropTables(); // FIXME
         createTables();
+    }
+
+    private void createSDB(final Context context) {
+        sdb_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sdb_path = context.getFilesDir().getPath() + "/sdata.db";
+
+                InputStream input = null;
+                OutputStream output = null;
+                try {
+                    input = context.getAssets().open("sample.db");
+                    output = new FileOutputStream(sdb_path);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                byte[] buffer = new byte[1024];
+                int length;
+                try {
+                    while ((length = input.read(buffer))>0) {
+                        output.write(buffer,0,length);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    input.close();
+                    output.flush();
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                sdb = SQLiteDatabase.openOrCreateDatabase(sdb_path, null);
+            }
+        });
+        sdb_thread.start();
     }
 
     void createTables() {
@@ -58,8 +107,8 @@ class FS {
                 TABLE_NAME_READ, KEY_ID);
         db.execSQL(read_table);
 
-        final String favorite_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key)",
-                TABLE_NAME_FAVORITE, KEY_ID);
+        final String favorite_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key, %s text)",
+                TABLE_NAME_FAVORITE, KEY_ID, KEY_SIMPLE);
         db.execSQL(favorite_table);
 
         final String picture_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key, %s text)",
@@ -86,7 +135,7 @@ class FS {
     }
 
     List<SimpleNews> fetchSimple(int pageNo, int pageSize, int category) throws JSONException {
-        String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s ORDER BY %s DESC LIMIT %s OFFSET %s",
+        String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s ORDER BY %s ASC LIMIT %s OFFSET %s",
                 TABLE_NAME_SIMPLE, KEY_CATEGORY, String.valueOf(category), KEY_ID, String.valueOf(pageSize), String.valueOf(pageSize*pageNo-pageSize));
         Cursor cursor = db.rawQuery(cmd, null);
         List<SimpleNews> list = new ArrayList<SimpleNews>();
@@ -133,10 +182,11 @@ class FS {
         return read;
     }
 
-    void insertFavorite(String news_ID) {
-        String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s) VALUES(%s)",
-                TABLE_NAME_FAVORITE, KEY_ID,
-                DatabaseUtils.sqlEscapeString(news_ID));
+    void insertFavorite(String news_ID, SimpleNews news) {
+        String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s, %s) VALUES(%s, %s)",
+                TABLE_NAME_FAVORITE, KEY_ID, KEY_SIMPLE,
+                DatabaseUtils.sqlEscapeString(news_ID),
+                DatabaseUtils.sqlEscapeString(news.plain_json));
         db.execSQL(cmd);
     }
 
@@ -156,12 +206,12 @@ class FS {
         return favorite;
     }
 
-    List<String> fetchFavorite() {
+    List<SimpleNews> fetchFavorite() throws JSONException {
         String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_FAVORITE);
         Cursor cursor = db.rawQuery(cmd, null);
-        List<String> list = new ArrayList<String>();
+        List<SimpleNews> list = new ArrayList<SimpleNews>();
         while(cursor.moveToNext()) {
-            list.add(cursor.getString(cursor.getColumnIndex(KEY_ID)));
+            list.add(API.GetNewsFromJson(new JSONObject(cursor.getString(cursor.getColumnIndex(KEY_SIMPLE))), true));
         }
         cursor.close();
         return list;
@@ -185,6 +235,21 @@ class FS {
         }
         cursor.close();
         return url;
+    }
+
+    List<DetailNews> fetchSimpleALL() throws JSONException, InterruptedException {
+        if (sdb_thread.isAlive()) sdb_thread.join();
+
+        String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_DETAIL);
+        Cursor cursor = sdb.rawQuery(cmd, null);
+
+        List<DetailNews> results = new ArrayList<DetailNews>();
+        while(cursor.moveToNext()) {
+            results.add(API.GetDetailNewsFromJson(new JSONObject(cursor.getString(cursor.getColumnIndex(KEY_DETAIL))), true));
+        }
+
+        cursor.close();
+        return results;
     }
 
     /**

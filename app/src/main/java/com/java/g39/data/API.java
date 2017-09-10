@@ -120,7 +120,7 @@ class API {
         news.news_Title = json_news.getString("news_Title");
         news.news_URL = json_news.getString("news_URL");
         news.news_Video = json_news.getString("news_Video");
-        news.news_Intro = json_news.getString("news_Intro");
+        news.news_Intro = json_news.has("news_Intro") ? json_news.getString("news_Intro") : "";
         return news;
     }
 
@@ -130,7 +130,9 @@ class API {
      */
     static String GetBodyFromURL(String url) throws IOException {
         URL cs = new URL(url);
-        BufferedReader in = new BufferedReader(new InputStreamReader(cs.openStream()));
+        URLConnection urlConn = cs.openConnection();
+        urlConn.setConnectTimeout(10 * 1000);
+        BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
         String inputLine, body = "";
         while ((inputLine = in.readLine()) != null)
             body = body + inputLine;
