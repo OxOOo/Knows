@@ -152,7 +152,10 @@ class API {
         if (category > 0)
             URL_String = URL_String + String.format("&category=%d", category);
         String body = GetBodyFromURL(URL_String);
-
+        if(body.equals("")) {
+            Log.d("warning"," In GetSimpleNews body=\"\"");
+            return new ArrayList<SimpleNews>();
+        }
         List<SimpleNews> result = new ArrayList<SimpleNews>();
         JSONObject allData = new JSONObject(body);
         JSONArray list = allData.getJSONArray("list");

@@ -37,7 +37,7 @@ public class DetailNews extends SimpleNews {
     public String seggedTitle;
     public int wordCountOfContent;
     public int wordCountOfTitle;
-    
+
     public String picture_url; // 解析出的图片链接，可能为null
     public boolean has_read; // 是否已读
     public boolean is_favorite; // 是否已收藏
