@@ -7,7 +7,11 @@
     <color name="colorTabSelectedText">#FFFFFF</color>
     <color name="colorTabText">#CCCCCC</color>
 
-    <color name="colorCard">#FFFFFF</color>
+    <color name="colorCard">#EDF1FA</color>
+    <color name="colorCardRead">#FFFFFF</color>
+    <color name="colorSelectorNormal">#00000000</color>
+    <color name="colorSelectorPress">#22000000</color>
+
     <color name="colorBackground">#E5E5E5</color>
     <color name="colorTitle">#333333</color>
     <color name="colorDetail">#999999</color>

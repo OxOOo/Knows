@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,7 +107,8 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
 
         mAdapter = new NewsAdapter(getContext());
         mAdapter.setOnItemClickListener((View itemView, int position) -> {
-            SimpleNews news = mAdapter.getData(position);
+            SimpleNews news = mAdapter.getNews(position);
+            mAdapter.setRead(position); // FIXME notify other view page
             View transitionView = itemView.findViewById(R.id.image_view);
 
             ActivityOptionsCompat options =
