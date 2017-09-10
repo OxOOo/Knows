@@ -19,6 +19,9 @@ import com.java.g39.data.SimpleNews;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+
 /**
  * 新闻列表适配器
  * Created by equation on 9/8/17.
@@ -45,6 +48,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 .showImageOnLoading(null)
                 .showImageForEmptyUri(R.mipmap.logo)
                 .showImageOnFail(R.mipmap.logo)
+                .resetViewBeforeLoading(true)
                 .cacheOnDisk(true)
                 .build();
     }
@@ -90,11 +94,18 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHolder) {
             SimpleNews news = mData.get(position);
-            ItemViewHolder item = (ItemViewHolder) holder;
+            final ItemViewHolder item = (ItemViewHolder) holder;
             item.mTitle.setText(news.news_Title);
             item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
             item.mDate.setText(news.news_Time);
-            mImageLoader.displayImage(news.picture_url, item.mImage, mDisplayOptions);
+            news.picture_url
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) throws Exception {
+                            mImageLoader.displayImage(s, item.mImage, mDisplayOptions);
+                        }
+                    });
         }
     }
 

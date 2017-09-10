@@ -73,7 +73,8 @@ public class Manager {
                     String picture_url = null;
 
                     if (t.news_Pictures.trim().length() > 0) { // 新闻中的图片
-                        picture_url = t.news_Pictures.trim().split(";")[0].split(" ")[0];
+                        String url = t.news_Pictures.trim().split(";")[0].split(" ")[0];
+                        if (fs.downloadImage(url) != null) picture_url = url; // 如果第一个链接不可用，则从网络上选取
                     }
                     if (picture_url == null) { // 磁盘载入
                         picture_url = fs.fetchPictureUrl(t.news_ID);

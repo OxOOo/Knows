@@ -193,7 +193,7 @@ class FS {
      * @return 图片
      */
     Bitmap downloadImage(String url) {
-        for(int times = 3; times > 0; times --) {
+        for(int times = 1; times > 0; times --) {
             try {
                 URL imgUrl = new URL(url);
                 HttpURLConnection conn = (HttpURLConnection)imgUrl.openConnection();
