@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Knows.iml" filepath="$PROJECT_DIR$/Knows.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/shareLibrary/shareLibrary.iml" filepath="$PROJECT_DIR$/shareLibrary/shareLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shareLibrary/shareLibrary.iml" filepath="$PROJECT_DIR$/shareLibrary/shareLibrary.iml" />
     </modules>
   </component>
 </project>
