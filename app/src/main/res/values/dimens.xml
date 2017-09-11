@@ -8,4 +8,5 @@
     <dimen name="text_margin">16dp</dimen>
 
     <dimen name="list_image_size">72dp</dimen>
+    <dimen name="bottom_button_width">32dp</dimen>
 </resources>

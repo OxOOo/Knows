@@ -269,6 +269,7 @@ class API {
     }
 
     /**
+     * 分享
      * @param activity 调用者
      * @param title 标题
      * @param text 文本内容

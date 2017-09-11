@@ -12,5 +12,9 @@
     <string name="nav_favorites_title">收藏</string>
     <string name="nav_settings_title">设置</string>
     <string name="nav_about_title">关于</string>
+    <string name="bottom_favorite">收藏</string>
+    <string name="bottom_share">分享</string>
+    <string name="bottom_speech">朗读</string>
+
     <string name="title_activity_wxentry">WXEntryActivit</string>
 </resources>

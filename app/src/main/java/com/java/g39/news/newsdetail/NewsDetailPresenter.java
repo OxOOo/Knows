@@ -1,6 +1,6 @@
 package com.java.g39.news.newsdetail;
 
-import android.util.Log;
+import android.app.Activity;
 import android.widget.Toast;
 
 import com.java.g39.data.DetailNews;
@@ -53,6 +53,12 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
         news.is_favorite = false;
         Manager.I.removeFavorite(news.news_ID);
         Toast.makeText(mView.context(), "已取消收藏", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void shareNews(Activity activity, DetailNews news) {
+        Manager.I.shareNews(activity, news.news_Title,
+                news.news_Intro.isEmpty() ? news.news_Title : news.news_Intro, news.news_URL, news.picture_url);
     }
 
     @Override
