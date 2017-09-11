@@ -132,6 +132,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mImage = (ImageView) findViewById(R.id.image_view);
 
         mFab.setSelected(news_is_favorited);
+        mFavoriteBtn.setSelected(news_is_favorited);
         if (news_picture_url != null) {
             ImageLoader.displayImage(news_picture_url, mImage);
         }
@@ -186,6 +187,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         String content = news.news_Content.trim();
         mContent.setText(TextUtils.join("\n\n　　", content.split(" 　　")));
         mFab.setSelected(news.is_favorite);
+        mFavoriteBtn.setSelected(news.is_favorite);
         news.single_picture_url
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
