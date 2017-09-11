@@ -93,7 +93,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final ItemViewHolder item = (ItemViewHolder) holder;
             item.mTitle.setText(news.news_Title);
             item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
-            item.mDate.setText(news.news_Time);
+            item.mDate.setText(news.news_Time.length() != 14 ? "0000-00-00" : news.news_Time.substring(0, 4) + "-" + news.news_Time.substring(4, 6) + "-" + news.news_Time.substring(6, 8));
             item.mImage.setImageBitmap(null);
             item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
             // FIXME cancel mImageLoader

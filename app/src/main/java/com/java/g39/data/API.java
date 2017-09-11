@@ -9,6 +9,8 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.Callable;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import io.reactivex.Flowable;
 import io.reactivex.annotations.*;
 import io.reactivex.functions.*;
@@ -51,10 +53,10 @@ class API {
             item.score = jobj.getDouble("score");
             news.bagOfWords.add(item);
         }
-        news.crawl_Source = json_news.getString("crawl_Source");
-        news.crawl_Time = json_news.getString("crawl_Time");
-        news.inborn_KeyWords = json_news.getString("inborn_KeyWords");
-        news.lang_Type = json_news.getString("lang_Type");
+        news.crawl_Source = json_news.optString("crawl_Source");
+        news.crawl_Time = json_news.optString("crawl_Time");
+        news.inborn_KeyWords = json_news.optString("inborn_KeyWords");
+        news.lang_Type = json_news.optString("lang_Type");
         news.locations = new ArrayList<DetailNews.WordWithCount>();
         list = json_news.getJSONArray("locations");
         for (int t = 0; t < list.length(); t++) {
@@ -64,18 +66,18 @@ class API {
             item.count = jobj.getInt("count");
             news.locations.add(item);
         }
-        news.newsClassTag = json_news.getString("newsClassTag");
-        news.news_Author = json_news.getString("news_Author");
-        news.news_Category = json_news.getString("news_Category");
-        news.news_Content = json_news.getString("news_Content");
-        news.news_ID = json_news.getString("news_ID");
-        news.news_Journal = json_news.getString("news_Journal");
-        news.news_Pictures = json_news.getString("news_Pictures");
-        news.news_Source = json_news.getString("news_Source");
-        news.news_Time = json_news.getString("news_Time");
-        news.news_Title = json_news.getString("news_Title");
-        news.news_URL = json_news.getString("news_URL");
-        news.news_Video = json_news.getString("news_Video");
+        news.newsClassTag = json_news.optString("newsClassTag");
+        news.news_Author = json_news.optString("news_Author");
+        news.news_Category = json_news.optString("news_Category");
+        news.news_Content = json_news.optString("news_Content");
+        news.news_ID = json_news.optString("news_ID");
+        news.news_Journal = json_news.optString("news_Journal");
+        news.news_Pictures = json_news.optString("news_Pictures");
+        news.news_Source = json_news.optString("news_Source");
+        news.news_Time = json_news.optString("news_Time");
+        news.news_Title = json_news.optString("news_Title");
+        news.news_URL = json_news.optString("news_URL");
+        news.news_Video = json_news.optString("news_Video");
         news.organizations = new ArrayList<String>();
         list = json_news.getJSONArray("organizations");
         for (int t = 0; t < list.length(); t++)
@@ -89,12 +91,12 @@ class API {
             item.count = jobj.getInt("count");
             news.persons.add(item);
         }
-        news.repeat_ID = json_news.getString("repeat_ID");
+        news.repeat_ID = json_news.optString("repeat_ID");
         news.seggedPListOfContent = new ArrayList<String>();
         list = json_news.getJSONArray("seggedPListOfContent");
         for (int t = 0; t < list.length(); t++)
             news.seggedPListOfContent.add(list.getString(t));
-        news.seggedTitle = json_news.getString("seggedTitle");
+        news.seggedTitle = json_news.optString("seggedTitle");
         news.wordCountOfContent = json_news.getInt("wordCountOfContent");
         news.wordCountOfTitle = json_news.getInt("wordCountOfTitle");
         return news;
@@ -110,17 +112,17 @@ class API {
         news.plain_json = json_news.toString();
         news.from_disk = from_disk;
 
-        news.lang_Type = json_news.getString("lang_Type");
-        news.newsClassTag = json_news.getString("newsClassTag");
-        news.news_Author = json_news.getString("news_Author");
-        news.news_ID = json_news.getString("news_ID");
-        news.news_Pictures = json_news.getString("news_Pictures");
-        news.news_Source = json_news.getString("news_Source");
-        news.news_Time = json_news.getString("news_Time"); // TODO format time
-        news.news_Title = json_news.getString("news_Title");
-        news.news_URL = json_news.getString("news_URL");
-        news.news_Video = json_news.getString("news_Video");
-        news.news_Intro = json_news.has("news_Intro") ? json_news.getString("news_Intro") : "";
+        news.lang_Type = json_news.optString("lang_Type");
+        news.newsClassTag = json_news.optString("newsClassTag");
+        news.news_Author = json_news.optString("news_Author");
+        news.news_ID = json_news.optString("news_ID");
+        news.news_Pictures = json_news.optString("news_Pictures");
+        news.news_Source = json_news.optString("news_Source");
+        news.news_Time = json_news.optString("news_Time"); // TODO format time
+        news.news_Title = json_news.optString("news_Title");
+        news.news_URL = json_news.optString("news_URL");
+        news.news_Video = json_news.optString("news_Video");
+        news.news_Intro = json_news.optString("news_Intro");
         return news;
     }
 
@@ -140,6 +142,32 @@ class API {
         return body;
     }
 
+    /**
+     * 测试是否可以访问
+     * @param url 地址
+     * @return 网络不可用是返回null
+     */
+    static Boolean TestBaikeConnection(String url) {
+        try {
+            URL cs = new URL(url);
+            URLConnection conn = cs.openConnection();
+            conn.connect();
+
+            int code = 0;
+            if (cs.getProtocol().toLowerCase().equals("http")) {
+                code = ((HttpURLConnection)conn).getResponseCode();
+            } else if (cs.getProtocol().toLowerCase().equals("https")) {
+                code = ((HttpsURLConnection)conn).getResponseCode();
+            } else {
+                return null;
+            }
+
+            return code == 200 && !conn.getURL().toString().endsWith("error.html");
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * 获取最近的新闻，不设置subscribeOn，只设置网络获取的字段

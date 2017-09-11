@@ -64,16 +64,30 @@ public class NewsListPresenter implements NewsListContract.Presenter {
 
     private void fetchNews() {
         final long start = System.currentTimeMillis();
-        Manager.I.fetchSimpleNews(mPageNo, 20, mCategory)
-                .subscribe(new Consumer<List<SimpleNews>>() {
-                    @Override
-                    public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                        System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
-                        mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
-                        // TODO onError
-                        if (mPageNo == 1) mView.setNewsList(simpleNewses);
-                        else mView.appendNewsList(simpleNewses);
-                    }
-                });
+        if (mCategory > 0) {
+            Manager.I.fetchSimpleNews(mPageNo, 20, mCategory)
+                    .subscribe(new Consumer<List<SimpleNews>>() {
+                        @Override
+                        public void accept(List<SimpleNews> simpleNewses) throws Exception {
+                            System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
+                            mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
+                            // TODO onError
+                            if (mPageNo == 1) mView.setNewsList(simpleNewses);
+                            else mView.appendNewsList(simpleNewses);
+                        }
+                    });
+        } else {
+            Manager.I.recommend()
+                    .subscribe(new Consumer<List<SimpleNews>>() {
+                        @Override
+                        public void accept(List<SimpleNews> simpleNewses) throws Exception {
+                            System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
+                            mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
+                            // TODO onError
+                            if (mPageNo == 1) mView.setNewsList(simpleNewses);
+                            else mView.appendNewsList(simpleNewses);
+                        }
+                    });
+        }
     }
 }

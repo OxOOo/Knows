@@ -22,7 +22,7 @@ public class RecSystem {
     private RecSystem() {
     }
 
-    final double readScore=1.0,favoriteScore=5.0,classScore=500.0;
+    final double readScore=1.0,favoriteScore=20.0,classScore=500.0;
 
     /**
      * 文本向量
@@ -109,7 +109,7 @@ public class RecSystem {
         }
         Collections.sort(sortList,new Comparator<Pair<Double,DetailNews>>(){
             public int compare(Pair<Double,DetailNews> arg0, Pair<Double,DetailNews> arg1) {
-                return arg0.first.compareTo(arg1.first);
+                return arg1.first.compareTo(arg0.first);
             }
         });
         for(Pair<Double,DetailNews> p : sortList)
