@@ -2,6 +2,10 @@ package com.java.g39.data;
 
 import android.graphics.Bitmap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -49,7 +53,7 @@ public class DetailNews extends SimpleNews {
      */
     Map<String,String> getKeywordHyperlink() throws UnsupportedEncodingException {
         Map<String,String> result = new HashMap<String,String>();
-        Pattern p = Pattern.compile("\\s(\\S*?)(/PER|/LOC)");
+        Pattern p = Pattern.compile("\\s(\\S+?)(/PER|/LOC)");
         for(String s : seggedPListOfContent)
         {
             Matcher m = p.matcher(s);
@@ -59,5 +63,17 @@ public class DetailNews extends SimpleNews {
             }
         }
         return result;
+    }
+
+    void loadKeywords(String keywords) throws JSONException {
+        JSONArray array = new JSONArray(keywords);
+        Keywords = new ArrayList<>();
+        for(int i = 0; i < array.length(); i ++) {
+            WordWithScore item = new WordWithScore();
+            JSONObject jobj = array.getJSONObject(i);
+            item.word = jobj.getString("word");
+            item.score = jobj.getDouble("score");
+            Keywords.add(item);
+        }
     }
 }

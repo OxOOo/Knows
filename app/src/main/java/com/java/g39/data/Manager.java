@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Exchanger;
 
@@ -358,21 +361,44 @@ public class Manager {
     }
 
     /**
-     * @deprecated 太慢，未完成
      * @return 推荐
      */
     public Single<List<SimpleNews>> recommend() {
-        return Flowable.just(0)
-                .flatMap(new Function<Integer, Publisher<Integer>>() {
-                    @Override
-                    public Publisher<Integer> apply(@NonNull Integer integer) throws Exception {
-                        return Flowable.range(0, fs.fetchSimpleALLCount());
-                    }
-                }).map(new Function<Integer, DetailNews>() {
-                    @Override
-                    public DetailNews apply(@NonNull Integer integer) throws Exception {
-                        return fs.fetchSimpleALL(integer);
-                    }
-                }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        final int pickSize = 50;
+        final int topSize = 200;
+
+        return Flowable.fromCallable(new Callable<List<String>>() {
+            @Override
+            public List<String> call() throws Exception {
+                List<DetailNews> all = fs.fetchAllFromSampleNotRead();
+                List<DetailNews> read = fs.fetchRead();
+                List<DetailNews> favorite = fs.fetchFavorite();
+                List<DetailNews> rec = RecSystem.getInstance().recommendSort(all, read, favorite);
+
+                Set<Integer> index = new TreeSet<Integer>();
+                Random r = new Random();
+                for(int i = 0; i < pickSize; i ++) {
+                    if (index.size() == rec.size()) continue;
+                    int x = r.nextInt(topSize);
+                    while(x >= rec.size() || index.contains(x)) x = r.nextInt(topSize);
+                    index.add(x);
+                }
+                List<String> ids = new ArrayList<String>();
+                for(int x: index) {
+                    ids.add(rec.get(x).news_ID);
+                }
+                return ids;
+            }
+        }).flatMap(new Function<List<String>, Publisher<String>>() {
+            @Override
+            public Publisher<String> apply(@NonNull List<String> strings) throws Exception {
+                return Flowable.fromIterable(strings);
+            }
+        }).map(new Function<String, SimpleNews>() {
+            @Override
+            public SimpleNews apply(@NonNull String s) throws Exception {
+                return fs.fetchDetailFromSample(s);
+            }
+        }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }

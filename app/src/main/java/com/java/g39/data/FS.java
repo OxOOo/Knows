@@ -21,7 +21,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -54,7 +56,7 @@ class FS {
 
         createSDB(context);
 
-        dropTables(); // FIXME
+        // dropTables(); // FIXME
         createTables();
     }
 
@@ -278,35 +280,40 @@ class FS {
         return value;
     }
 
-    List<DetailNews> fetchSimpleALL() throws JSONException, InterruptedException {
+    List<DetailNews> fetchAllFromSampleNotRead() throws JSONException, InterruptedException {
         if (sdb_thread.isAlive()) sdb_thread.join();
 
-        String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_DETAIL);
+        String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_SIMPLE);
         Cursor cursor = sdb.rawQuery(cmd, null);
+        Map<String, String> m = new HashMap<String, String>();
+        while(cursor.moveToNext()) {
+            m.put(cursor.getString(cursor.getColumnIndex(KEY_ID)), cursor.getString(cursor.getColumnIndex(KEY_SIMPLE)));
+        }
+        cursor.close();
+
+        cmd = String.format("SELECT %s FROM `%s`", KEY_ID, TABLE_NAME_READ);
+        cursor = db.rawQuery(cmd, null);
+        while(cursor.moveToNext()) {
+            if (m.containsKey(cursor.getString(cursor.getColumnIndex(KEY_ID))))
+                m.remove(cursor.getString(cursor.getColumnIndex(KEY_ID)));
+        }
+        cursor.close();
 
         List<DetailNews> results = new ArrayList<DetailNews>();
-        while(cursor.moveToNext()) {
-            results.add(API.GetDetailNewsFromJson(new JSONObject(cursor.getString(cursor.getColumnIndex(KEY_DETAIL))), true));
+        for(String news_ID: m.keySet()) {
+            DetailNews news = new DetailNews();
+            news.news_ID = news_ID;
+            news.loadKeywords(m.get(news_ID));
+            results.add(news);
         }
-
-        cursor.close();
         return results;
     }
 
-    int fetchSimpleALLCount() throws InterruptedException {
+    DetailNews fetchDetailFromSample(String news_ID) throws InterruptedException, JSONException {
         if (sdb_thread.isAlive()) sdb_thread.join();
 
-        String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_DETAIL);
-        Cursor cursor = sdb.rawQuery(cmd, null);
-        int ans = cursor.getCount();
-        cursor.close();
-        return ans;
-    }
-
-    DetailNews fetchSimpleALL(int index) throws InterruptedException, JSONException {
-        if (sdb_thread.isAlive()) sdb_thread.join();
-
-        String cmd = String.format("SELECT * FROM `%s` LIMIT 1 OFFSET %s", TABLE_NAME_DETAIL, index + "");
+        String cmd = String.format("SELECT * FROM `%s` WHERE %S=%s",
+                TABLE_NAME_DETAIL, KEY_ID, DatabaseUtils.sqlEscapeString(news_ID));
         Cursor cursor = sdb.rawQuery(cmd, null);
         DetailNews news = null;
         if (cursor.moveToFirst()) {
