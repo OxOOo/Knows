@@ -16,10 +16,21 @@ public interface NewsDetailContract {
          * 设置新闻，只设置
          * @param news 新闻
          */
-        public void setNewsDetail(DetailNews news);
+        void setNewsDetail(DetailNews news);
     }
 
     interface Presenter extends BasePresenter {
 
+        /**
+         * 收藏
+         * @param news 新闻
+         */
+        void favorite(DetailNews news);
+
+        /**
+         * 取消收藏
+         * @param news 新闻
+         */
+        void unFavorite(DetailNews news);
     }
 }

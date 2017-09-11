@@ -56,6 +56,9 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     public void openNewsDetailUI(SimpleNews news, Bundle options) {
         Intent intent = new Intent(mView.context(), NewsDetailActivity.class);
         intent.putExtra(NewsDetailActivity.NEWS_ID, news.news_ID);
+        intent.putExtra(NewsDetailActivity.NEWS_TITLE, news.news_Title);
+        intent.putExtra(NewsDetailActivity.NEWS_PICTURE_URL, news.picture_url);
+        intent.putExtra(NewsDetailActivity.NEWS_IS_FAVORITED, news.is_favorite);
         mView.start(intent, options);
     }
 
