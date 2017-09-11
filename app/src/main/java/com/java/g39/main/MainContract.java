@@ -40,5 +40,10 @@ public interface MainContract {
          * @param id 页面 ID
          */
         void switchNavigation(int id);
+
+        /**
+         * 清除缓存
+         */
+        void clean();
     }
 }

@@ -1,5 +1,8 @@
 package com.java.g39.news.newsdetail;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import com.java.g39.data.DetailNews;
 import com.java.g39.data.Manager;
 
@@ -24,13 +27,32 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
 
     @Override
     public void subscribe() {
+        Manager.I.touchRead(mNews_ID);
         Manager.I.fetchDetailNews(mNews_ID)
                 .subscribe(new Consumer<DetailNews>() {
                     @Override
                     public void accept(DetailNews detailNews) throws Exception {
-                        mView.setNewsDetail(detailNews);
+                        if (detailNews == DetailNews.NULL) {
+                            Toast.makeText(mView.context(), "无法获取新闻详情", Toast.LENGTH_LONG).show();
+                        } else {
+                            mView.setNewsDetail(detailNews);
+                        }
                     }
                 });
+    }
+
+    @Override
+    public void favorite(DetailNews news) {
+        news.is_favorite = true;
+        Manager.I.insertFavorite(news);
+        Toast.makeText(mView.context(), "已添加收藏", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void unFavorite(DetailNews news) {
+        news.is_favorite = false;
+        Manager.I.removeFavorite(news.news_ID);
+        Toast.makeText(mView.context(), "已取消收藏", Toast.LENGTH_SHORT).show();
     }
 
     @Override

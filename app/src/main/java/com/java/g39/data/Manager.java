@@ -48,7 +48,7 @@ public class Manager {
     public static Manager I = null;
 
     /**
-     * 创建单例，全局只能调用一次
+     * 创建单例
      * @param context 上下文
      */
     public static synchronized void CreateI(Context context) {
@@ -87,18 +87,11 @@ public class Manager {
         public T apply(@NonNull final T t) throws Exception {
             if (t == DetailNews.NULL) return t;
 
-            t.picture_url = Single.fromCallable(new Callable<String>() {
+            t.single_picture_url = Single.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
-                    String picture_url = null;
+                    String picture_url = fs.fetchPictureUrl(t.news_ID);
 
-//                    if (t.news_Pictures.trim().length() > 0) { // 新闻中的图片
-//                        String url = t.news_Pictures.trim().split(";")[0].split(" ")[0];
-//                        if (fs.downloadImage(url) != null) picture_url = url; // 如果第一个链接不可用，则从网络上选取
-//                    }
-                    // if (picture_url == null) { // 磁盘载入
-                        picture_url = fs.fetchPictureUrl(t.news_ID);
-                    // }
                     if (picture_url == null) { // 搜索
                         DetailNews news = fs.fetchDetail(t.news_ID);
                         try {
@@ -126,6 +119,7 @@ public class Manager {
                     } else Log.e("ERROR", t.news_ID);
 
                     if (picture_url == null) picture_url = "";
+                    t.picture_url = picture_url;
                     return picture_url;
                 }
             }).subscribeOn(Schedulers.io());
@@ -192,6 +186,7 @@ public class Manager {
                         .map(new Function<DetailNews, DetailNews>() {
                             @Override
                             public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+                                if (detailNews == DetailNews.NULL) return detailNews;
                                 fs.insertDetail(detailNews);
                                 return detailNews;
                             }
@@ -310,19 +305,13 @@ public class Manager {
 
     /**
      * 添加收藏
-     * @param news_ID
+     * @param news
      */
-    public void insertFavorite(final String news_ID) {
+    public void insertFavorite(final DetailNews news) {
         Single.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                DetailNews news = fs.fetchDetail(news_ID);
-                try {
-                    if (news == null) news = API.GetDetailNews(news_ID);
-                } catch(Exception e) {
-
-                }
-                if (news != null)  fs.insertFavorite(news_ID, news);
+                fs.insertFavorite(news.news_ID, news);
                 return new Object();
             }
         }).subscribeOn(Schedulers.io()).subscribe();
@@ -400,5 +389,20 @@ public class Manager {
                 return fs.fetchDetailFromSample(s);
             }
         }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * 清空数据库缓存
+     * @return 是否成功
+     */
+    public Single<Boolean> clean() {
+        return Single.fromCallable(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                fs.dropTables();
+                fs.createTables();
+                return true;
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }
