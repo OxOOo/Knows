@@ -38,12 +38,15 @@ class FS {
     private static final String TABLE_NAME_READ = "news_read";
     private static final String TABLE_NAME_FAVORITE = "news_favorite";
     private static final String TABLE_NAME_PICTURE = "news_picture";
+    private static final String TABLE_NAME_LINK = "links";
 
     private static final String KEY_ID = "news_id"; // string
     private static final String KEY_SIMPLE = "simple_json"; // text
     private static final String KEY_CATEGORY = "category"; // integer
-    private static final String KEY_DETAIL = "detail_json"; //text
-    private static final String KEY_PICTURE = "picture_url"; //text
+    private static final String KEY_DETAIL = "detail_json"; // text
+    private static final String KEY_PICTURE = "picture_url"; // text
+    private static final String KEY_LINK = "link_url"; // text
+    private static final String KEY_VALUE = "value"; // boolean
 
     FS(Context context) throws IOException {
         db_path = context.getFilesDir().getPath() + "/data.db";
@@ -51,7 +54,7 @@ class FS {
 
         createSDB(context);
 
-        // dropTables(); // FIXME
+        dropTables(); // FIXME
         createTables();
     }
 
@@ -103,17 +106,21 @@ class FS {
                 TABLE_NAME_DETAIL, KEY_ID, KEY_DETAIL);
         db.execSQL(detail_table);
 
-        final String read_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key)",
-                TABLE_NAME_READ, KEY_ID);
+        final String read_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key, %s text)",
+                TABLE_NAME_READ, KEY_ID, KEY_DETAIL);
         db.execSQL(read_table);
 
         final String favorite_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key, %s text)",
-                TABLE_NAME_FAVORITE, KEY_ID, KEY_SIMPLE);
+                TABLE_NAME_FAVORITE, KEY_ID, KEY_DETAIL);
         db.execSQL(favorite_table);
 
         final String picture_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s string primary key, %s text)",
                 TABLE_NAME_PICTURE, KEY_ID, KEY_PICTURE);
         db.execSQL(picture_table);
+
+        final String link_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s text primary key, %s boolean)",
+                TABLE_NAME_LINK, KEY_LINK, KEY_VALUE);
+        db.execSQL(link_table);
     }
 
     void dropTables() {
@@ -122,6 +129,7 @@ class FS {
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_READ));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_FAVORITE));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_PICTURE));
+        db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_LINK));
     }
 
     void insertSimple(SimpleNews simpleNews, int category) {
@@ -166,10 +174,11 @@ class FS {
         return detailNews;
     }
 
-    void insertRead(String news_ID) {
-        String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s) VALUES(%s)",
-                TABLE_NAME_READ, KEY_ID,
-                DatabaseUtils.sqlEscapeString(news_ID));
+    void insertRead(String news_ID, DetailNews news) {
+        String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s,%s) VALUES(%s,%s)",
+                TABLE_NAME_READ, KEY_ID, KEY_DETAIL,
+                DatabaseUtils.sqlEscapeString(news_ID),
+                DatabaseUtils.sqlEscapeString(news.plain_json));
         db.execSQL(cmd);
     }
 
@@ -182,9 +191,21 @@ class FS {
         return read;
     }
 
-    void insertFavorite(String news_ID, SimpleNews news) {
+    List<DetailNews> fetchRead() throws JSONException {
+        String cmd = String.format("SELECT * FROM `%s`",
+                TABLE_NAME_READ);
+        Cursor cursor = db.rawQuery(cmd, null);
+        List<DetailNews> results = new ArrayList<DetailNews>();
+        while(cursor.moveToNext()) {
+            results.add(API.GetDetailNewsFromJson(new JSONObject(cursor.getString(cursor.getColumnIndex(KEY_DETAIL))), true));
+        }
+        cursor.close();
+        return results;
+    }
+
+    void insertFavorite(String news_ID, DetailNews news) {
         String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s, %s) VALUES(%s, %s)",
-                TABLE_NAME_FAVORITE, KEY_ID, KEY_SIMPLE,
+                TABLE_NAME_FAVORITE, KEY_ID, KEY_DETAIL,
                 DatabaseUtils.sqlEscapeString(news_ID),
                 DatabaseUtils.sqlEscapeString(news.plain_json));
         db.execSQL(cmd);
@@ -206,12 +227,12 @@ class FS {
         return favorite;
     }
 
-    List<SimpleNews> fetchFavorite() throws JSONException {
+    List<DetailNews> fetchFavorite() throws JSONException {
         String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_FAVORITE);
         Cursor cursor = db.rawQuery(cmd, null);
-        List<SimpleNews> list = new ArrayList<SimpleNews>();
+        List<DetailNews> list = new ArrayList<DetailNews>();
         while(cursor.moveToNext()) {
-            list.add(API.GetNewsFromJson(new JSONObject(cursor.getString(cursor.getColumnIndex(KEY_SIMPLE))), true));
+            list.add(API.GetDetailNewsFromJson(new JSONObject(cursor.getString(cursor.getColumnIndex(KEY_DETAIL))), true));
         }
         cursor.close();
         return list;
@@ -237,6 +258,26 @@ class FS {
         return url;
     }
 
+    void setLinkValue(String link, Boolean value) {
+        String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s,%s) VALUES(%s,%s)",
+                TABLE_NAME_LINK, KEY_LINK, KEY_VALUE,
+                DatabaseUtils.sqlEscapeString(link),
+                DatabaseUtils.sqlEscapeString(value + ""));
+        db.execSQL(cmd);
+    }
+
+    Boolean getLinkValue(String link) {
+        String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s",
+                TABLE_NAME_LINK, KEY_LINK, DatabaseUtils.sqlEscapeString(link));
+        Cursor cursor = db.rawQuery(cmd, null);
+        Boolean value = null;
+        if (cursor.moveToFirst()) {
+            value = Boolean.valueOf(cursor.getString(cursor.getColumnIndex(KEY_VALUE)));
+        }
+        cursor.close();
+        return value;
+    }
+
     List<DetailNews> fetchSimpleALL() throws JSONException, InterruptedException {
         if (sdb_thread.isAlive()) sdb_thread.join();
 
@@ -250,6 +291,29 @@ class FS {
 
         cursor.close();
         return results;
+    }
+
+    int fetchSimpleALLCount() throws InterruptedException {
+        if (sdb_thread.isAlive()) sdb_thread.join();
+
+        String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_DETAIL);
+        Cursor cursor = sdb.rawQuery(cmd, null);
+        int ans = cursor.getCount();
+        cursor.close();
+        return ans;
+    }
+
+    DetailNews fetchSimpleALL(int index) throws InterruptedException, JSONException {
+        if (sdb_thread.isAlive()) sdb_thread.join();
+
+        String cmd = String.format("SELECT * FROM `%s` LIMIT 1 OFFSET %s", TABLE_NAME_DETAIL, index + "");
+        Cursor cursor = sdb.rawQuery(cmd, null);
+        DetailNews news = null;
+        if (cursor.moveToFirst()) {
+            news = API.GetDetailNewsFromJson(new JSONObject(cursor.getString(cursor.getColumnIndex(KEY_DETAIL))), true);
+        }
+        cursor.close();
+        return news;
     }
 
     /**

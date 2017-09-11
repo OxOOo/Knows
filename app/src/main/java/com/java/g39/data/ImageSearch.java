@@ -4,6 +4,9 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +18,8 @@ public class ImageSearch {
     private ImageSearch() {
 
     }
+
+    private static Random r = new Random();
 
     /**
      * 搜索图片
@@ -36,13 +41,16 @@ public class ImageSearch {
         int image_start = 0;
 
         final String[] patterns = {"\"thumbUrl\":\"(.*?)\""};
+        List<String> images = new ArrayList<String>();
         for(String pattern: patterns) {
             Pattern reg = Pattern.compile(pattern);
             Matcher m = reg.matcher(res);
-            if (m.find() && (image_url == null || image_start > m.start())) {
-                image_url = m.group(1).replace("\\/", "/");
-                image_start = m.start();
+            for(int i = 0; m.find() && i < 10; i ++) {
+                images.add(m.group(1));
             }
+        }
+        if (images.size() > 0) {
+            image_url = images.get(r.nextInt(images.size()));
         }
 
         Log.d("Image Search", url);

@@ -1,6 +1,7 @@
 package com.java.g39.data;
 
 import android.content.Context;
+import android.content.Entity;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,9 +14,13 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Exchanger;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
@@ -26,6 +31,7 @@ import io.reactivex.SingleTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -55,7 +61,7 @@ public class Manager {
     private FlowableTransformer<SimpleNews, SimpleNews> liftAllSimple;
     private FlowableTransformer<DetailNews, DetailNews> liftAllDetail;
 
-    class FetchRead<T extends SimpleNews> implements Function<T, T> {
+    private class FetchRead<T extends SimpleNews> implements Function<T, T> {
         @Override
         public T apply(@NonNull T t) throws Exception {
             if (t == DetailNews.NULL) return t;
@@ -64,16 +70,16 @@ public class Manager {
             return t;
         }
     }
-    class FetchFavorite<T extends SimpleNews> implements Function<T, T> {
+    private class FetchFavorite<T extends SimpleNews> implements Function<T, T> {
         @Override
         public T apply(@NonNull T t) throws Exception {
             if (t == DetailNews.NULL) return t;
 
-            t.has_read = fs.hasRead(t.news_ID);
+            t.is_favorite = fs.isFavorite(t.news_ID);
             return t;
         }
     }
-    class FetchPicture<T extends SimpleNews> implements Function<T, T> {
+    private class FetchPicture<T extends SimpleNews> implements Function<T, T> {
         @Override
         public T apply(@NonNull final T t) throws Exception {
             if (t == DetailNews.NULL) return t;
@@ -87,9 +93,9 @@ public class Manager {
 //                        String url = t.news_Pictures.trim().split(";")[0].split(" ")[0];
 //                        if (fs.downloadImage(url) != null) picture_url = url; // 如果第一个链接不可用，则从网络上选取
 //                    }
-                    if (picture_url == null) { // 磁盘载入
+                    // if (picture_url == null) { // 磁盘载入
                         picture_url = fs.fetchPictureUrl(t.news_ID);
-                    }
+                    // }
                     if (picture_url == null) { // 搜索
                         DetailNews news = fs.fetchDetail(t.news_ID);
                         try {
@@ -107,7 +113,7 @@ public class Manager {
                             try {
                                 if (key != null) picture_url = ImageSearch.search(key.word);
                             } catch(Exception e) {
-
+                                Log.d("DEBUG", "ERROR ON ImageSearch");
                             }
                         }
                     }
@@ -121,6 +127,47 @@ public class Manager {
                 }
             }).subscribeOn(Schedulers.io());
             return t;
+        }
+    }
+    private class FetchLinks implements Function<DetailNews, DetailNews> {
+
+        @Override
+        public DetailNews apply(@NonNull final DetailNews detailNews) throws Exception {
+            if (detailNews == DetailNews.NULL) return detailNews;
+
+            detailNews.links = Flowable.just(0)
+                    .flatMap(new Function<Integer, Publisher<Map.Entry<String,String>>>() {
+                        @Override
+                        public Publisher<Map.Entry<String,String>> apply(@NonNull Integer integer) throws Exception {
+                            return Flowable.fromIterable(detailNews.getKeywordHyperlink().entrySet());
+                        }
+                    })
+                    .filter(new Predicate<Map.Entry<String, String>>() {
+                        @Override
+                        public boolean test(@NonNull Map.Entry<String, String> stringStringEntry) throws Exception {
+                            try {
+                                String link = stringStringEntry.getValue().trim();
+                                Boolean value = fs.getLinkValue(link);
+                                if (value == null) value = API.TestBaikeConnection(link);
+                                if (value != null) fs.setLinkValue(link, value);
+                                return value == null ? false : value;
+                            } catch(Exception e) {
+                                return false;
+                            }
+                        }
+                    })
+                    .toList()
+                    .map(new Function<List<Map.Entry<String, String>>, Map<String, String>>() {
+                        @Override
+                        public Map<String, String> apply(@NonNull List<Map.Entry<String, String>> entries) throws Exception {
+                            Map<String, String> rst = new HashMap<String, String>();
+                            for(Map.Entry<String, String> e: entries)
+                                rst.put(e.getKey(), e.getValue());
+                            return rst;
+                        }
+                    }).subscribeOn(Schedulers.io());
+
+            return detailNews;
         }
     }
 
@@ -148,7 +195,8 @@ public class Manager {
                         })
                         .map(new FetchRead<DetailNews>())
                         .map(new FetchFavorite<DetailNews>())
-                        .map(new FetchPicture<DetailNews>());
+                        .map(new FetchPicture<DetailNews>())
+                        .map(new FetchLinks());
             }
         };
     }
@@ -245,7 +293,13 @@ public class Manager {
         Single.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                fs.insertRead(news_ID);
+                DetailNews news = fs.fetchDetail(news_ID);
+                try {
+                    if (news == null) news = API.GetDetailNews(news_ID);
+                } catch(Exception e) {
+
+                }
+                if (news != null)  fs.insertRead(news_ID, news);
                 return new Object();
             }
         }).subscribeOn(Schedulers.io()).subscribe();
@@ -253,13 +307,19 @@ public class Manager {
 
     /**
      * 添加收藏
-     * @param news
+     * @param news_ID
      */
-    public void insertFavorite(final DetailNews news) {
+    public void insertFavorite(final String news_ID) {
         Single.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                fs.insertFavorite(news.news_ID, news);
+                DetailNews news = fs.fetchDetail(news_ID);
+                try {
+                    if (news == null) news = API.GetDetailNews(news_ID);
+                } catch(Exception e) {
+
+                }
+                if (news != null)  fs.insertFavorite(news_ID, news);
                 return new Object();
             }
         }).subscribeOn(Schedulers.io()).subscribe();
@@ -284,30 +344,35 @@ public class Manager {
      * @return 收藏列表
      */
     public Single<List<SimpleNews>> favorites() {
-        return Flowable.fromCallable(new Callable<List<SimpleNews>>() {
+        return Flowable.fromCallable(new Callable<List<DetailNews>>() {
             @Override
-            public List<SimpleNews> call() throws Exception {
+            public List<DetailNews> call() throws Exception {
                 return fs.fetchFavorite();
             }
-        }).flatMap(new Function<List<SimpleNews>, Publisher<SimpleNews>>() { // 展开
+        }).flatMap(new Function<List<DetailNews>, Publisher<DetailNews>>() { // 展开
             @Override
-            public Publisher<SimpleNews> apply(@NonNull List<SimpleNews> news) throws Exception {
+            public Publisher<DetailNews> apply(@NonNull List<DetailNews> news) throws Exception {
                 return Flowable.fromIterable(news);
             }
         }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
-    private Bitmap fetchBitmap(String news_Pictures) {
-        news_Pictures = news_Pictures.trim();
-        Bitmap picture = null;
-
-        if (news_Pictures.length() > 0) {
-            picture = fs.downloadImage(news_Pictures.split(";")[0].split(" ")[0]);
-        }
-//        if (picture == null) {
-//            picture = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher); // default picture
-//        }
-
-        return picture;
+    /**
+     * @deprecated 太慢，未完成
+     * @return 推荐
+     */
+    public Single<List<SimpleNews>> recommend() {
+        return Flowable.just(0)
+                .flatMap(new Function<Integer, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(@NonNull Integer integer) throws Exception {
+                        return Flowable.range(0, fs.fetchSimpleALLCount());
+                    }
+                }).map(new Function<Integer, DetailNews>() {
+                    @Override
+                    public DetailNews apply(@NonNull Integer integer) throws Exception {
+                        return fs.fetchSimpleALL(integer);
+                    }
+                }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 }
