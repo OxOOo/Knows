@@ -9,6 +9,7 @@ import com.java.g39.data.Manager;
 import com.java.g39.data.SimpleNews;
 import com.java.g39.news.newsdetail.NewsDetailActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -88,7 +89,7 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                     .subscribe(new Consumer<List<SimpleNews>>() {
                         @Override
                         public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                            System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
+                            System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size());
                             mLoading = false;
                             mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
                             // TODO onError
@@ -103,10 +104,13 @@ public class NewsListPresenter implements NewsListContract.Presenter {
                         public void accept(List<SimpleNews> simpleNewses) throws Exception {
                             System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
                             mLoading = false;
-                            mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
-                            // TODO onError
-                            if (mPageNo == 1) mView.setNewsList(simpleNewses);
-                            else mView.appendNewsList(simpleNewses);
+                            if (mPageNo > 1 || simpleNewses.size() == 0) {
+                                mView.onSuccess(true);
+                                mView.appendNewsList(new ArrayList<>());
+                            } else {
+                                mView.onSuccess(false);
+                                mView.setNewsList(simpleNewses);
+                            }
                         }
                     });
         }
