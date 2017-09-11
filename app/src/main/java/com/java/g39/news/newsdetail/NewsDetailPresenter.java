@@ -45,21 +45,14 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
     public void favorite(DetailNews news) {
         news.is_favorite = true;
         Manager.I.insertFavorite(news);
-//        Manager.I.favorites()
-//                .subscribe(new Consumer<List<DetailNews>>() {
-//                    @Override
-//                    public void accept(List<DetailNews> detailNewses) throws Exception {
-//                        for (DetailNews news : detailNewses) {
-//                            System.out.println("favorites:" + news.news_Title);
-//                        }
-//                    }
-//                });
+        Toast.makeText(mView.context(), "已添加收藏", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void unFavorite(DetailNews news) {
         news.is_favorite = false;
         Manager.I.removeFavorite(news.news_ID);
+        Toast.makeText(mView.context(), "已取消收藏", Toast.LENGTH_SHORT).show();
     }
 
     @Override
