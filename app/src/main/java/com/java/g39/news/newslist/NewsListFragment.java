@@ -160,8 +160,10 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
 
     @Override
     public void resetItemRead(int pos, boolean has_read) {
-        mAdapter.setRead(pos, has_read);
-        mAdapter.notifyItemChanged(pos);
+        if (mAdapter.getNews(pos).has_read != has_read) {
+            mAdapter.setRead(pos, has_read);
+            mAdapter.notifyItemChanged(pos);
+        }
     }
 
     @Override
