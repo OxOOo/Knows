@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.java.g39.R;
 import com.java.g39.data.DetailNews;
 import com.java.g39.data.ImageLoader;
+import com.java.g39.data.Speech;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -35,6 +37,10 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     private TextView mTag, mDetail, mContent;
     private ImageView mImage;
     private FloatingActionButton mFab;
+    private NestedScrollView mScrollView;
+    private View mBottomView;
+    private TextView mFavoriteBtn, mSpeechBtn, mShareBtn;
+    private Speech mSpeaker;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,14 +58,63 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
             @Override
             public void onClick(View view) {
                 if (mNews != null) {
-                    if (mNews.is_favorite) {
+                    mFab.setSelected(!mNews.is_favorite);
+                    mFavoriteBtn.setSelected(!mNews.is_favorite);
+                    if (mNews.is_favorite)
                         mPresenter.unFavorite(mNews);
-                        mFab.setSelected(false);
-                    } else {
+                    else
                         mPresenter.favorite(mNews);
-                        mFab.setSelected(true);
-                    }
                 }
+            }
+        });
+
+        mBottomView = findViewById(R.id.bottom_view);
+        mScrollView = (NestedScrollView) findViewById(R.id.scroll_view);
+        mScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            private boolean isBottomShow = true;
+
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY - oldScrollY > 0 && isBottomShow) { // 下移隐藏
+                    isBottomShow = false;
+                    mBottomView.animate().translationY(mBottomView.getHeight());
+                } else if (scrollY - oldScrollY < 0 && !isBottomShow) { // 上移出现
+                    isBottomShow = true;
+                    mBottomView.animate().translationY(0);
+                }
+            }
+        });
+
+        mFavoriteBtn = (TextView) findViewById(R.id.bottom_favorite);
+        mSpeechBtn = (TextView) findViewById(R.id.bottom_speech);
+        mShareBtn = (TextView) findViewById(R.id.bottom_share);
+        mFavoriteBtn.setOnClickListener((View view) -> {
+            if (mNews != null) {
+                mFab.setSelected(!mNews.is_favorite);
+                mFavoriteBtn.setSelected(!mNews.is_favorite);
+                if (mNews.is_favorite)
+                    mPresenter.unFavorite(mNews);
+                else
+                    mPresenter.favorite(mNews);
+            }
+        });
+        mSpeechBtn.setOnClickListener((View view) -> {
+            if (mNews != null && mSpeaker != null) {
+                switch (mSpeaker.getState()) {
+                    case ready:
+                        mSpeaker.start();
+                        break;
+                    case reading:
+                        mSpeaker.stop();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        mShareBtn.setOnClickListener((View view) -> {
+            if (mNews != null) {
+                mPresenter.shareNews(this, mNews);
             }
         });
 
@@ -77,6 +132,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mImage = (ImageView) findViewById(R.id.image_view);
 
         mFab.setSelected(news_is_favorited);
+        mFavoriteBtn.setSelected(news_is_favorited);
         if (news_picture_url != null) {
             ImageLoader.displayImage(news_picture_url, mImage);
         }
@@ -104,6 +160,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     @Override
     public void onBackPressed() {
         mFab.setVisibility(View.INVISIBLE);
+        if (mSpeaker != null) mSpeaker.stop();
         super.onBackPressed();
     }
 
@@ -129,8 +186,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mDetail.setText((news.news_Author.isEmpty() ? news.news_Source : news.news_Author) + "　" + news.formatTime());
         String content = news.news_Content.trim();
         mContent.setText(TextUtils.join("\n\n　　", content.split(" 　　")));
-        mFab.setClickable(true);
         mFab.setSelected(news.is_favorite);
+        mFavoriteBtn.setSelected(news.is_favorite);
         news.single_picture_url
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {
@@ -139,5 +196,24 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
                         ImageLoader.displayImage(s, mImage);
                     }
                 });
+
+        mSpeaker = new Speech(this, mNews.news_Title + "。" + mNews.news_Content, null);
+        mSpeaker.setStateChangeListener(() -> {
+            switch (mSpeaker.getState()) {
+                case stoped:
+                    mSpeechBtn.setSelected(false);
+                    break;
+                case reading:
+                    mSpeechBtn.setSelected(true);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        mFab.setClickable(true);
+        mFavoriteBtn.setClickable(true);
+        mSpeechBtn.setClickable(true);
+        mShareBtn.setClickable(true);
     }
 }

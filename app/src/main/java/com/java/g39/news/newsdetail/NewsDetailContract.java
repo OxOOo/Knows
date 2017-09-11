@@ -1,5 +1,7 @@
 package com.java.g39.news.newsdetail;
 
+import android.app.Activity;
+
 import com.java.g39.BasePresenter;
 import com.java.g39.BaseView;
 import com.java.g39.data.DetailNews;
@@ -32,5 +34,12 @@ public interface NewsDetailContract {
          * @param news 新闻
          */
         void unFavorite(DetailNews news);
+
+        /**
+         * 分享
+         * @param activity 调用者
+         * @param news 新闻
+         */
+        void shareNews(Activity activity, DetailNews news);
     }
 }

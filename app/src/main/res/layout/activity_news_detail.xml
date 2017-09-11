@@ -59,6 +59,82 @@
 
     <include layout="@layout/content_news_detail" />
 
+    <FrameLayout
+        android:id="@+id/bottom_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorBackgroundLight">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="6dp">
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5" />
+
+            <TextView
+                android:id="@+id/bottom_favorite"
+                android:layout_width="@dimen/bottom_button_width"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="3dp"
+                android:drawableTop="@drawable/selector_favorite"
+                android:gravity="center"
+                android:text="@string/bottom_favorite"
+                android:textColor="@color/colorDetail" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/bottom_speech"
+                android:layout_width="@dimen/bottom_button_width"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="3dp"
+                android:drawableTop="@drawable/selector_favorite"
+                android:gravity="center"
+                android:text="@string/bottom_speech"
+                android:textColor="@color/colorDetail" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/bottom_share"
+                android:layout_width="@dimen/bottom_button_width"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="3dp"
+                android:drawableTop="?attr/actionModeShareDrawable"
+                android:gravity="center"
+                android:text="@string/bottom_share"
+                android:textColor="@color/colorDetail" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_gravity="top"
+            android:background="@color/colorBackground" />
+
+    </FrameLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"

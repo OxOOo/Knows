@@ -1,5 +1,6 @@
 package com.java.g39.data;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Entity;
 import android.database.sqlite.SQLiteDatabase;
@@ -404,5 +405,17 @@ public class Manager {
                 return true;
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * 分享
+     * @param activity 调用者
+     * @param title 标题
+     * @param text 文本内容
+     * @param url 分享链接
+     * @param imgUrl 图片链接
+     */
+    public static void shareNews(Activity activity, String title, String text, String url, String imgUrl) {
+        API.ShareNews(activity, title, text, url, imgUrl);
     }
 }

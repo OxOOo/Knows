@@ -82,6 +82,8 @@ public class Speech
             else
             {
                 Log.d("mySynth complete code:", "0");
+                changeState(State.stoped);
+                changeState(State.ready);
             }
         }
 
@@ -94,7 +96,8 @@ public class Speech
     private void changeState(State newState)
     {
         nowState = newState;
-        stateChangeListener.onChange();
+        if (stateChangeListener != null)
+            stateChangeListener.onChange();
     }
 
     public int start()
@@ -110,6 +113,7 @@ public class Speech
     {
         changeState(State.stoped);
         mySynthesizer.stopSpeaking();
+        changeState(State.ready);
     }
 
     public void pause()
