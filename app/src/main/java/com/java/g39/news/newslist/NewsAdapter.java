@@ -55,6 +55,11 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.notifyItemRangeChanged(pos, mData.size());
     }
 
+    public void removeItem(int position) {
+        mData.remove(position);
+        this.notifyItemRemoved(position);
+    }
+
     public void setRead(int position, boolean has_read) {
         SimpleNews news = getNews(position);
         news.has_read = has_read;

@@ -15,12 +15,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.java.g39.R;
 import com.java.g39.news.NewsFragment;
-
-import io.reactivex.functions.Consumer;
+import com.java.g39.favorites.FavoritesFragment;
 
 /**
  * Created by equation on 9/7/17.
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void switchToFavorites() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Fragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, FavoritesFragment.newInstance()).commit();
         this.mToolbar.setTitle(R.string.nav_favorites_title);
     }
 

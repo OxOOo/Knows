@@ -61,6 +61,8 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCategory = getArguments().getInt("category");
+        mPresenter = new NewsListPresenter(this, mCategory);
+        mPresenter.subscribe();
     }
 
     @Override
@@ -87,7 +89,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         });
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
-        mLayoutManager = new LinearLayoutManager(this.getContext());
+        mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mRecyclerView.setHasFixedSize(true);
@@ -128,8 +130,6 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         });
         mRecyclerView.setAdapter(mAdapter);
 
-        mPresenter = new NewsListPresenter(this, mCategory);
-        mPresenter.refreshNews();
         return view;
     }
 

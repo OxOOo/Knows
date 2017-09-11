@@ -68,6 +68,7 @@ public interface NewsListContract {
         /**
          * 打开新闻详情
          * @param news 被打开的新闻
+         * @param options 过渡选项
          */
         void openNewsDetailUI(SimpleNews news, Bundle options);
 

@@ -183,6 +183,11 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     public void onBackPressed() {
         mFab.setVisibility(View.INVISIBLE);
         if (mSpeaker != null) mSpeaker.stop();
+
+        Intent intent = new Intent();
+        intent.putExtra("IS_FAVORITED", mNews.is_favorite);
+        setResult(RESULT_OK, intent);
+
         super.onBackPressed();
     }
 
