@@ -138,12 +138,12 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         }
 
         mPresenter = new NewsDetailPresenter(this, news_ID);
-        mPresenter.subscribe();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mPresenter.subscribe();
     }
 
     @Override
