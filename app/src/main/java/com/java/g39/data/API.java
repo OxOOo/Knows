@@ -1,6 +1,11 @@
 package com.java.g39.data;
 
+import android.app.Activity;
 import android.util.*;
+
+import com.xyzlf.share.library.bean.ShareEntity;
+import com.xyzlf.share.library.interfaces.ShareConstant;
+import com.xyzlf.share.library.util.ShareUtil;
 
 import org.json.*;
 
@@ -261,5 +266,20 @@ class API {
         JSONObject allData;
         allData = new JSONObject(body);
         return GetDetailNewsFromJson(allData, false);
+    }
+
+    /**
+     * @param activity 调用者
+     * @param title 标题
+     * @param text 文本内容
+     * @param url 分享链接
+     * @param imgUrl 图片链接
+     */
+    public static void ShareNews(Activity activity, String title, String text, String url, String imgUrl)
+    {
+        ShareEntity testBean = new ShareEntity(title, text);
+        testBean.setUrl(url);
+        testBean.setImgUrl(imgUrl);
+        ShareUtil.showShareDialog(activity, testBean, ShareConstant.REQUEST_CODE);
     }
 }
