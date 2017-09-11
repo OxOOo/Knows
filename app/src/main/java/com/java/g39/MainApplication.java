@@ -1,6 +1,7 @@
 package com.java.g39;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.java.g39.data.ImageLoader;
 import com.java.g39.data.Manager;
