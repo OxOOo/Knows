@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Weibo -->
+    <string name="sina_weibo_key">3066914544</string>
+    <string name="sina_weibo_redirecturi">none</string>
+
+    <!-- Weixin -->
+    <string name="weixin_key">wx51dfba91db58907c</string>
+
+    <!-- QQ -->
+    <string name="tencent_qq_appid">1106407140</string>
+
+</resources>

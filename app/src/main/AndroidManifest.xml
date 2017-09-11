@@ -3,8 +3,8 @@
     package="com.java.g39">
 
     <!-- 应用签名微信：tsinghua_g39 -->
-    <!-- 应用appId微信：wx51dfba91db58907c-->
-    <!-- 应用secret微信：403afc88507a13e2ef909f23ab67af4b-->
+    <!-- 应用appId微信：wx51dfba91db58907c -->
+    <!-- 应用secret微信：403afc88507a13e2ef909f23ab67af4b -->
     <!-- 应用签名微博：caaf693c1c7fbd76a2d404bcaa234063 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -34,7 +34,43 @@
             android:name=".news.newsdetail.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".main.SpeechAPI"></activity>
+
+        <!-- 分享相关设置 -->
+        <meta-data
+            android:name="tencent_qq_appid"
+            android:value="@string/tencent_qq_appid" />
+        <meta-data
+            android:name="weixin_key"
+            android:value="@string/weixin_key" />
+        <!-- 微信分享注册 -->
+        <activity
+            android:name=".main.wxapi.WXEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- QQ SDK 需要註冊Activity -->
+        <activity
+            android:name="com.tencent.connect.common.AssistActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="behind"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent222222" />
+                <!-- 100380359 100381104 222222 -->
+            </intent-filter>
+        </activity>
+        <!-- QQ SDK 需要注册 Activity -->
     </application>
 
 </manifest>
