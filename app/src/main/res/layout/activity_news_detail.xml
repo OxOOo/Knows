@@ -85,7 +85,7 @@
                 android:drawablePadding="3dp"
                 android:drawableTop="@drawable/selector_favorite"
                 android:gravity="center"
-                android:text="@string/bottom_favorite"
+                android:text="@string/action_favorite"
                 android:textColor="@color/colorDetail" />
 
             <Space
@@ -101,7 +101,7 @@
                 android:drawablePadding="3dp"
                 android:drawableTop="@drawable/selector_favorite"
                 android:gravity="center"
-                android:text="@string/bottom_speech"
+                android:text="@string/action_speech"
                 android:textColor="@color/colorDetail" />
 
             <Space
@@ -117,7 +117,7 @@
                 android:drawablePadding="3dp"
                 android:drawableTop="?attr/actionModeShareDrawable"
                 android:gravity="center"
-                android:text="@string/bottom_share"
+                android:text="@string/action_share"
                 android:textColor="@color/colorDetail" />
 
             <Space

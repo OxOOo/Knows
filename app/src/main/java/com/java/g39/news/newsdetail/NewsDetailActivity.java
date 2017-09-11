@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,6 +43,38 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     private TextView mFavoriteBtn, mSpeechBtn, mShareBtn;
     private Speech mSpeaker;
 
+    private void onFavoite() {
+        if (mNews != null) {
+            mFab.setSelected(!mNews.is_favorite);
+            mFavoriteBtn.setSelected(!mNews.is_favorite);
+            if (mNews.is_favorite)
+                mPresenter.unFavorite(mNews);
+            else
+                mPresenter.favorite(mNews);
+        }
+    }
+
+    private void onSpeech() {
+        if (mNews != null && mSpeaker != null) {
+            switch (mSpeaker.getState()) {
+                case ready:
+                    mSpeaker.start();
+                    break;
+                case reading:
+                    mSpeaker.stop();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void onShare() {
+        if (mNews != null) {
+            mPresenter.shareNews(this, mNews);
+        }
+    }
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
@@ -54,19 +87,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         }
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mNews != null) {
-                    mFab.setSelected(!mNews.is_favorite);
-                    mFavoriteBtn.setSelected(!mNews.is_favorite);
-                    if (mNews.is_favorite)
-                        mPresenter.unFavorite(mNews);
-                    else
-                        mPresenter.favorite(mNews);
-                }
-            }
-        });
+        mFab.setOnClickListener((View view) -> onFavoite());
 
         mBottomView = findViewById(R.id.bottom_view);
         mScrollView = (NestedScrollView) findViewById(R.id.scroll_view);
@@ -88,35 +109,9 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mFavoriteBtn = (TextView) findViewById(R.id.bottom_favorite);
         mSpeechBtn = (TextView) findViewById(R.id.bottom_speech);
         mShareBtn = (TextView) findViewById(R.id.bottom_share);
-        mFavoriteBtn.setOnClickListener((View view) -> {
-            if (mNews != null) {
-                mFab.setSelected(!mNews.is_favorite);
-                mFavoriteBtn.setSelected(!mNews.is_favorite);
-                if (mNews.is_favorite)
-                    mPresenter.unFavorite(mNews);
-                else
-                    mPresenter.favorite(mNews);
-            }
-        });
-        mSpeechBtn.setOnClickListener((View view) -> {
-            if (mNews != null && mSpeaker != null) {
-                switch (mSpeaker.getState()) {
-                    case ready:
-                        mSpeaker.start();
-                        break;
-                    case reading:
-                        mSpeaker.stop();
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-        mShareBtn.setOnClickListener((View view) -> {
-            if (mNews != null) {
-                mPresenter.shareNews(this, mNews);
-            }
-        });
+        mFavoriteBtn.setOnClickListener((View view) -> onFavoite());
+        mSpeechBtn.setOnClickListener((View view) -> onSpeech());
+        mShareBtn.setOnClickListener((View view) -> onShare());
 
         String news_ID = getIntent().getStringExtra(NEWS_ID);
         String news_Title = getIntent().getStringExtra(NEWS_TITLE);
@@ -147,10 +142,37 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.detail_news, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mNews != null) {
+            menu.findItem(R.id.action_favorite).setTitle(
+                    getString(mNews.is_favorite ? R.string.action_unfavorite : R.string.action_favorite));
+            menu.findItem(R.id.action_speech).setTitle(
+                    getString(mSpeaker.getState() == Speech.State.ready ? R.string.action_speech : R.string.action_stop_speech));
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.action_favorite:
+                onFavoite();
+                return true;
+            case R.id.action_speech:
+                onSpeech();
+                return true;
+            case R.id.action_share:
+                onShare();
                 return true;
             default:
                 return super.onOptionsItemSelected(menuItem);
