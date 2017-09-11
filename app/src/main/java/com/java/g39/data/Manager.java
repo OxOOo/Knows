@@ -401,4 +401,19 @@ public class Manager {
             }
         }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
+
+    /**
+     * 清空数据库缓存
+     * @return 是否成功
+     */
+    public Single<Boolean> clean() {
+        return Single.fromCallable(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                fs.dropTables();
+                fs.createTables();
+                return true;
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 }

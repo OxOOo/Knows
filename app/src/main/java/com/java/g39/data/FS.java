@@ -248,7 +248,7 @@ class FS {
         db.execSQL(cmd);
     }
 
-    String fetchPictureUrl(String news_ID) {
+    String fetchPictureUrl(String news_ID) throws InterruptedException {
         String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s",
                 TABLE_NAME_PICTURE, KEY_ID, DatabaseUtils.sqlEscapeString(news_ID));
         Cursor cursor = db.rawQuery(cmd, null);
@@ -257,6 +257,17 @@ class FS {
             url = cursor.getString(cursor.getColumnIndex(KEY_PICTURE));
         }
         cursor.close();
+
+        if (url == null) {
+            if (sdb_thread.isAlive()) sdb_thread.join();
+            cursor = sdb.rawQuery(cmd, null);
+            if (cursor.moveToFirst()) {
+                url = cursor.getString(cursor.getColumnIndex(KEY_PICTURE));
+                Log.d("DEBUG", "HERE:" + url);
+            }
+            cursor.close();
+        }
+
         return url;
     }
 

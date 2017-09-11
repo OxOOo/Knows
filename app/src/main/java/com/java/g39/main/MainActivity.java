@@ -15,10 +15,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.java.g39.R;
 import com.java.g39.data.Manager;
 import com.java.g39.news.NewsFragment;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by equation on 9/7/17.
@@ -92,7 +95,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_clean) {
+            Manager.I.clean().subscribe(new Consumer<Boolean>() {
+                @Override
+                public void accept(Boolean aBoolean) throws Exception {
+                    if (aBoolean) Toast.makeText(MainActivity.this, "清空缓存成功", Toast.LENGTH_LONG).show();
+                    else Toast.makeText(MainActivity.this, "清空缓存失败", Toast.LENGTH_LONG).show();
+                }
+            });
             return true;
         }
 
