@@ -40,12 +40,6 @@ public class DetailNews extends SimpleNews {
     public int wordCountOfContent;
     public int wordCountOfTitle;
 
-    public String picture_url; // 解析出的图片链接，可能为null
-    public boolean has_read; // 是否已读
-    public boolean is_favorite; // 是否已收藏
-
-    public boolean from_disk; // 是否是从磁盘上读取的
-
     /**
      * @return 返回所有有必要添加超链接的词，以及其对应的超链接
      */

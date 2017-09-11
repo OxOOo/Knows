@@ -14,6 +14,7 @@
     <!-- FIXME need roundIcon -->
     <application
         android:allowBackup="true"
+        android:name=".MainApplication"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo"

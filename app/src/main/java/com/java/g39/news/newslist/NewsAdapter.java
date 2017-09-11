@@ -9,12 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import com.java.g39.R;
 import com.java.g39.data.SimpleNews;
+import com.java.g39.data.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,20 +35,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<SimpleNews> mData = new ArrayList<SimpleNews>();
     private boolean mIsShowFooter = true;
     private OnItemClickListener mOnItemClickListener;
-    private ImageLoader mImageLoader = ImageLoader.getInstance();
-    private DisplayImageOptions mDisplayOptions;
 
     public NewsAdapter(Context context) {
         mContext = context;
-        mImageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
-        // FIXME add showImage*()
-        mDisplayOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(null)
-                .showImageForEmptyUri(R.mipmap.logo)
-                .showImageOnFail(R.mipmap.logo)
-                .resetViewBeforeLoading(true)
-                .cacheOnDisk(true)
-                .build();
     }
 
     public SimpleNews getNews(int position) {
@@ -109,12 +96,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             item.mDate.setText(news.news_Time);
             item.mImage.setImageBitmap(null);
             item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
-            news.picture_url
+            // FIXME cancel mImageLoader
+            news.single_picture_url
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<String>() {
                         @Override
                         public void accept(String s) throws Exception {
-                            mImageLoader.displayImage(s, item.mImage, mDisplayOptions);
+                            ImageLoader.displayImage(s, item.mImage);
                         }
                     });
         }

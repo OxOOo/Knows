@@ -69,7 +69,7 @@ public class Manager {
         public T apply(@NonNull T t) throws Exception {
             if (t == DetailNews.NULL) return t;
 
-            t.has_read = fs.hasRead(t.news_ID);
+            t.is_favorite = fs.isFavorite(t.news_ID);
             return t;
         }
     }
@@ -78,7 +78,7 @@ public class Manager {
         public T apply(@NonNull final T t) throws Exception {
             if (t == DetailNews.NULL) return t;
 
-            t.picture_url = Single.fromCallable(new Callable<String>() {
+            t.single_picture_url = Single.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
                     String picture_url = null;
@@ -117,6 +117,7 @@ public class Manager {
                     } else Log.e("ERROR", t.news_ID);
 
                     if (picture_url == null) picture_url = "";
+                    t.picture_url = picture_url;
                     return picture_url;
                 }
             }).subscribeOn(Schedulers.io());

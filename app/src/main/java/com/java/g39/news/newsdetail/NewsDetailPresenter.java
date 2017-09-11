@@ -24,6 +24,7 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
 
     @Override
     public void subscribe() {
+        Manager.I.touchRead(mNews_ID);
         Manager.I.fetchDetailNews(mNews_ID)
                 .subscribe(new Consumer<DetailNews>() {
                     @Override
@@ -31,6 +32,27 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
                         mView.setNewsDetail(detailNews);
                     }
                 });
+    }
+
+    @Override
+    public void favorite(DetailNews news) {
+        news.is_favorite = true;
+        Manager.I.insertFavorite(news);
+//        Manager.I.favorites()
+//                .subscribe(new Consumer<List<DetailNews>>() {
+//                    @Override
+//                    public void accept(List<DetailNews> detailNewses) throws Exception {
+//                        for (DetailNews news : detailNewses) {
+//                            System.out.println("favorites:" + news.news_Title);
+//                        }
+//                    }
+//                });
+    }
+
+    @Override
+    public void unFavorite(DetailNews news) {
+        news.is_favorite = false;
+        Manager.I.removeFavorite(news.news_ID);
     }
 
     @Override
