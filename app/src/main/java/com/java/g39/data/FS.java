@@ -263,7 +263,6 @@ class FS {
             cursor = sdb.rawQuery(cmd, null);
             if (cursor.moveToFirst()) {
                 url = cursor.getString(cursor.getColumnIndex(KEY_PICTURE));
-                Log.d("DEBUG", "HERE:" + url);
             }
             cursor.close();
         }

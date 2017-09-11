@@ -48,7 +48,7 @@ public class Manager {
     public static Manager I = null;
 
     /**
-     * 创建单例，全局只能调用一次
+     * 创建单例
      * @param context 上下文
      */
     public static synchronized void CreateI(Context context) {
@@ -311,19 +311,13 @@ public class Manager {
 
     /**
      * 添加收藏
-     * @param news_ID
+     * @param news
      */
-    public void insertFavorite(final String news_ID) {
+    public void insertFavorite(final DetailNews news) {
         Single.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                DetailNews news = fs.fetchDetail(news_ID);
-                try {
-                    if (news == null) news = API.GetDetailNews(news_ID);
-                } catch(Exception e) {
-
-                }
-                if (news != null)  fs.insertFavorite(news_ID, news);
+                fs.insertFavorite(news.news_ID, news);
                 return new Object();
             }
         }).subscribeOn(Schedulers.io()).subscribe();

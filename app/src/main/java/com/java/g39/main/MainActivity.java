@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.java.g39.R;
+import com.java.g39.data.Manager;
 import com.java.g39.news.NewsFragment;
 
 import io.reactivex.functions.Consumer;
