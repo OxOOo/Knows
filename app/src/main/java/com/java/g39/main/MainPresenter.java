@@ -1,6 +1,11 @@
 package com.java.g39.main;
 
+import android.widget.Toast;
+
 import com.java.g39.R;
+import com.java.g39.data.Manager;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by equation on 9/7/17.
@@ -42,5 +47,16 @@ public class MainPresenter implements MainContract.Presenter {
             default:
                 break;
         }
+    }
+
+    @Override
+    public void clean() {
+        Manager.I.clean().subscribe(new Consumer<Boolean>() {
+            @Override
+            public void accept(Boolean aBoolean) throws Exception {
+                if (aBoolean) Toast.makeText(mMainView.context(), "清空缓存成功", Toast.LENGTH_LONG).show();
+                else Toast.makeText(mMainView.context(), "清空缓存失败", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.java.g39.data.DetailNews;
 import com.java.g39.data.Manager;
 import com.java.g39.data.SimpleNews;
 import com.java.g39.news.newsdetail.NewsDetailActivity;
@@ -60,6 +61,17 @@ public class NewsListPresenter implements NewsListContract.Presenter {
         intent.putExtra(NewsDetailActivity.NEWS_PICTURE_URL, news.picture_url);
         intent.putExtra(NewsDetailActivity.NEWS_IS_FAVORITED, news.is_favorite);
         mView.start(intent, options);
+    }
+
+    @Override
+    public void fetchNewsRead(final int pos, SimpleNews news) {
+        Manager.I.fetchDetailNews(news.news_ID)
+                .subscribe(new Consumer<DetailNews>() {
+                    @Override
+                    public void accept(DetailNews detailNews) throws Exception {
+                        mView.resetItemRead(pos, detailNews.has_read);
+                    }
+                });
     }
 
     private void fetchNews() {

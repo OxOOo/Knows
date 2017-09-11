@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.java.g39.R;
-import com.java.g39.data.Manager;
 import com.java.g39.news.NewsFragment;
 
 import io.reactivex.functions.Consumer;
@@ -93,13 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_clean) {
-            Manager.I.clean().subscribe(new Consumer<Boolean>() {
-                @Override
-                public void accept(Boolean aBoolean) throws Exception {
-                    if (aBoolean) Toast.makeText(MainActivity.this, "清空缓存成功", Toast.LENGTH_LONG).show();
-                    else Toast.makeText(MainActivity.this, "清空缓存失败", Toast.LENGTH_LONG).show();
-                }
-            });
+            mPresenter.clean();
             return true;
         }
 

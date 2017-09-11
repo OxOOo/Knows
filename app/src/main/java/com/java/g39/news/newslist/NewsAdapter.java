@@ -55,12 +55,10 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.notifyItemInserted(pos);
     }
 
-    public void setRead(int position) {
+    public void setRead(int position, boolean has_read) {
         SimpleNews news = getNews(position);
-        if (!news.has_read) {
-            news.has_read = true;
-            mData.set(position, news);
-        }
+        news.has_read = has_read;
+        mData.set(position, news);
     }
 
     public boolean isShowFooter() {
@@ -93,7 +91,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             final ItemViewHolder item = (ItemViewHolder) holder;
             item.mTitle.setText(news.news_Title);
             item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
-            item.mDate.setText(news.news_Time.length() != 14 ? "0000-00-00" : news.news_Time.substring(0, 4) + "-" + news.news_Time.substring(4, 6) + "-" + news.news_Time.substring(6, 8));
+            item.mDate.setText(news.formatTime());
             item.mImage.setImageBitmap(null);
             item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
             // FIXME cancel mImageLoader

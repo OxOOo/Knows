@@ -25,8 +25,12 @@ public class SimpleNews {
 
     public Single<String> single_picture_url; // 解析出的图片链接，已设置subscribeOn(Schedulers.io())，未设置observeOn
     public String picture_url; // 最终显示的图片
-    public boolean has_read; // 是否已读
-    public boolean is_favorite; // 是否已收藏
+    public boolean has_read = false; // 是否已读
+    public boolean is_favorite = false; // 是否已收藏
 
     public boolean from_disk; // 是否是从磁盘上读取的
+
+    public String formatTime() {
+        return news_Time.length() != 14 ? "0000-00-00" : news_Time.substring(0, 4) + "-" + news_Time.substring(4, 6) + "-" + news_Time.substring(6, 8);
+    }
 }

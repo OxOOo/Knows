@@ -30,6 +30,13 @@ public interface NewsListContract {
         void appendNewsList(List<SimpleNews> list);
 
         /**
+         * 重置
+         * @param pos
+         * @param has_read
+         */
+        void resetItemRead(int pos, boolean has_read);
+
+        /**
          * 获取新闻成功
          * @param loadCompleted 是否加载完成
          */
@@ -58,5 +65,11 @@ public interface NewsListContract {
          * @param news 被打开的新闻
          */
         void openNewsDetailUI(SimpleNews news, Bundle options);
+
+        /**
+         * 从数据库载入是否已读
+         * @param news
+         */
+        void fetchNewsRead(int pos, SimpleNews news);
     }
 }

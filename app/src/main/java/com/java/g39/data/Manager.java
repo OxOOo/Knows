@@ -90,15 +90,8 @@ public class Manager {
             t.single_picture_url = Single.fromCallable(new Callable<String>() {
                 @Override
                 public String call() throws Exception {
-                    String picture_url = null;
+                    String picture_url = fs.fetchPictureUrl(t.news_ID);
 
-//                    if (t.news_Pictures.trim().length() > 0) { // 新闻中的图片
-//                        String url = t.news_Pictures.trim().split(";")[0].split(" ")[0];
-//                        if (fs.downloadImage(url) != null) picture_url = url; // 如果第一个链接不可用，则从网络上选取
-//                    }
-                    // if (picture_url == null) { // 磁盘载入
-                        picture_url = fs.fetchPictureUrl(t.news_ID);
-                    // }
                     if (picture_url == null) { // 搜索
                         DetailNews news = fs.fetchDetail(t.news_ID);
                         try {
@@ -193,6 +186,7 @@ public class Manager {
                         .map(new Function<DetailNews, DetailNews>() {
                             @Override
                             public DetailNews apply(@NonNull DetailNews detailNews) throws Exception {
+                                if (detailNews == DetailNews.NULL) return detailNews;
                                 fs.insertDetail(detailNews);
                                 return detailNews;
                             }

@@ -1,5 +1,8 @@
 package com.java.g39.news.newsdetail;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import com.java.g39.data.DetailNews;
 import com.java.g39.data.Manager;
 
@@ -29,7 +32,11 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
                 .subscribe(new Consumer<DetailNews>() {
                     @Override
                     public void accept(DetailNews detailNews) throws Exception {
-                        mView.setNewsDetail(detailNews);
+                        if (detailNews == DetailNews.NULL) {
+                            Toast.makeText(mView.context(), "无法获取新闻详情", Toast.LENGTH_LONG).show();
+                        } else {
+                            mView.setNewsDetail(detailNews);
+                        }
                     }
                 });
     }

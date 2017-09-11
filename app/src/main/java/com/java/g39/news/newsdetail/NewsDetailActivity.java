@@ -126,7 +126,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     public void setNewsDetail(DetailNews news) {
         mNews = news;
         mTag.setText(news.newsClassTag);
-        mDetail.setText((news.news_Author.isEmpty() ? news.news_Source : news.news_Author) + "　" + news.news_Time);
+        mDetail.setText((news.news_Author.isEmpty() ? news.news_Source : news.news_Author) + "　" + news.formatTime());
         String content = news.news_Content.trim();
         mContent.setText(TextUtils.join("\n\n　　", content.split(" 　　")));
         mFab.setClickable(true);

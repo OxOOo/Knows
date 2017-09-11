@@ -67,8 +67,10 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     public void onResume() {
         super.onResume();
         // FIXME notify other view page
+//        if (mLastClickPosition >= 0) // 在离线情况下，点击不代表已读
+//            mAdapter.notifyItemChanged(mLastClickPosition);
         if (mLastClickPosition >= 0)
-            mAdapter.notifyItemChanged(mLastClickPosition);
+            mPresenter.fetchNewsRead(mLastClickPosition, mAdapter.getNews(mLastClickPosition));
     }
 
     @Override
@@ -113,7 +115,6 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         mAdapter.setOnItemClickListener((View itemView, int position) -> {
             SimpleNews news = mAdapter.getNews(position);
             if (!news.has_read) {
-                mAdapter.setRead(position);
                 this.mLastClickPosition = position;
             } else
                 this.mLastClickPosition = -1;
@@ -155,6 +156,12 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void appendNewsList(List<SimpleNews> list) {
         mAdapter.appendData(list);
+    }
+
+    @Override
+    public void resetItemRead(int pos, boolean has_read) {
+        mAdapter.setRead(pos, has_read);
+        mAdapter.notifyItemChanged(pos);
     }
 
     @Override
