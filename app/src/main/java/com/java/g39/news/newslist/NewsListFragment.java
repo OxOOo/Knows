@@ -105,7 +105,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem == mAdapter.getItemCount() - 1
-                        && mAdapter.isShowFooter()) {
+                        && mAdapter.isShowFooter() && !mPresenter.isLoading()) {
                     mPresenter.requireMoreNews();
                 }
             }

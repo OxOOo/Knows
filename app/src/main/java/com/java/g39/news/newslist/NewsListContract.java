@@ -51,6 +51,11 @@ public interface NewsListContract {
     interface Presenter extends BasePresenter {
 
         /**
+         *  是否正在加载
+         */
+        boolean isLoading();
+
+        /**
          * 新闻列表翻到了最底下，需要更多数据
          */
         void requireMoreNews();

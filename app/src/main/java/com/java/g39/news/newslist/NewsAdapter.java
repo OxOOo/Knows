@@ -52,7 +52,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void appendData(List<SimpleNews> data) {
         int pos = mData.size();
         mData.addAll(data);
-        this.notifyItemInserted(pos);
+        this.notifyItemRangeChanged(pos, mData.size());
     }
 
     public void setRead(int position, boolean has_read) {
