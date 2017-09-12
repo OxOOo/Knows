@@ -21,26 +21,67 @@
         android:paddingStart="16dp"
         android:paddingTop="16dp">
 
-        <TextView
-            android:id="@+id/text_tag"
+        <LinearLayout
+            android:id="@+id/layout_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/text_detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textColor="@color/colorDetail"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/text_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_weight="1" />
 
-        <TextView
-            android:id="@+id/text_content"
+            <TextView
+                android:id="@+id/text_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_weight="1"
+                android:textColor="@color/colorDetail"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:lineSpacingMultiplier="1.4"
+                android:textColor="@color/colorTitle"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_error"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingMultiplier="1.4"
-            android:textColor="@color/colorTitle"
-            android:textSize="16sp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="96dp"
+            android:paddingRight="96dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:cropToPadding="false"
+                app:srcCompat="@mipmap/error" />
+
+            <TextView
+                android:id="@+id/text_reload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="~出错了~\n点击重新加载"
+                android:textColor="@drawable/selector_text"
+                android:textSize="16sp" />
+        </LinearLayout>
+
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

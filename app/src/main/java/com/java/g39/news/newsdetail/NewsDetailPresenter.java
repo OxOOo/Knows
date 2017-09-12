@@ -1,14 +1,11 @@
 package com.java.g39.news.newsdetail;
 
 import android.app.Activity;
-import android.widget.Toast;
 
 import com.java.g39.data.DetailNews;
 import com.java.g39.data.Manager;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -23,17 +20,17 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
         this.mNews_ID = news_ID;
         this.mView = view;
         view.setPresenter(this);
+        Manager.I.touchRead(mNews_ID);
     }
 
     @Override
     public void subscribe() {
-        Manager.I.touchRead(mNews_ID);
         Manager.I.fetchDetailNews(mNews_ID)
                 .subscribe(new Consumer<DetailNews>() {
                     @Override
                     public void accept(DetailNews detailNews) throws Exception {
                         if (detailNews == DetailNews.NULL) {
-                            Toast.makeText(mView.context(), "无法获取新闻详情", Toast.LENGTH_LONG).show();
+                            mView.onError();
                         } else {
                             mView.setNewsDetail(detailNews);
                         }
@@ -45,14 +42,14 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
     public void favorite(DetailNews news) {
         news.is_favorite = true;
         Manager.I.insertFavorite(news);
-        Toast.makeText(mView.context(), "已添加收藏", Toast.LENGTH_SHORT).show();
+        mView.onShowToast("已添加收藏");
     }
 
     @Override
     public void unFavorite(DetailNews news) {
         news.is_favorite = false;
         Manager.I.removeFavorite(news.news_ID);
-        Toast.makeText(mView.context(), "已取消收藏", Toast.LENGTH_SHORT).show();
+        mView.onShowToast("已取消收藏");
     }
 
     @Override

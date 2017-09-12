@@ -19,6 +19,17 @@ public interface NewsDetailContract {
          * @param news 新闻
          */
         void setNewsDetail(DetailNews news);
+
+        /**
+         * 弹窗
+         * @param title 标题
+         */
+        void onShowToast(String title);
+
+        /**
+         * 获取新闻详情失败
+         */
+        void onError();
     }
 
     interface Presenter extends BasePresenter {
