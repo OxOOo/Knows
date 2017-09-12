@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- 夜晚颜色 -->
-    <color name="colorPrimary">#a1a2a9</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#272636</color>
+    <color name="colorPrimaryDark">#242333</color>
+    <color name="colorAccent">#31d7d7</color>
 
-    <color name="colorTabSelectedText">#FFFFFF</color>
-    <color name="colorTabText">#CCCCCC</color>
+    <color name="colorTabSelectedText">#000000</color>
+    <color name="colorTabText">#333333</color>
 
-    <color name="colorCard">#EDF1FA</color>
-    <color name="colorCardRead">#FFFFFF</color>
-    <color name="colorSelectorNormal">#00000000</color>
-    <color name="colorSelectorPress">#22000000</color>
+    <color name="colorCard">#2e3045</color>
+    <color name="colorCardRead">#272636</color>
+    <color name="colorSelectorNormal">#FFFFFFFF</color>
+    <color name="colorSelectorPress">#DDFFFFFF</color>
 
-    <color name="colorBackground">#E5E5E5</color>
-    <color name="colorBackgroundLight">#F2F2F2</color>
-    <color name="colorTitle">#333333</color>
-    <color name="colorText">#333333</color>
-    <color name="colorTitleLight">#FFFFFF</color>
-    <color name="colorDetail">#999999</color>
+    <color name="colorBackground">#1A1A1A</color>
+    <color name="colorBackgroundLight">#0D0D0D</color>
+    <color name="colorTitle">#CCCCCC</color>
+    <color name="colorText">#CCCCCC</color>
+    <color name="colorTitleLight">#000000</color>
+    <color name="colorDetail">#777777</color>
 </resources>
