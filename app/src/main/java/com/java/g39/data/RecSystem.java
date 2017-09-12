@@ -22,7 +22,7 @@ public class RecSystem {
     private RecSystem() {
     }
 
-    final double readScore=1.0,favoriteScore=20.0,classScore=500.0;
+    final double readScore=1.0,favoriteScore=20.0,classScore=300.0;
 
     /**
      * 文本向量
@@ -52,9 +52,10 @@ public class RecSystem {
                     vec.put(p.word,0.0);
                 vec.put(p.word,vec.get(p.word)+p.score*weight);
             }
-            if(!vec.containsKey(news.newsClassTag))
-                vec.put(news.newsClassTag,0.0);
-            vec.put(news.newsClassTag,vec.get(news.newsClassTag)+weight*classWeight);
+            String classTag = news.newsClassTag+"_c";
+            if(!vec.containsKey(classTag))
+                vec.put(classTag,0.0);
+            vec.put(classTag,vec.get(classTag)+weight*classWeight);
         }
 
         /**
