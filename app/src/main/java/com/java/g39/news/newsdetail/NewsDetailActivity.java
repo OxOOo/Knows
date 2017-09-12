@@ -8,7 +8,11 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +29,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
+
+import java.util.Map;
 
 public class NewsDetailActivity extends AppCompatActivity implements NewsDetailContract.View {
 
@@ -218,8 +224,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mNews = news;
         mTag.setText(news.newsClassTag);
         mDetail.setText((news.news_Author.isEmpty() ? news.news_Source : news.news_Author) + "　" + news.formatTime());
-        String content = news.news_Content.trim();
-        mContent.setText(TextUtils.join("\n\n　　", content.split(" 　　")));
         mFab.setSelected(news.is_favorite);
         mFavoriteBtn.setSelected(news.is_favorite);
         news.single_picture_url
@@ -230,6 +234,22 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
                         ImageLoader.displayImage(s, mImage);
                     }
                 });
+
+        String content = TextUtils.join("\n\n　　", news.news_Content.trim().split("　　"));
+        mContent.setText(content);
+        mNews.links.observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Map<String, String>>() {
+            @Override
+            public void accept(Map<String, String> links) throws Exception {
+                SpannableString sp = new SpannableString(content);
+                for (Map.Entry<String, String> e : links.entrySet()) {
+                    String word = e.getKey(), url = e.getValue();
+                    int pos = content.indexOf(word);
+                    sp.setSpan(new URLSpan(url), pos, pos + word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    mContent.setText(sp);
+                    mContent.setMovementMethod(LinkMovementMethod.getInstance());
+                }
+            }
+        });
 
         mSpeaker = new Speech(this, mNews.news_Title + "。" + mNews.news_Content, null);
         mSpeaker.setStateChangeListener(() -> {
