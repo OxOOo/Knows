@@ -12,6 +12,7 @@ import com.java.g39.news.newsdetail.NewsDetailActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
@@ -21,14 +22,18 @@ import io.reactivex.functions.Consumer;
 
 public class NewsListPresenter implements NewsListContract.Presenter {
 
+    private final int PAGE_SIZE = 20;
+
     private NewsListContract.View mView;
     private int mCategory;
+    private String mKeyword;
     private int mPageNo = 1;
     private boolean mLoading = false;
 
-    public NewsListPresenter(NewsListContract.View view, int category) {
+    public NewsListPresenter(NewsListContract.View view, int category, String keyword) {
         this.mView = view;
         this.mCategory = category;
+        this.mKeyword = keyword;
 
         view.setPresenter(this);
     }
@@ -36,6 +41,12 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     @Override
     public boolean isLoading() {
         return mLoading;
+    }
+
+    @Override
+    public void setKeyword(String keyword) {
+        mKeyword = keyword;
+        refreshNews();
     }
 
     @Override
@@ -50,7 +61,7 @@ public class NewsListPresenter implements NewsListContract.Presenter {
 
     @Override
     public void requireMoreNews() {
-        mPageNo ++;
+        mPageNo++;
         fetchNews();
     }
 
@@ -85,18 +96,21 @@ public class NewsListPresenter implements NewsListContract.Presenter {
         mLoading = true;
         final long start = System.currentTimeMillis();
         if (mCategory > 0) {
-            Manager.I.fetchSimpleNews(mPageNo, 20, mCategory)
-                    .subscribe(new Consumer<List<SimpleNews>>() {
-                        @Override
-                        public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                            System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size());
-                            mLoading = false;
-                            mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
-                            // TODO onError
-                            if (mPageNo == 1) mView.setNewsList(simpleNewses);
-                            else mView.appendNewsList(simpleNewses);
-                        }
-                    });
+            Single<List<SimpleNews>> single = mKeyword.trim().length() > 0 ?
+                    Manager.I.searchNews(mKeyword, mPageNo, PAGE_SIZE, mCategory)
+                    : Manager.I.fetchSimpleNews(mPageNo, PAGE_SIZE, mCategory);
+
+            single.subscribe(new Consumer<List<SimpleNews>>() {
+                @Override
+                public void accept(List<SimpleNews> simpleNewses) throws Exception {
+                    System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size());
+                    mLoading = false;
+                    mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
+                    // TODO onError
+                    if (mPageNo == 1) mView.setNewsList(simpleNewses);
+                    else mView.appendNewsList(simpleNewses);
+                }
+            });
         } else {
             Manager.I.recommend()
                     .subscribe(new Consumer<List<SimpleNews>>() {
