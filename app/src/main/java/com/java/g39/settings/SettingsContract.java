@@ -21,6 +21,9 @@ public interface SettingsContract {
 
         void showTextMode(boolean is_text_mode);
 
+        void setAllCategories(List<Config.Category> list);
+
+        void setAvailableCategories(List<Config.Category> list);
     }
 
     interface Presenter extends BasePresenter {
@@ -28,6 +31,8 @@ public interface SettingsContract {
         void switchNightMode();
 
         void switchTextMode();
+
+        void switchAvailableCategory(int idx);
 
         /**
          * 清除缓存

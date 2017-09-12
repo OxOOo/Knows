@@ -1,5 +1,6 @@
 package com.java.g39.settings;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.java.g39.data.Config;
@@ -27,6 +28,8 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     public void subscribe() {
         mView.showNightMode(mConfig.isNightMode());
         mView.showTextMode(mConfig.isTextMode());
+        mView.setAllCategories(mConfig.allCategories());
+        mView.setAvailableCategories(mConfig.availableCategories());
     }
 
     @Override
@@ -37,13 +40,16 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     @Override
     public void switchNightMode() {
         mConfig.setNightMode(!mConfig.isNightMode());
-        mView.showNightMode(mConfig.isNightMode());
     }
 
     @Override
     public void switchTextMode() {
         mConfig.setTextMode(!mConfig.isTextMode());
-        mView.showTextMode(mConfig.isTextMode());
+    }
+
+    @Override
+    public void switchAvailableCategory(int idx) {
+        mConfig.switchAvailable(idx);
     }
 
     @Override

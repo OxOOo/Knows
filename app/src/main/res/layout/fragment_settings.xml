@@ -23,6 +23,14 @@
             android:layout_weight="1"
             android:text="文字模式" />
 
+        <GridLayout
+            android:id="@+id/categoriesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+        </GridLayout>
+
         <Button
             android:id="@+id/cleanBtn"
             android:layout_width="match_parent"
