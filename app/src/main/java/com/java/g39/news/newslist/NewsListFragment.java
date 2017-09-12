@@ -60,7 +60,25 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLastClickPosition = -1;
         mCategory = getArguments().getInt("category");
+
+        mAdapter = new NewsAdapter(getContext());
+        mAdapter.setOnItemClickListener((View itemView, int position) -> {
+            SimpleNews news = mAdapter.getNews(position);
+            if (!news.has_read) {
+                this.mLastClickPosition = position;
+            } else
+                this.mLastClickPosition = -1;
+            View transitionView = itemView.findViewById(R.id.image_view);
+
+            ActivityOptionsCompat options =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                            transitionView, getString(R.string.transition_news_img));
+
+            this.mPresenter.openNewsDetailUI(news, options.toBundle());
+        });
+
         mPresenter = new NewsListPresenter(this, mCategory);
         mPresenter.subscribe();
     }
@@ -88,12 +106,12 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
             mPresenter.refreshNews();
         });
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
         mLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private int lastVisibleItem;
 
@@ -112,23 +130,6 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
                 }
             }
         });
-
-        mAdapter = new NewsAdapter(getContext());
-        mAdapter.setOnItemClickListener((View itemView, int position) -> {
-            SimpleNews news = mAdapter.getNews(position);
-            if (!news.has_read) {
-                this.mLastClickPosition = position;
-            } else
-                this.mLastClickPosition = -1;
-            View transitionView = itemView.findViewById(R.id.image_view);
-
-            ActivityOptionsCompat options =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                            transitionView, getString(R.string.transition_news_img));
-
-            this.mPresenter.openNewsDetailUI(news, options.toBundle());
-        });
-        mRecyclerView.setAdapter(mAdapter);
 
         return view;
     }
