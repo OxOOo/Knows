@@ -29,6 +29,14 @@ public class ImageLoader {
         mImageLoader.displayImage(imageUrl, imageView, mDisplayImageOptions);
     }
 
+    public static void clearDiskCache() {
+        mImageLoader.clearDiskCache();
+    }
+
+    public static void cancelDisplayTask(ImageView v) {
+        mImageLoader.cancelDisplayTask(v);
+    }
+
     private static com.nostra13.universalimageloader.core.ImageLoader
             mImageLoader = com.nostra13.universalimageloader.core.ImageLoader.getInstance();
     private static DisplayImageOptions mDisplayImageOptions;

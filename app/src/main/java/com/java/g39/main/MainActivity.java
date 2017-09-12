@@ -15,10 +15,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.java.g39.R;
 import com.java.g39.news.NewsFragment;
 import com.java.g39.favorites.FavoritesFragment;
+import com.java.g39.settings.SettingsFragment;
 
 /**
  * Created by equation on 9/7/17.
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_clean) {
-            mPresenter.clean();
+            Toast.makeText(this, "功能已被移至“设置”中", Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -141,7 +143,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void switchToSettings() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Fragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, SettingsFragment.newInstance()).commit();
         this.mToolbar.setTitle(R.string.nav_settings_title);
     }
 

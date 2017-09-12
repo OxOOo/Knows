@@ -62,115 +62,13 @@ public class Manager {
     }
 
     private FS fs;
+    private Config config;
     private FlowableTransformer<SimpleNews, SimpleNews> liftAllSimple;
     private FlowableTransformer<DetailNews, DetailNews> liftAllDetail;
 
-    private class FetchRead<T extends SimpleNews> implements Function<T, T> {
-        @Override
-        public T apply(@NonNull T t) throws Exception {
-            if (t == DetailNews.NULL) return t;
-
-            t.has_read = fs.hasRead(t.news_ID);
-            return t;
-        }
-    }
-    private class FetchFavorite<T extends SimpleNews> implements Function<T, T> {
-        @Override
-        public T apply(@NonNull T t) throws Exception {
-            if (t == DetailNews.NULL) return t;
-
-            t.is_favorite = fs.isFavorite(t.news_ID);
-            return t;
-        }
-    }
-    private class FetchPicture<T extends SimpleNews> implements Function<T, T> {
-        @Override
-        public T apply(@NonNull final T t) throws Exception {
-            if (t == DetailNews.NULL) return t;
-
-            t.single_picture_url = Single.fromCallable(new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    String picture_url = fs.fetchPictureUrl(t.news_ID);
-
-                    if (picture_url == null) { // 搜索
-                        DetailNews news = fs.fetchDetail(t.news_ID);
-                        try {
-                            if (news == null) news = API.GetDetailNews(t.news_ID);
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (news != null) {
-                            fs.insertDetail(news);
-
-                            DetailNews.WordWithScore key = null;
-                            for(DetailNews.WordWithScore k : news.Keywords) {
-                                if (key == null || key.score < k.score) key = k;
-                            }
-                            try {
-                                if (key != null) picture_url = ImageSearch.search(key.word);
-                            } catch(Exception e) {
-                                Log.d("DEBUG", "ERROR ON ImageSearch");
-                            }
-                        }
-                    }
-
-                    if (picture_url != null) {
-                        fs.insertPictureUrl(t.news_ID, picture_url);
-                    } else Log.e("ERROR", t.news_ID);
-
-                    if (picture_url == null) picture_url = "";
-                    t.picture_url = picture_url;
-                    return picture_url;
-                }
-            }).subscribeOn(Schedulers.io());
-            return t;
-        }
-    }
-    private class FetchLinks implements Function<DetailNews, DetailNews> {
-
-        @Override
-        public DetailNews apply(@NonNull final DetailNews detailNews) throws Exception {
-            if (detailNews == DetailNews.NULL) return detailNews;
-
-            detailNews.links = Flowable.just(0)
-                    .flatMap(new Function<Integer, Publisher<Map.Entry<String,String>>>() {
-                        @Override
-                        public Publisher<Map.Entry<String,String>> apply(@NonNull Integer integer) throws Exception {
-                            return Flowable.fromIterable(detailNews.getKeywordHyperlink().entrySet());
-                        }
-                    })
-                    .filter(new Predicate<Map.Entry<String, String>>() {
-                        @Override
-                        public boolean test(@NonNull Map.Entry<String, String> stringStringEntry) throws Exception {
-                            try {
-                                String link = stringStringEntry.getValue().trim();
-                                Boolean value = fs.getLinkValue(link);
-                                if (value == null) value = API.TestBaikeConnection(link);
-                                if (value != null) fs.setLinkValue(link, value);
-                                return value == null ? false : value;
-                            } catch(Exception e) {
-                                return false;
-                            }
-                        }
-                    })
-                    .toList()
-                    .map(new Function<List<Map.Entry<String, String>>, Map<String, String>>() {
-                        @Override
-                        public Map<String, String> apply(@NonNull List<Map.Entry<String, String>> entries) throws Exception {
-                            Map<String, String> rst = new HashMap<String, String>();
-                            for(Map.Entry<String, String> e: entries)
-                                rst.put(e.getKey(), e.getValue());
-                            return rst;
-                        }
-                    }).subscribeOn(Schedulers.io());
-
-            return detailNews;
-        }
-    }
-
     private Manager(final Context context) throws IOException {
         this.fs = new FS(context);
+        this.config = new Config(context);
         this.liftAllSimple = new FlowableTransformer<SimpleNews, SimpleNews>() {
             @Override
             public Publisher<SimpleNews> apply(@NonNull Flowable<SimpleNews> upstream) {
@@ -198,6 +96,10 @@ public class Manager {
                         .map(new FetchLinks());
             }
         };
+    }
+
+    public Config getConfig() {
+        return config;
     }
 
     /**
@@ -417,5 +319,112 @@ public class Manager {
      */
     public static void shareNews(Activity activity, String title, String text, String url, String imgUrl) {
         API.ShareNews(activity, title, text, url, imgUrl);
+    }
+
+    // ========================================================
+    private class FetchRead<T extends SimpleNews> implements Function<T, T> {
+        @Override
+        public T apply(@NonNull T t) throws Exception {
+            if (t == DetailNews.NULL) return t;
+
+            t.has_read = fs.hasRead(t.news_ID);
+            return t;
+        }
+    }
+    private class FetchFavorite<T extends SimpleNews> implements Function<T, T> {
+        @Override
+        public T apply(@NonNull T t) throws Exception {
+            if (t == DetailNews.NULL) return t;
+
+            t.is_favorite = fs.isFavorite(t.news_ID);
+            return t;
+        }
+    }
+    private class FetchPicture<T extends SimpleNews> implements Function<T, T> {
+        @Override
+        public T apply(@NonNull final T t) throws Exception {
+            if (t == DetailNews.NULL) return t;
+
+            t.single_picture_url = Single.fromCallable(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    if (config.isTextMode()) return ""; // 文字模式
+
+                    String picture_url = fs.fetchPictureUrl(t.news_ID);
+
+                    if (picture_url == null) { // 搜索
+                        DetailNews news = fs.fetchDetail(t.news_ID);
+                        try {
+                            if (news == null) news = API.GetDetailNews(t.news_ID);
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (news != null) {
+                            fs.insertDetail(news);
+
+                            DetailNews.WordWithScore key = null;
+                            for(DetailNews.WordWithScore k : news.Keywords) {
+                                if (key == null || key.score < k.score) key = k;
+                            }
+                            try {
+                                if (key != null) picture_url = ImageSearch.search(key.word);
+                            } catch(Exception e) {
+                                Log.d("DEBUG", "ERROR ON ImageSearch");
+                            }
+                        }
+                    }
+
+                    if (picture_url != null) {
+                        fs.insertPictureUrl(t.news_ID, picture_url);
+                    } else Log.e("ERROR", t.news_ID);
+
+                    if (picture_url == null) picture_url = "";
+                    t.picture_url = picture_url;
+                    return picture_url;
+                }
+            }).subscribeOn(Schedulers.io());
+            return t;
+        }
+    }
+    private class FetchLinks implements Function<DetailNews, DetailNews> {
+
+        @Override
+        public DetailNews apply(@NonNull final DetailNews detailNews) throws Exception {
+            if (detailNews == DetailNews.NULL) return detailNews;
+
+            detailNews.links = Flowable.just(0)
+                    .flatMap(new Function<Integer, Publisher<Map.Entry<String,String>>>() {
+                        @Override
+                        public Publisher<Map.Entry<String,String>> apply(@NonNull Integer integer) throws Exception {
+                            return Flowable.fromIterable(detailNews.getKeywordHyperlink().entrySet());
+                        }
+                    })
+                    .filter(new Predicate<Map.Entry<String, String>>() {
+                        @Override
+                        public boolean test(@NonNull Map.Entry<String, String> stringStringEntry) throws Exception {
+                            try {
+                                String link = stringStringEntry.getValue().trim();
+                                Boolean value = fs.getLinkValue(link);
+                                if (value == null) value = API.TestBaikeConnection(link);
+                                if (value != null) fs.setLinkValue(link, value);
+                                return value == null ? false : value;
+                            } catch(Exception e) {
+                                return false;
+                            }
+                        }
+                    })
+                    .toList()
+                    .map(new Function<List<Map.Entry<String, String>>, Map<String, String>>() {
+                        @Override
+                        public Map<String, String> apply(@NonNull List<Map.Entry<String, String>> entries) throws Exception {
+                            Map<String, String> rst = new HashMap<String, String>();
+                            for(Map.Entry<String, String> e: entries)
+                                rst.put(e.getKey(), e.getValue());
+                            return rst;
+                        }
+                    }).subscribeOn(Schedulers.io());
+
+            return detailNews;
+        }
     }
 }
