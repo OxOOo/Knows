@@ -24,12 +24,6 @@ public interface NewsDetailContract {
     interface Presenter extends BasePresenter {
 
         /**
-         * 是否夜间模式
-         * @return
-         */
-        boolean isNightMode();
-
-        /**
          * 收藏
          * @param news 新闻
          */

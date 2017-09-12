@@ -33,6 +33,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
 
     private NewsListContract.Presenter mPresenter;
     private int mCategory;
+    private String mKeyword;
 
     private int mLastClickPosition = -1;
     private SwipeRefreshLayout mSwipeRefreshWidget;
@@ -44,6 +45,14 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         // Required empty public constructor
     }
 
+    public void setKeyword(String keyword) {
+        mPresenter.setKeyword(keyword);
+    }
+
+    public String getKeyword() {
+        return mKeyword;
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -51,10 +60,11 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
      * @param category 新闻分类 code
      * @return A new instance of fragment NewsListFragment.
      */
-    public static NewsListFragment newInstance(int category) {
+    public static NewsListFragment newInstance(int category, String keyword) {
         Bundle args = new Bundle();
         NewsListFragment fragment = new NewsListFragment();
         args.putInt("category", category);
+        args.putString("keyword", keyword);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,6 +74,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         super.onCreate(savedInstanceState);
         mLastClickPosition = -1;
         mCategory = getArguments().getInt("category");
+        mKeyword = getArguments().getString("keyword");
 
         mAdapter = new NewsAdapter(getContext());
         mAdapter.setOnItemClickListener((View itemView, int position) -> {
@@ -81,7 +92,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
             this.mPresenter.openNewsDetailUI(news, options.toBundle());
         });
 
-        mPresenter = new NewsListPresenter(this, mCategory);
+        mPresenter = new NewsListPresenter(this, mCategory, mKeyword);
         mPresenter.subscribe();
     }
 

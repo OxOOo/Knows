@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="?attr/colorBackgroundLight">
+        android:background="@color/colorBackgroundLight">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -85,7 +85,7 @@
                 android:drawableTop="@drawable/selector_favorite"
                 android:gravity="center"
                 android:text="@string/action_favorite"
-                android:textColor="?attr/colorDetail" />
+                android:textColor="@color/colorDetail" />
 
             <Space
                 android:layout_width="0dp"
@@ -101,7 +101,7 @@
                 android:drawableTop="@drawable/selector_favorite"
                 android:gravity="center"
                 android:text="@string/action_speech"
-                android:textColor="?attr/colorDetail" />
+                android:textColor="@color/colorDetail" />
 
             <Space
                 android:layout_width="0dp"
@@ -117,7 +117,7 @@
                 android:drawableTop="?attr/actionModeShareDrawable"
                 android:gravity="center"
                 android:text="@string/action_share"
-                android:textColor="?attr/colorDetail" />
+                android:textColor="@color/colorDetail" />
 
             <Space
                 android:layout_width="0dp"
@@ -130,7 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_gravity="top"
-            android:background="?attr/colorBackground" />
+            android:background="@color/colorBackground" />
 
     </FrameLayout>
 

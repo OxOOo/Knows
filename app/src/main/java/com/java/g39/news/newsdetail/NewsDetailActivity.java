@@ -84,11 +84,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         boolean news_is_favorited = getIntent().getBooleanExtra(NEWS_IS_FAVORITED, false);
 
         mPresenter = new NewsDetailPresenter(this, news_ID);
-        if (mPresenter.isNightMode()) {
-            setTheme(R.style.AppTheme_Night);
-        } else {
-            setTheme(R.style.AppTheme_Day);
-        }
 
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

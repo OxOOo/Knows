@@ -77,5 +77,11 @@ public interface NewsListContract {
          * @param news
          */
         void fetchNewsRead(int pos, SimpleNews news);
+
+        /**
+         * 设置搜索关键字
+         * @param keyword 关键字
+         */
+        void setKeyword(String keyword);
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 白天颜色 -->
-    <color name="colorPrimary">#3F51B5</color>
+    <!-- 夜晚颜色 -->
+    <color name="colorPrimary">#a1a2a9</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
@@ -19,6 +19,4 @@
     <color name="colorText">#333333</color>
     <color name="colorTitleLight">#FFFFFF</color>
     <color name="colorDetail">#999999</color>
-
-    <color name="black_bg">#d0000000</color>
 </resources>

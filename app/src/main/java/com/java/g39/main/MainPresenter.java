@@ -12,6 +12,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     private MainContract.View mMainView;
     private boolean mRestartByMode;
+    private int mCurrentNavigation = R.id.nav_news;
 
     public MainPresenter(MainContract.View view, boolean restartByMode) {
         this.mMainView = view;
@@ -19,10 +20,19 @@ public class MainPresenter implements MainContract.Presenter {
         view.setPresenter(this);
     }
 
+    public int getCurrentNavigation() {
+        return mCurrentNavigation;
+    }
+
     @Override
     public void subscribe() {
-        if (mRestartByMode) mMainView.switchToSettings();
-        else mMainView.switchToNews();
+        if (mRestartByMode) {
+            mCurrentNavigation = R.id.nav_settings;
+            mMainView.switchToSettings();
+        } else {
+            mCurrentNavigation = R.id.nav_news;
+            mMainView.switchToNews();
+        }
     }
 
     @Override
@@ -41,6 +51,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void switchNavigation(int id) {
+        mCurrentNavigation = id;
         switch (id) {
             case R.id.nav_news:
                 mMainView.switchToNews();

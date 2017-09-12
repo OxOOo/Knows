@@ -30,10 +30,16 @@ public class NewsFragment extends Fragment {
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
+    private String mKeyword = "";
     private MyPagerAdapter mPagerAdapter;
 
     public NewsFragment() {
         // Required empty public constructor
+    }
+
+    public void setKeyword(String keyword) {
+        mKeyword = keyword;
+        mPagerAdapter.setKeyword(keyword);
     }
 
     /**
@@ -50,7 +56,7 @@ public class NewsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager(), Constant.CATEGORY_COUNT);
+        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager(), Constant.CATEGORY_COUNT, mKeyword);
     }
 
     @Override
@@ -75,19 +81,28 @@ public class NewsFragment extends Fragment {
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
 
-        private List<Fragment> mFragments = new ArrayList<Fragment>();
+        private List<NewsListFragment> mFragments = new ArrayList<NewsListFragment>();
+        private String mKeyword;
 
-        public MyPagerAdapter(FragmentManager fm, int size) {
+        public MyPagerAdapter(FragmentManager fm, int size, String keyword) {
             super(fm);
+            mKeyword = keyword;
             for (int i = 0; i < size; i++)
                 mFragments.add(null);
+        }
+
+        public void setKeyword(String keyword) {
+            mKeyword = keyword;
+            for (NewsListFragment f : mFragments)
+                if (f != null) f.setKeyword(keyword);
         }
 
         @Override
         public Fragment getItem(int position) {
             try {
-                if (mFragments.get(position) == null)
-                    mFragments.set(position, NewsListFragment.newInstance(position));
+                System.out.println(position);
+                if (mFragments.get(position) == null || !mKeyword.equals(mFragments.get(position).getKeyword()))
+                    mFragments.set(position, NewsListFragment.newInstance(position, mKeyword));
                 return mFragments.get(position);
             } catch (Exception e) {
                 return new Fragment();

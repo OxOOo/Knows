@@ -49,5 +49,11 @@ public interface MainContract {
          * @param id 页面 ID
          */
         void switchNavigation(int id);
+
+        /**
+         * 获得当前页面
+         * @return 页面 ID
+         */
+        int getCurrentNavigation();
     }
 }
