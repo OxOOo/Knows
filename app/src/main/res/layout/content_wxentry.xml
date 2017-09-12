@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.java.g39.main.wxapi.WXEntryActivit"
+    tools:context="com.java.g39.main.wxapi.WXEntryActivity"
     tools:showIn="@layout/activity_wxentry">
 
 </android.support.constraint.ConstraintLayout>
