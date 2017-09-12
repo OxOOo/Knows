@@ -1,22 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <attr name="colorPrimary" format="color" />
+    <attr name="colorPrimaryDark" format="color" />
+    <attr name="colorAccent" format="color" />
 
-    <color name="colorTabSelectedText">#FFFFFF</color>
-    <color name="colorTabText">#CCCCCC</color>
+    <attr name="colorTabSelectedText" format="color" />
+    <attr name="colorTabText" format="color" />
 
-    <color name="colorCard">#EDF1FA</color>
-    <color name="colorCardRead">#FFFFFF</color>
-    <color name="colorSelectorNormal">#00000000</color>
-    <color name="colorSelectorPress">#22000000</color>
+    <attr name="colorCard" format="color" />
+    <attr name="colorCardRead" format="color" />
+    <attr name="colorSelectorNormal" format="color" />
+    <attr name="colorSelectorPress" format="color" />
 
-    <color name="colorBackground">#E5E5E5</color>
-    <color name="colorBackgroundLight">#F2F2F2</color>
-    <color name="colorTitle">#333333</color>
-    <color name="colorTitleLight">#FFFFFF</color>
-    <color name="colorDetail">#999999</color>
+    <attr name="colorBackground" format="color" />
+    <attr name="colorBackgroundLight" format="color" />
+    <attr name="colorTitle" format="color" />
+    <attr name="colorTitleLight" format="color" />
+    <attr name="colorDetail" format="color" />
+
+    <!-- 白天颜色 -->
+    <color name="colorPrimaryDay">#3F51B5</color>
+    <color name="colorPrimaryDarkDay">#303F9F</color>
+    <color name="colorAccentDay">#FF4081</color>
+
+    <color name="colorTabSelectedTextDay">#FFFFFF</color>
+    <color name="colorTabTextDay">#CCCCCC</color>
+
+    <color name="colorCardDay">#EDF1FA</color>
+    <color name="colorCardReadDay">#FFFFFF</color>
+    <color name="colorSelectorNormalDay">#00000000</color>
+    <color name="colorSelectorPressDay">#22000000</color>
+
+    <color name="colorBackgroundDay">#E5E5E5</color>
+    <color name="colorBackgroundLightDay">#F2F2F2</color>
+    <color name="colorTitleDay">#333333</color>
+    <color name="colorTitleLightDay">#FFFFFF</color>
+    <color name="colorDetailDay">#999999</color>
+
+    <!-- 夜晚颜色 -->
+    <color name="colorPrimaryNight">#a1a2a9</color>
+    <color name="colorPrimaryDarkNight">#303F9F</color>
+    <color name="colorAccentNight">#FF4081</color>
+
+    <color name="colorTabSelectedTextNight">#FFFFFF</color>
+    <color name="colorTabTextNight">#CCCCCC</color>
+
+    <color name="colorCardNight">#EDF1FA</color>
+    <color name="colorCardReadNight">#FFFFFF</color>
+    <color name="colorSelectorNormalNight">#00000000</color>
+    <color name="colorSelectorPressNight">#22000000</color>
+
+    <color name="colorBackgroundNight">#E5E5E5</color>
+    <color name="colorBackgroundLightNight">#F2F2F2</color>
+    <color name="colorTitleNight">#333333</color>
+    <color name="colorTitleLightNight">#FFFFFF</color>
+    <color name="colorDetailNight">#999999</color>
 
     <color name="black_bg">#d0000000</color>
 </resources>

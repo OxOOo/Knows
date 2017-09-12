@@ -77,6 +77,19 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String news_ID = getIntent().getStringExtra(NEWS_ID);
+        String news_Title = getIntent().getStringExtra(NEWS_TITLE);
+        String news_picture_url = getIntent().getStringExtra(NEWS_PICTURE_URL);
+        boolean news_is_favorited = getIntent().getBooleanExtra(NEWS_IS_FAVORITED, false);
+
+        mPresenter = new NewsDetailPresenter(this, news_ID);
+        if (mPresenter.isNightMode()) {
+            setTheme(R.style.AppTheme_Night);
+        } else {
+            setTheme(R.style.AppTheme_Day);
+        }
+
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,11 +126,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mSpeechBtn.setOnClickListener((View view) -> onSpeech());
         mShareBtn.setOnClickListener((View view) -> onShare());
 
-        String news_ID = getIntent().getStringExtra(NEWS_ID);
-        String news_Title = getIntent().getStringExtra(NEWS_TITLE);
-        String news_picture_url = getIntent().getStringExtra(NEWS_PICTURE_URL);
-        boolean news_is_favorited = getIntent().getBooleanExtra(NEWS_IS_FAVORITED, false);
-
         CollapsingToolbarLayout mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         mCollapsingToolbarLayout.setTitle(news_Title);
 
@@ -131,8 +139,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         if (news_picture_url != null) {
             ImageLoader.displayImage(news_picture_url, mImage);
         }
-
-        mPresenter = new NewsDetailPresenter(this, news_ID);
     }
 
     @Override

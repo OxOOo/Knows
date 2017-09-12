@@ -8,11 +8,11 @@
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="?attr/colorPrimary"
         app:tabIndicatorColor="@android:color/white"
         app:tabMode="scrollable"
-        app:tabSelectedTextColor="@color/colorTabSelectedText"
-        app:tabTextColor="@color/colorTabText" />
+        app:tabSelectedTextColor="?attr/colorTabSelectedText"
+        app:tabTextColor="?attr/colorTabText" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"

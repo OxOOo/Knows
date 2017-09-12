@@ -1,8 +1,10 @@
 package com.java.g39.news.newslist;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,6 +93,12 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        TypedValue colorCardRead = new TypedValue();// 已读颜色
+        TypedValue colorCard = new TypedValue();// 未读颜色
+        Resources.Theme theme = mContext.getTheme();
+        theme.resolveAttribute(R.attr.colorCardRead, colorCardRead, true);
+        theme.resolveAttribute(R.attr.colorCard, colorCard, true);
+
         if (holder instanceof ItemViewHolder) {
             SimpleNews news = mData.get(position);
             final ItemViewHolder item = (ItemViewHolder) holder;
@@ -98,7 +106,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             item.mAuthor.setText(news.news_Author.isEmpty() ? news.news_Source : news.news_Author);
             item.mDate.setText(news.formatTime());
             item.mImage.setImageBitmap(null);
-            item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
+            item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? colorCardRead.resourceId : colorCard.resourceId));
             // FIXME cancel mImageLoader
             news.single_picture_url
                     .observeOn(AndroidSchedulers.mainThread())

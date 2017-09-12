@@ -3,16 +3,52 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
 
         <item name="android:windowContentTransitions">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <!-- 白天主题 -->
+    <style name="AppTheme.Day">
+        <item name="colorPrimary">@color/colorPrimaryDay</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkDay</item>
+        <item name="colorAccent">@color/colorAccentDay</item>
+
+        <item name="colorTabSelectedText">@color/colorTabSelectedTextDay</item>
+        <item name="colorTabText">@color/colorTabTextDay</item>
+
+        <item name="colorCard">@color/colorCardDay</item>
+        <item name="colorCardRead">@color/colorCardReadDay</item>
+        <item name="colorSelectorNormal">@color/colorSelectorNormalDay</item>
+        <item name="colorSelectorPress">@color/colorSelectorPressDay</item>
+
+        <item name="colorBackground">@color/colorBackgroundDay</item>
+        <item name="colorBackgroundLight">@color/colorBackgroundLightDay</item>
+        <item name="colorTitle">@color/colorTitleDay</item>
+        <item name="colorTitleLight">@color/colorTitleLightDay</item>
+        <item name="colorDetail">@color/colorDetailDay</item>
+    </style>
+
+    <!-- 夜间主题 -->
+    <style name="AppTheme.Night">
+        <item name="colorPrimary">@color/colorPrimaryNight</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkNight</item>
+        <item name="colorAccent">@color/colorAccentNight</item>
+
+        <item name="colorTabSelectedText">@color/colorTabSelectedTextNight</item>
+        <item name="colorTabText">@color/colorTabTextNight</item>
+
+        <item name="colorCard">@color/colorCardNight</item>
+        <item name="colorCardRead">@color/colorCardReadNight</item>
+        <item name="colorSelectorNormal">@color/colorSelectorNormalNight</item>
+        <item name="colorSelectorPress">@color/colorSelectorPressNight</item>
+
+        <item name="colorBackground">@color/colorBackgroundNight</item>
+        <item name="colorBackgroundLight">@color/colorBackgroundLightNight</item>
+        <item name="colorTitle">@color/colorTitleNight</item>
+        <item name="colorTitleLight">@color/colorTitleLightNight</item>
+        <item name="colorDetail">@color/colorDetailNight</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

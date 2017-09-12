@@ -43,7 +43,7 @@
                 android:gravity="center_vertical"
                 android:lineSpacingMultiplier="1.2"
                 android:lines="2"
-                android:textColor="@color/colorTitle"
+                android:textColor="?attr/colorTitle"
                 android:textSize="16dp" />
 
             <LinearLayout
@@ -58,7 +58,7 @@
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/colorDetail"
+                    android:textColor="?attr/colorDetail"
                     android:textSize="12dp" />
 
                 <TextView
@@ -67,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="right|end"
                     android:maxLines="1"
-                    android:textColor="@color/colorDetail"
+                    android:textColor="?attr/colorDetail"
                     android:textSize="12sp" />
 
             </LinearLayout>

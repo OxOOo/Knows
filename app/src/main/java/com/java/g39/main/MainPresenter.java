@@ -1,6 +1,8 @@
 package com.java.g39.main;
 
 import com.java.g39.R;
+import com.java.g39.data.Config;
+import com.java.g39.data.Manager;
 
 /**
  * Created by equation on 9/7/17.
@@ -9,19 +11,32 @@ import com.java.g39.R;
 public class MainPresenter implements MainContract.Presenter {
 
     private MainContract.View mMainView;
+    private boolean mRestartByMode;
 
-    public MainPresenter(MainContract.View view) {
+    public MainPresenter(MainContract.View view, boolean restartByMode) {
         this.mMainView = view;
+        this.mRestartByMode = restartByMode;
         view.setPresenter(this);
     }
 
     @Override
     public void subscribe() {
-        mMainView.switchToNews();
+        if (mRestartByMode) mMainView.switchToSettings();
+        else mMainView.switchToNews();
     }
 
     @Override
     public void unsubscribe() {
+    }
+
+    @Override
+    public boolean isNightMode() {
+        return Manager.I.getConfig().isNightMode();
+    }
+
+    @Override
+    public void setConfigNightModeChangeListener(Config.NightModeChangeListener listener) {
+        Manager.I.getConfig().setNightModeChangeListener(listener);
     }
 
     @Override

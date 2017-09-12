@@ -37,13 +37,13 @@
         <activity
             android:name=".main.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Day" />
 
         <activity
             android:name=".news.newsdetail.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Day" />
 
         <!-- 分享相关设置 -->
         <meta-data

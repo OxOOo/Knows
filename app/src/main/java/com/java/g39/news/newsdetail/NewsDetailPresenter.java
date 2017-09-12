@@ -42,6 +42,11 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
     }
 
     @Override
+    public boolean isNightMode() {
+        return Manager.I.getConfig().isNightMode();
+    }
+
+    @Override
     public void favorite(DetailNews news) {
         news.is_favorite = true;
         Manager.I.insertFavorite(news);

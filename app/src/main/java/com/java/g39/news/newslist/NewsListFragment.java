@@ -2,9 +2,11 @@ package com.java.g39.news.newslist;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,11 +98,15 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        TypedValue colorPrimary = new TypedValue();
+        Resources.Theme theme = getContext().getTheme();
+        theme.resolveAttribute(R.attr.colorPrimary, colorPrimary, true);
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_list, container, false);
 
         mSwipeRefreshWidget = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_widget);
-        mSwipeRefreshWidget.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        mSwipeRefreshWidget.setColorSchemeColors(getResources().getColor(colorPrimary.resourceId));
         mSwipeRefreshWidget.setOnRefreshListener(() -> {
             mSwipeRefreshWidget.setRefreshing(true);
             mPresenter.refreshNews();

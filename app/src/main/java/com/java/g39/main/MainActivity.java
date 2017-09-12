@@ -29,6 +29,8 @@ import com.java.g39.settings.SettingsFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainContract.View {
 
+    private static final String RESTART_BY_MODE = "RESTART_BY_MODE";
+
     private Toolbar mToolbar;
     private MainContract.Presenter mPresenter;
     private Fragment mNews, mFavorites, mSettings, mAbout;
@@ -36,6 +38,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPresenter = new MainPresenter(this, getIntent().getBooleanExtra(RESTART_BY_MODE, false));
+
+        if (mPresenter.isNightMode()) {
+            setTheme(R.style.AppTheme_Night);
+        } else {
+            setTheme(R.style.AppTheme_Day);
+        }
+        mPresenter.setConfigNightModeChangeListener(() -> { // 白天/夜晚主题切换
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            intent.putExtra(RESTART_BY_MODE, true);
+            MainActivity.this.startActivity(intent);
+            overridePendingTransition(R.anim.in_anim,R.anim.out_anim);
+            MainActivity.this.finish();
+        });
+
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -58,7 +75,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mPresenter = new MainPresenter(this);
         mPresenter.subscribe();
     }
 

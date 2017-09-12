@@ -19,6 +19,9 @@ import java.util.Scanner;
  */
 
 public class Config {
+    public interface NightModeChangeListener {
+        void onChange();
+    }
     public class Category {
         public String title;
         public int idx;
@@ -27,6 +30,7 @@ public class Config {
 
     private String path;
 
+    private NightModeChangeListener mode_listener = null;
     private boolean night_mode; // 夜间模式
     private boolean text_mode; // 无图模式/文字模式
     private List<Integer> available_categories;
@@ -36,12 +40,17 @@ public class Config {
         loadConfig();
     }
 
+    public void setNightModeChangeListener(NightModeChangeListener listener) {
+        this.mode_listener = listener;
+    }
+
     public boolean isNightMode() {
         return night_mode;
     }
     public void setNightMode(boolean is_night_mode) {
         night_mode = is_night_mode;
         saveConfig();
+        if (mode_listener != null) mode_listener.onChange();
     }
 
     public boolean isTextMode() {
