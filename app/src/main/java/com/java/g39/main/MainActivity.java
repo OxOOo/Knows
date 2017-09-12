@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.java.g39.R;
+import com.java.g39.about.AboutFragment;
 import com.java.g39.news.NewsFragment;
 import com.java.g39.favorites.FavoritesFragment;
 import com.java.g39.settings.SettingsFragment;
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void switchToAbout() {
         if (mAbout == null)
-            mAbout = new Fragment();
+            mAbout = new AboutFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mAbout).commit();
         this.mToolbar.setTitle(R.string.nav_about_title);
     }

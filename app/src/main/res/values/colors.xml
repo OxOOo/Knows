@@ -15,6 +15,7 @@
     <color name="colorBackground">#E5E5E5</color>
     <color name="colorBackgroundLight">#F2F2F2</color>
     <color name="colorTitle">#333333</color>
+    <color name="colorText">#333333</color>
     <color name="colorTitleLight">#FFFFFF</color>
     <color name="colorDetail">#999999</color>
 
