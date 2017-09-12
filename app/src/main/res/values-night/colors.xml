@@ -17,6 +17,5 @@
     <color name="colorBackgroundLight">#0D0D0D</color>
     <color name="colorTitle">#CCCCCC</color>
     <color name="colorText">#CCCCCC</color>
-    <color name="colorTitleLight">#000000</color>
     <color name="colorDetail">#777777</color>
 </resources>
