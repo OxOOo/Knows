@@ -9,10 +9,15 @@ import com.java.g39.R;
 public class MainPresenter implements MainContract.Presenter {
 
     private MainContract.View mMainView;
+    private int mCurrentNavigation = R.id.nav_news;
 
     public MainPresenter(MainContract.View view) {
         this.mMainView = view;
         view.setPresenter(this);
+    }
+
+    public int getCurrentNavigation() {
+        return mCurrentNavigation;
     }
 
     @Override
@@ -26,6 +31,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void switchNavigation(int id) {
+        mCurrentNavigation = id;
         switch (id) {
             case R.id.nav_news:
                 mMainView.switchToNews();

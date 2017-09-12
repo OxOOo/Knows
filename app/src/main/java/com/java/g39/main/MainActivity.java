@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,7 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.inputmethod.InputMethodManager;
 
 import com.java.g39.R;
 import com.java.g39.news.NewsFragment;
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity
     private Toolbar mToolbar;
     private MainContract.Presenter mPresenter;
     private Fragment mNews, mFavorites, mSettings, mAbout;
+    private MenuItem mSearchItem;
+    private SearchView mSearchView;
+    private String mKeyword = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,29 +89,45 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        mSearchItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) mSearchItem.getActionView();
+        mSearchView.setOnCloseListener(() -> {
+            ((NewsFragment) mNews).setKeyword("");
+            return false;
+        });
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mKeyword = query;
+                System.out.println(mPresenter.getCurrentNavigation() + "  " + R.id.nav_news);
+                if (mPresenter.getCurrentNavigation() == R.id.nav_news && mNews != null)
+                    ((NewsFragment) mNews).setKeyword(query);
+                mSearchView.clearFocus();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_clean) {
-            Toast.makeText(this, "功能已被移至“设置”中", Toast.LENGTH_LONG).show();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+        mToolbar.setTitle(item.getTitle());
+        mSearchItem.setVisible(item.getItemId() == R.id.nav_news);
+        mSearchView.clearFocus();
+        mSearchView.setQuery(mKeyword, false);
         mPresenter.switchNavigation(item.getItemId());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -135,7 +155,6 @@ public class MainActivity extends AppCompatActivity
         if (mNews == null)
             mNews = NewsFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mNews).commit();
-        this.mToolbar.setTitle(R.string.nav_news_title);
     }
 
     @Override
@@ -143,7 +162,6 @@ public class MainActivity extends AppCompatActivity
         if (mFavorites == null)
             mFavorites = FavoritesFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mFavorites).commit();
-        this.mToolbar.setTitle(R.string.nav_favorites_title);
     }
 
     @Override
@@ -151,7 +169,6 @@ public class MainActivity extends AppCompatActivity
         if (mSettings == null)
             mSettings = SettingsFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mSettings).commit();
-        this.mToolbar.setTitle(R.string.nav_settings_title);
     }
 
     @Override
@@ -159,6 +176,5 @@ public class MainActivity extends AppCompatActivity
         if (mAbout == null)
             mAbout = new Fragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mAbout).commit();
-        this.mToolbar.setTitle(R.string.nav_about_title);
     }
 }

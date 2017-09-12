@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">39_秦岳</string>
-    <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_news_detail">NewsDetailActivity</string>
+    <string name="title_activity_wxentry">WXEntryActivit</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -18,8 +18,4 @@
     <string name="action_stop_speech">停止朗读</string>
     <string name="action_share">分享</string>
 
-    <string name="title_activity_wxentry">WXEntryActivit</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
