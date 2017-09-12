@@ -1,5 +1,6 @@
 package com.java.g39.news;
 
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -13,6 +14,9 @@ import android.view.ViewGroup;
 import com.java.g39.R;
 import com.java.g39.data.Constant;
 import com.java.g39.news.newslist.NewsListFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 新闻主页面
@@ -46,6 +50,7 @@ public class NewsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager(), Constant.CATEGORY_COUNT);
     }
 
     @Override
@@ -54,7 +59,6 @@ public class NewsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_page, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
 
@@ -69,21 +73,35 @@ public class NewsFragment extends Fragment {
         return view;
     }
 
-    // TODO Optimize performance
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
 
-        public MyPagerAdapter(FragmentManager fm) {
+        private List<Fragment> mFragments = new ArrayList<Fragment>();
+
+        public MyPagerAdapter(FragmentManager fm, int size) {
             super(fm);
+            for (int i = 0; i < size; i++)
+                mFragments.add(null);
         }
 
         @Override
         public Fragment getItem(int position) {
-            return NewsListFragment.newInstance(position);
+            try {
+                if (mFragments.get(position) == null)
+                    mFragments.set(position, NewsListFragment.newInstance(position));
+                return mFragments.get(position);
+            } catch (Exception e) {
+                return new Fragment();
+            }
         }
 
         @Override
         public int getCount() {
             return Constant.CATEGORY_COUNT;
+        }
+
+        @Override
+        public Parcelable saveState() {
+            return null;
         }
     }
 }
