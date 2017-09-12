@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.java.g39.R;
 import com.java.g39.data.DetailNews;
@@ -39,6 +40,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     private ImageView mImage;
     private FloatingActionButton mFab;
     private NestedScrollView mScrollView;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private View mBottomView;
     private TextView mFavoriteBtn, mSpeechBtn, mShareBtn;
     private Speech mSpeaker;
@@ -121,7 +123,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mSpeechBtn.setOnClickListener((View view) -> onSpeech());
         mShareBtn.setOnClickListener((View view) -> onShare());
 
-        CollapsingToolbarLayout mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         mCollapsingToolbarLayout.setTitle(news_Title);
 
         mTag = (TextView) findViewById(R.id.text_tag);
@@ -134,6 +136,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         if (news_picture_url != null) {
             ImageLoader.displayImage(news_picture_url, mImage);
         }
+
+        findViewById(R.id.text_reload).setOnClickListener((View view) -> mPresenter.subscribe());
     }
 
     @Override
@@ -185,9 +189,11 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mFab.setVisibility(View.INVISIBLE);
         if (mSpeaker != null) mSpeaker.stop();
 
-        Intent intent = new Intent();
-        intent.putExtra("IS_FAVORITED", mNews.is_favorite);
-        setResult(RESULT_OK, intent);
+        if (mNews != null) {
+            Intent intent = new Intent();
+            intent.putExtra("IS_FAVORITED", mNews.is_favorite);
+            setResult(RESULT_OK, intent);
+        }
 
         super.onBackPressed();
     }
@@ -243,5 +249,22 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mFavoriteBtn.setClickable(true);
         mSpeechBtn.setClickable(true);
         mShareBtn.setClickable(true);
+        findViewById(R.id.layout_error).setVisibility(View.GONE);
+        findViewById(R.id.layout_content).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onShowToast(String title) {
+        Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onError() {
+        mFab.setClickable(false);
+        mFavoriteBtn.setClickable(false);
+        mSpeechBtn.setClickable(false);
+        mShareBtn.setClickable(false);
+        findViewById(R.id.layout_content).setVisibility(View.GONE);
+        findViewById(R.id.layout_error).setVisibility(View.VISIBLE);
     }
 }
