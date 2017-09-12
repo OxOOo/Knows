@@ -15,10 +15,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.java.g39.R;
 import com.java.g39.news.NewsFragment;
 import com.java.g39.favorites.FavoritesFragment;
+import com.java.g39.settings.SettingsFragment;
 
 /**
  * Created by equation on 9/7/17.
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity
 
     private Toolbar mToolbar;
     private MainContract.Presenter mPresenter;
+    private Fragment mNews, mFavorites, mSettings, mAbout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +97,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_clean) {
-            mPresenter.clean();
+            Toast.makeText(this, "功能已被移至“设置”中", Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -129,25 +132,33 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void switchToNews() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, NewsFragment.newInstance()).commit();
+        if (mNews == null)
+            mNews = NewsFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mNews).commit();
         this.mToolbar.setTitle(R.string.nav_news_title);
     }
 
     @Override
     public void switchToFavorites() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, FavoritesFragment.newInstance()).commit();
+        if (mFavorites == null)
+            mFavorites = FavoritesFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mFavorites).commit();
         this.mToolbar.setTitle(R.string.nav_favorites_title);
     }
 
     @Override
     public void switchToSettings() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Fragment()).commit();
+        if (mSettings == null)
+            mSettings = SettingsFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mSettings).commit();
         this.mToolbar.setTitle(R.string.nav_settings_title);
     }
 
     @Override
     public void switchToAbout() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new Fragment()).commit();
+        if (mAbout == null)
+            mAbout = new Fragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mAbout).commit();
         this.mToolbar.setTitle(R.string.nav_about_title);
     }
 }

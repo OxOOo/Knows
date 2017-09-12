@@ -51,26 +51,10 @@ public class FavoritesFragment extends Fragment implements FavoritesContract.Vie
         return fragment;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = new FavoritesPresenter(this);
-        mPresenter.subscribe();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_favorites, container, false);
-
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
-        mLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mLastClickPosition = -1;
 
         mAdapter = new NewsAdapter(getContext());
         mAdapter.setFooterVisible(false);
@@ -85,6 +69,22 @@ public class FavoritesFragment extends Fragment implements FavoritesContract.Vie
 
             this.mPresenter.openNewsDetailUI(news, options.toBundle());
         });
+
+        mPresenter = new FavoritesPresenter(this);
+        mPresenter.subscribe();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_favorites, container, false);
+
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mAdapter);
 
         return view;
