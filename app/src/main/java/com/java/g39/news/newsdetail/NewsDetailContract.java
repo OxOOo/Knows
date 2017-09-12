@@ -27,6 +27,11 @@ public interface NewsDetailContract {
         void onShowToast(String title);
 
         /**
+         * 开始加载
+         */
+        void onStartLoading();
+
+        /**
          * 获取新闻详情失败
          */
         void onError();

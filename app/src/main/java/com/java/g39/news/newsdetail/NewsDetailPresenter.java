@@ -36,6 +36,7 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
                         }
                     }
                 });
+        mView.onStartLoading();
     }
 
     @Override
