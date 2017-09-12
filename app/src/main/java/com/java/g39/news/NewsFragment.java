@@ -30,7 +30,7 @@ public class NewsFragment extends Fragment {
 
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
-    private String mKeyword= "";
+    private String mKeyword = "";
     private MyPagerAdapter mPagerAdapter;
 
     public NewsFragment() {

@@ -93,7 +93,10 @@ public class MainActivity extends AppCompatActivity
         mSearchItem = menu.findItem(R.id.action_search);
         mSearchView = (SearchView) mSearchItem.getActionView();
         mSearchView.setOnCloseListener(() -> {
-            ((NewsFragment) mNews).setKeyword("");
+            if (!mKeyword.isEmpty()) {
+                mKeyword = "";
+                ((NewsFragment) mNews).setKeyword("");
+            }
             return false;
         });
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -132,6 +135,7 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
