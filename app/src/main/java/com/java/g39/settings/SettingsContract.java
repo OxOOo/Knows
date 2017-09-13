@@ -24,6 +24,19 @@ public interface SettingsContract {
         void setAllCategories(List<Config.Category> list);
 
         void setAvailableCategories(List<Config.Category> list);
+
+        /**
+         * 弹窗
+         * @param title 标题
+         */
+        void onShowToast(String title);
+
+        /**
+         * 弹窗
+         * @param title 标题
+         * @param message 消息
+         */
+        void onShowAlertDialog(String title,String message);
     }
 
     interface Presenter extends BasePresenter {
@@ -37,6 +50,11 @@ public interface SettingsContract {
         /**
          * 清除缓存
          */
-        void clean();
+        void cleanCache();
+
+        /**
+         * 检查更新
+         */
+        void checkUpdate();
     }
 }

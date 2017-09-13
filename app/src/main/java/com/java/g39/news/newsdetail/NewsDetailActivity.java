@@ -144,12 +144,13 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         }
 
         findViewById(R.id.text_reload).setOnClickListener((View view) -> mPresenter.subscribe());
+
+        mPresenter.subscribe();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mPresenter.subscribe();
     }
 
     @Override
@@ -244,10 +245,11 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
                 for (Map.Entry<String, String> e : links.entrySet()) {
                     String word = e.getKey(), url = e.getValue();
                     int pos = content.indexOf(word);
-                    sp.setSpan(new URLSpan(url), pos, pos + word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    mContent.setText(sp);
-                    mContent.setMovementMethod(LinkMovementMethod.getInstance());
+                    if (pos >= 0)
+                        sp.setSpan(new URLSpan(url), pos, pos + word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
+                mContent.setText(sp);
+                mContent.setMovementMethod(LinkMovementMethod.getInstance());
             }
         });
 
@@ -269,6 +271,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mFavoriteBtn.setClickable(true);
         mSpeechBtn.setClickable(true);
         mShareBtn.setClickable(true);
+        findViewById(R.id.progress_bar).setVisibility(View.GONE);
         findViewById(R.id.layout_error).setVisibility(View.GONE);
         findViewById(R.id.layout_content).setVisibility(View.VISIBLE);
     }
@@ -279,12 +282,25 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     }
 
     @Override
+    public void onStartLoading() {
+        findViewById(R.id.layout_error).setVisibility(View.INVISIBLE);
+        findViewById(R.id.layout_content).setVisibility(View.INVISIBLE);
+        findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
+    }
+
+    @Override
     public void onError() {
         mFab.setClickable(false);
         mFavoriteBtn.setClickable(false);
         mSpeechBtn.setClickable(false);
         mShareBtn.setClickable(false);
-        findViewById(R.id.layout_content).setVisibility(View.GONE);
+        findViewById(R.id.progress_bar).setVisibility(View.INVISIBLE);
+        findViewById(R.id.layout_content).setVisibility(View.INVISIBLE);
         findViewById(R.id.layout_error).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setImageVisible(boolean visible) {
+        findViewById(R.id.image_layout).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

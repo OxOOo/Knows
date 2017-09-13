@@ -12,11 +12,13 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -34,7 +37,8 @@ import java.util.Map;
 class FS {
     private SQLiteDatabase db, sdb;
     private String db_path, sdb_path;
-    private Thread sdb_thread;
+    private Thread sdb_thread, word_pv_thread;
+    private Map<String, Integer> word_pv;
 
     private static final String TABLE_NAME_SIMPLE = "news_simple";
     private static final String TABLE_NAME_DETAIL = "news_detail";
@@ -55,13 +59,23 @@ class FS {
         db_path = context.getFilesDir().getPath() + "/data.db";
         db = SQLiteDatabase.openOrCreateDatabase(db_path, null);
 
-        createSDB(context);
+        createSDBThread(context);
+        createWordPVThread(context);
 
         // dropTables(); // FIXME
         createTables();
     }
 
-    private void createSDB(final Context context) {
+    void waitForInit() throws InterruptedException {
+        if (sdb_thread != null && sdb_thread.isAlive()) sdb_thread.join();
+        if (word_pv_thread != null && word_pv_thread.isAlive()) word_pv_thread.join();
+    }
+
+    Map<String, Integer> getWordPV() {
+        return word_pv;
+    }
+
+    private void createSDBThread(final Context context) {
         sdb_thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -98,6 +112,35 @@ class FS {
             }
         });
         sdb_thread.start();
+    }
+
+    private void createWordPVThread(final Context context) {
+        word_pv_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                word_pv = new HashMap<>();
+                long start = System.currentTimeMillis();
+                try {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(context.getAssets().open("word_pv")));
+                    String line = in.readLine();
+                    while(line != null) {
+                        line = line.trim();
+                        String[] items = line.split(" ");
+                        if (items.length == 2) {
+                            word_pv.put(items[0], Integer.parseInt(items[1]));
+                        } else {
+                            Log.e("ERROR ON word_pv", line);
+                        }
+                        line = in.readLine();
+                    }
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("createWordPVThread | " + (System.currentTimeMillis() - start) + " | " + word_pv.size());
+            }
+        });
+        word_pv_thread.start();
     }
 
     void createTables() {

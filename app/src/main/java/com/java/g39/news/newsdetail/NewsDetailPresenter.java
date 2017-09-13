@@ -25,17 +25,22 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
 
     @Override
     public void subscribe() {
+        if (Manager.I.getConfig().isTextMode())
+            mView.setImageVisible(false);
         Manager.I.fetchDetailNews(mNews_ID)
                 .subscribe(new Consumer<DetailNews>() {
                     @Override
                     public void accept(DetailNews detailNews) throws Exception {
                         if (detailNews == DetailNews.NULL) {
+                            mView.setImageVisible(false);
                             mView.onError();
                         } else {
+                            mView.setImageVisible(!Manager.I.getConfig().isTextMode());
                             mView.setNewsDetail(detailNews);
                         }
                     }
                 });
+        mView.onStartLoading();
     }
 
     @Override

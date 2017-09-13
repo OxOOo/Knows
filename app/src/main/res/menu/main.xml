@@ -4,7 +4,7 @@
     xmlns:appcompat="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_search"
-        android:title="搜索"
+        android:title="@string/search"
         appcompat:actionViewClass="android.support.v7.widget.SearchView"
         appcompat:showAsAction="ifRoom"/>
 </menu>

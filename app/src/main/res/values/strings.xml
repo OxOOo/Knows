@@ -5,8 +5,7 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_clean">清空缓存</string>
+    <string name="search">搜索</string>
 
     <string name="nav_news_title">新闻</string>
     <string name="nav_favorites_title">收藏</string>
@@ -18,13 +17,19 @@
     <string name="action_stop_speech">停止朗读</string>
     <string name="action_share">分享</string>
 
+    <string name="setting_view">外观</string>
+    <string name="setting_other">其他</string>
+    <string name="setting_tags">首页标签</string>
+    <string name="action_night">夜间模式</string>
+    <string name="action_text">无图模式</string>
+    <string name="action_clean">清空缓存</string>
+    <string name="action_update">检查更新</string>
+
     <string name="about_addr">项目地址:\nhttps://git.oschina.net/_yuguo_tianqing/Knows</string>
     <string name="about_author">作者:Group 39</string>
     <string name="about_project">项目简介:\n清青时事：一款由清华大学计算机系学生团队独立开发的新闻APP，旨在帮助同学了解时事，欢迎尽情玩耍(～￣▽￣)～ </string>
     <string name="about_info">清青时事\t\t\tV1.0.0</string>
 
     <string name="error_tips">由于惨不忍睹的网络环境\n加载失败了！\n</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="reload_tips">点击重新加载</string>
 </resources>

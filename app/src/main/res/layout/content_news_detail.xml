@@ -10,7 +10,7 @@
     tools:context=".news.newsdetail.NewsDetailActivity"
     tools:showIn="@layout/activity_news_detail">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -21,11 +21,19 @@
         android:paddingStart="16dp"
         android:paddingTop="16dp">
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <LinearLayout
             android:id="@+id/layout_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="invisible">
+
 
             <TextView
                 android:id="@+id/text_tag"
@@ -58,9 +66,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingLeft="96dp"
-            android:paddingRight="96dp"
-            android:visibility="gone">
+            android:visibility="invisible">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -68,20 +74,28 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:cropToPadding="false"
+                android:paddingLeft="72dp"
+                android:paddingRight="72dp"
                 app:srcCompat="@mipmap/error" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:text="@string/error_tips"
+                android:textAlignment="center"
+                android:textSize="16dp" />
 
             <TextView
                 android:id="@+id/text_reload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:clickable="true"
                 android:gravity="center"
-                android:padding="10dp"
-                android:text="~出错了~\n点击重新加载"
+                android:text="@string/reload_tips"
                 android:textColor="@drawable/selector_text"
                 android:textSize="16sp" />
         </LinearLayout>
 
-    </LinearLayout>
+    </FrameLayout>
 </android.support.v4.widget.NestedScrollView>

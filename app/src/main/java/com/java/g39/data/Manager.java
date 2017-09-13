@@ -98,8 +98,22 @@ public class Manager {
         };
     }
 
+    public Single<Boolean> waitForInit() {
+        return Single.fromCallable(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                fs.waitForInit();
+                return true;
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Config getConfig() {
         return config;
+    }
+
+    Map<String, Integer> getWordPV() {
+        return fs.getWordPV();
     }
 
     /**

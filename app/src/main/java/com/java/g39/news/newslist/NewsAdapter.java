@@ -1,10 +1,7 @@
 package com.java.g39.news.newslist;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,13 +98,16 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             item.mDate.setText(news.formatTime());
             item.mImage.setImageBitmap(null);
             item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
-            // FIXME cancel mImageLoader
+            item.mCurrentPosition = position;
             news.single_picture_url
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<String>() {
                         @Override
                         public void accept(String s) throws Exception {
-                            ImageLoader.displayImage(s, item.mImage);
+                            if (item.mCurrentPosition == position)
+                                ImageLoader.displayImage(s, item.mImage);
+                            else
+                                ImageLoader.cancelDisplayTask(item.mImage);
                         }
                     });
         }
@@ -140,6 +140,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         View mView;
         TextView mTitle, mAuthor, mDate;
+        int mCurrentPosition = -1;
         ImageView mImage;
 
         public ItemViewHolder(View view) {
