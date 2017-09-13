@@ -69,7 +69,7 @@ public class Config {
     public void removeBlacklist(String x) {
         if (!blacklist.contains(x)) blacklist.remove(x);
     }
-    List<String> getBlacklist() {
+    public List<String> getBlacklist() {
         return blacklist;
     }
 
