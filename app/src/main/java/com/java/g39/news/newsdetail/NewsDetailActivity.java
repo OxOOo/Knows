@@ -242,9 +242,11 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
 
         String content = TextUtils.join("\n\n　　", news.news_Content.trim().split("　　"));
         mContent.setText(content);
+        long links_start = System.currentTimeMillis();
         mNews.links.observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Map<String, String>>() {
             @Override
             public void accept(Map<String, String> links) throws Exception {
+                System.out.println("links : " + (System.currentTimeMillis() - links_start));
                 SpannableString sp = new SpannableString(content);
                 for (Map.Entry<String, String> e : links.entrySet()) {
                     String word = e.getKey(), url = e.getValue();

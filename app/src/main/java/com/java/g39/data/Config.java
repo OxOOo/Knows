@@ -38,6 +38,7 @@ public class Config {
     private boolean night_mode; // 夜间模式
     private boolean text_mode; // 无图模式/文字模式
     private List<Integer> available_categories;
+    private List<String> blacklist;
 
     Config(Context context) {
         path = context.getFilesDir().getPath() + "/config.json";
@@ -63,6 +64,17 @@ public class Config {
     public void setTextMode(boolean is_text_mode) {
         text_mode = is_text_mode;
         saveConfig();
+    }
+
+    public void insertBlacklist(String x) {
+        if (!blacklist.contains(x)) blacklist.add(x);
+        saveConfig();
+    }
+    public void removeBlacklist(String x) {
+        if (!blacklist.contains(x)) blacklist.remove(x);
+    }
+    public List<String> getBlacklist() {
+        return blacklist;
     }
 
     /**
@@ -163,6 +175,14 @@ public class Config {
             for(int i = 1; i < Constant.CATEGORY_COUNT; i ++)
                 available_categories.add(i);
         }
+        blacklist = new ArrayList<>();
+        try {
+            JSONArray array = obj.getJSONArray("blacklist");
+            for(int i = 0; i < array.length(); i ++)
+                blacklist.add(array.getString(i));
+        } catch(Exception e) {
+
+        }
     }
 
     void saveConfig() {
@@ -170,10 +190,14 @@ public class Config {
         try {
             obj.put("night_mode", night_mode);
             obj.put("text_mode", text_mode);
-            JSONArray array = new JSONArray();
+            JSONArray available_categories_array = new JSONArray();
             for(int x: available_categories)
-                array.put(x);
-            obj.put("available_categories", array);
+                available_categories_array.put(x);
+            obj.put("available_categories", available_categories_array);
+            JSONArray blacklist_array = new JSONArray();
+            for(String x: blacklist)
+                blacklist_array.put(x);
+            obj.put("blacklist", blacklist_array);
 
             OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(path));
             w.write(obj.toString());
