@@ -11,7 +11,7 @@ import org.ahocorasick.trie.Trie;
 
 
 public class AC_AutoMaton{
-    private static class KeyValue
+    private class KeyValue
     {
         public KeyValue(String k,int v)
         {
@@ -21,18 +21,18 @@ public class AC_AutoMaton{
         String key;
         Integer value;
     }
-    private static Trie trie = new Trie(false);//AC自动机
-    private static Map<String,Integer> map = new HashMap<String,Integer>();//文本向量
+    private Trie trie = new Trie(false);//AC自动机
+    private Map<String,Integer> map = new HashMap<String,Integer>();//文本向量
 
     //加入一个关键词-数量二元组
-    public static void add(String key,int value)
+    public void add(String key,int value)
     {
         map.put(key, value);
         trie.addKeyword(key);
     }
 
     //查询文本中和AC自动机匹配的全部词条，并按优先级排序
-    public static List<String> find(String text)
+    public List<String> find(String text)
     {
         List<String> result = new ArrayList<String>();
         Collection<Emit> emits = trie.parseText(text);
