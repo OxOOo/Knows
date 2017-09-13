@@ -1,10 +1,12 @@
 package com.java.g39.main;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.SearchView;
 import android.view.View;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this, MainActivity.class);
             intent.putExtra(RESTART_BY_MODE, true);
             MainActivity.this.startActivity(intent);
-            overridePendingTransition(R.anim.in_anim,R.anim.out_anim);
+            overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
             MainActivity.this.finish();
         });
 
@@ -94,7 +96,6 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            // super.onBackPressed();
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addCategory(Intent.CATEGORY_HOME);

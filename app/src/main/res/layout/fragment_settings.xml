@@ -1,43 +1,134 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context="com.java.g39.settings.SettingsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <CheckBox
-            android:id="@+id/nightModeBox"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="夜间模式" />
+            android:layout_marginBottom="8dp"
+            android:text="@string/setting_view"
+            android:textColor="@color/colorDetail" />
 
-        <CheckBox
-            android:id="@+id/textModeBox"
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:background="@color/colorCard"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="2dp"
+            app:contentPadding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Switch
+                    android:id="@+id/switch_night"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@android:drawable/ic_menu_help"
+                    android:text="@string/action_night"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="36dp"
+                    android:background="@color/colorBackground" />
+
+                <Switch
+                    android:id="@+id/switch_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@android:drawable/ic_menu_help"
+                    android:text="@string/action_text"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="文字模式" />
+            android:layout_marginBottom="8dp"
+            android:text="@string/setting_other"
+            android:textColor="@color/colorDetail" />
 
-        <GridLayout
-            android:id="@+id/categoriesLayout"
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_marginBottom="16dp"
+            android:background="@color/colorCard"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="2dp"
+            app:contentPadding="8dp">
 
-        </GridLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <Button
-            android:id="@+id/cleanBtn"
+                <Button
+                    android:id="@+id/button_clear"
+                    style="@style/Widget.AppCompat.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/action_clean"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/button_update"
+                    style="@style/Widget.AppCompat.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/action_update"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="清除缓存" />
+            android:layout_marginBottom="8dp"
+            android:text="@string/setting_tags"
+            android:textColor="@color/colorDetail" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="2dp"
+            app:contentPadding="8dp">
+
+            <GridLayout
+                android:id="@+id/categoriesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+            </GridLayout>
+        </android.support.v7.widget.CardView>
 
     </LinearLayout>
 
-</FrameLayout>
+</ScrollView>

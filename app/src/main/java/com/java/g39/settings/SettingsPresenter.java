@@ -53,16 +53,21 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     }
 
     @Override
-    public void clean() {
+    public void cleanCache() {
         ImageLoader.clearDiskCache();
-        Toast.makeText(mView.context(), "已清除图片缓存", Toast.LENGTH_SHORT).show();
+        mView.onShowToast("已清除图片缓存");
         Manager.I.clean()
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean aBoolean) throws Exception {
-                        if (aBoolean) Toast.makeText(mView.context(), "已清除数据库记录", Toast.LENGTH_SHORT).show();
-                        else Toast.makeText(mView.context(), "清除数据库记录失败", Toast.LENGTH_SHORT).show();
+                        if (aBoolean) mView.onShowToast("已清除数据库记录");
+                        else mView.onShowToast("清除数据库记录失败");
                     }
                 });
+    }
+
+    @Override
+    public void checkUpdate() {
+        mView.onShowAlertDialog("您已经是最新版", "当前版本：V1.0.0");
     }
 }
