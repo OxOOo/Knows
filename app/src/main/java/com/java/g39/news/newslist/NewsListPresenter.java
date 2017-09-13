@@ -95,38 +95,36 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     private void fetchNews() {
         mLoading = true;
         final long start = System.currentTimeMillis();
-        if (mCategory > 0) {
-            Single<List<SimpleNews>> single = mKeyword.trim().length() > 0 ?
-                    Manager.I.searchNews(mKeyword, mPageNo, PAGE_SIZE, mCategory)
-                    : Manager.I.fetchSimpleNews(mPageNo, PAGE_SIZE, mCategory);
 
-            single.subscribe(new Consumer<List<SimpleNews>>() {
-                @Override
-                public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                    System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size());
-                    mLoading = false;
+        Single<List<SimpleNews>> single = null;
+        if (mKeyword.trim().length() > 0) {
+            single = Manager.I.searchNews(mKeyword, mPageNo, PAGE_SIZE, mCategory);
+        } else if (mCategory > 0) {
+            single = Manager.I.fetchSimpleNews(mPageNo, PAGE_SIZE, mCategory);
+        } else {
+            single = Manager.I.recommend();
+        }
+
+        single.subscribe(new Consumer<List<SimpleNews>>() {
+            @Override
+            public void accept(List<SimpleNews> simpleNewses) throws Exception {
+                System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size());
+                mLoading = false;
+                if (mKeyword.trim().length() != 0 || mCategory > 0) {
                     mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
                     // TODO onError
                     if (mPageNo == 1) mView.setNewsList(simpleNewses);
                     else mView.appendNewsList(simpleNewses);
+                } else {
+                    if (mPageNo > 1 || simpleNewses.size() == 0) {
+                        mView.onSuccess(true);
+                        mView.appendNewsList(new ArrayList<>());
+                    } else {
+                        mView.onSuccess(false);
+                        mView.setNewsList(simpleNewses);
+                    }
                 }
-            });
-        } else {
-            Manager.I.recommend()
-                    .subscribe(new Consumer<List<SimpleNews>>() {
-                        @Override
-                        public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                            System.out.println(System.currentTimeMillis() - start + " | " + mCategory);
-                            mLoading = false;
-                            if (mPageNo > 1 || simpleNewses.size() == 0) {
-                                mView.onSuccess(true);
-                                mView.appendNewsList(new ArrayList<>());
-                            } else {
-                                mView.onSuccess(false);
-                                mView.setNewsList(simpleNewses);
-                            }
-                        }
-                    });
-        }
+            }
+        });
     }
 }

@@ -6,23 +6,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.java.g39.R;
+import com.java.g39.data.Manager;
 import com.java.g39.main.MainActivity;
 
-public class SplashActivity extends AppCompatActivity {
+import io.reactivex.functions.Consumer;
 
-    private final int SPLASH_DISPLAY_LENGHT = 2000;
+public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
-                SplashActivity.this.startActivity(mainIntent);
-                SplashActivity.this.finish();
-            }
-        }, SPLASH_DISPLAY_LENGHT);
+        Manager.I.waitForInit()
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) throws Exception {
+                        Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
+                        SplashActivity.this.startActivity(mainIntent);
+                        SplashActivity.this.finish();
+                    }
+                });
     }
 }
