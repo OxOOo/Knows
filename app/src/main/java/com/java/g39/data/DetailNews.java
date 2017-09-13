@@ -63,8 +63,10 @@ public class DetailNews extends SimpleNews {
                     result.add(key);
             }
         }
+        long start = System.currentTimeMillis();
         for(String key : ac.find(news_Content))
             result.add(key);
+        System.out.println("links in : " + (System.currentTimeMillis() - start));
         return result;
     }
 
