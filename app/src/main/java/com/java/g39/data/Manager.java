@@ -16,6 +16,7 @@ import org.reactivestreams.Subscriber;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -413,20 +414,20 @@ public class Manager {
             if (detailNews == DetailNews.NULL) return detailNews;
 
             detailNews.links = Flowable.just(0)
-                    .flatMap(new Function<Integer, Publisher<Map.Entry<String,String>>>() {
+                    .flatMap(new Function<Integer, Publisher<String>>() {
                         @Override
-                        public Publisher<Map.Entry<String,String>> apply(@NonNull Integer integer) throws Exception {
-                            return Flowable.fromIterable(detailNews.getKeywordHyperlink(ac).entrySet());
+                        public Publisher<String> apply(@NonNull Integer integer) throws Exception {
+                            return Flowable.fromIterable(detailNews.getKeywordHyperlink(ac));
                         }
                     })
-                    .filter(new Predicate<Map.Entry<String, String>>() {
+                    .filter(new Predicate<String>() {
                         @Override
-                        public boolean test(@NonNull Map.Entry<String, String> stringStringEntry) throws Exception {
+                        public boolean test(@NonNull String word) throws Exception {
                             try {
-                                String link = stringStringEntry.getValue().trim();
-                                Boolean value = fs.getLinkValue(link);
+                                String link = "https://baike.baidu.com/item/"+ URLEncoder.encode(word, "UTF-8");
+                                Boolean value = fs.getLinkValue(word);
                                 if (value == null) value = API.TestBaikeConnection(link);
-                                if (value != null) fs.setLinkValue(link, value);
+                                if (value != null) fs.setLinkValue(word, value);
                                 return value == null ? false : value;
                             } catch(Exception e) {
                                 return false;
@@ -434,12 +435,12 @@ public class Manager {
                         }
                     })
                     .toList()
-                    .map(new Function<List<Map.Entry<String, String>>, Map<String, String>>() {
+                    .map(new Function<List<String>, Map<String, String>>() {
                         @Override
-                        public Map<String, String> apply(@NonNull List<Map.Entry<String, String>> entries) throws Exception {
+                        public Map<String, String> apply(@NonNull List<String> entries) throws Exception {
                             Map<String, String> rst = new HashMap<String, String>();
-                            for(Map.Entry<String, String> e: entries)
-                                rst.put(e.getKey(), e.getValue());
+                            for(String e: entries)
+                                rst.put(e, "https://baike.baidu.com/item/"+ URLEncoder.encode(e, "UTF-8"));
                             return rst;
                         }
                     }).subscribeOn(Schedulers.io());

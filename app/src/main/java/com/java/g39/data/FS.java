@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * Created by chenyu on 2017/9/7.
@@ -45,14 +46,14 @@ class FS {
     private static final String TABLE_NAME_READ = "news_read";
     private static final String TABLE_NAME_FAVORITE = "news_favorite";
     private static final String TABLE_NAME_PICTURE = "news_picture";
-    private static final String TABLE_NAME_LINK = "links";
+    private static final String TABLE_NAME_WORD = "words";
 
     private static final String KEY_ID = "news_id"; // string
     private static final String KEY_SIMPLE = "simple_json"; // text
     private static final String KEY_CATEGORY = "category"; // integer
     private static final String KEY_DETAIL = "detail_json"; // text
     private static final String KEY_PICTURE = "picture_url"; // text
-    private static final String KEY_LINK = "link_url"; // text
+    private static final String KEY_WORD = "word"; // text
     private static final String KEY_VALUE = "value"; // boolean
 
     FS(Context context) throws IOException {
@@ -118,7 +119,7 @@ class FS {
         word_pv_thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                word_pv = new HashMap<>();
+                word_pv = new TreeMap<>();
                 long start = System.currentTimeMillis();
                 try {
                     BufferedReader in = new BufferedReader(new InputStreamReader(context.getAssets().open("word_pv")));
@@ -164,9 +165,9 @@ class FS {
                 TABLE_NAME_PICTURE, KEY_ID, KEY_PICTURE);
         db.execSQL(picture_table);
 
-        final String link_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s text primary key, %s boolean)",
-                TABLE_NAME_LINK, KEY_LINK, KEY_VALUE);
-        db.execSQL(link_table);
+        final String word_table = String.format("CREATE TABLE IF NOT EXISTS `%s`(%s text primary key, %s boolean)",
+                TABLE_NAME_WORD, KEY_WORD, KEY_VALUE);
+        db.execSQL(word_table);
     }
 
     void dropTables() {
@@ -175,7 +176,7 @@ class FS {
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_READ));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_FAVORITE));
         db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_PICTURE));
-        db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_LINK));
+        db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", TABLE_NAME_WORD));
     }
 
     void insertSimple(SimpleNews simpleNews, int category) {
@@ -315,17 +316,18 @@ class FS {
         return url;
     }
 
-    void setLinkValue(String link, Boolean value) {
+    void setLinkValue(String word, Boolean value) {
         String cmd = String.format("INSERT OR REPLACE INTO `%s`(%s,%s) VALUES(%s,%s)",
-                TABLE_NAME_LINK, KEY_LINK, KEY_VALUE,
-                DatabaseUtils.sqlEscapeString(link),
+                TABLE_NAME_WORD, KEY_WORD, KEY_VALUE,
+                DatabaseUtils.sqlEscapeString(word),
                 DatabaseUtils.sqlEscapeString(value + ""));
         db.execSQL(cmd);
     }
 
-    Boolean getLinkValue(String link) {
+    Boolean getLinkValue(String word) {
+        if (word_pv.containsKey(word)) return true;
         String cmd = String.format("SELECT * FROM `%s` WHERE %s=%s",
-                TABLE_NAME_LINK, KEY_LINK, DatabaseUtils.sqlEscapeString(link));
+                TABLE_NAME_WORD, KEY_WORD, DatabaseUtils.sqlEscapeString(word));
         Cursor cursor = db.rawQuery(cmd, null);
         Boolean value = null;
         if (cursor.moveToFirst()) {
