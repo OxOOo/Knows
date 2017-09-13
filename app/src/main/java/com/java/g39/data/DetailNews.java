@@ -51,8 +51,8 @@ public class DetailNews extends SimpleNews {
     /**
      * @return 返回所有有必要添加超链接的词，以及其对应的超链接
      */
-    Map<String,String> getKeywordHyperlink(AC_AutoMaton ac) throws UnsupportedEncodingException {
-        Map<String,String> result = new HashMap<String,String>();
+    Set<String> getKeywordHyperlink(AC_AutoMaton ac) throws UnsupportedEncodingException {
+        Set<String> result = new TreeSet<>();
         Pattern p = Pattern.compile("\\s(\\S+?)(/PER|/LOC)");
         for(String s : seggedPListOfContent)
         {
@@ -60,11 +60,13 @@ public class DetailNews extends SimpleNews {
             while (m.find()) {
                 String key=m.group(1);
                 if(key.length()>1)
-                    result.put(key, "https://baike.baidu.com/item/"+ URLEncoder.encode(key, "UTF-8"));
+                    result.add(key);
             }
         }
+        long start = System.currentTimeMillis();
         for(String key : ac.find(news_Content))
-            result.put(key, "https://baike.baidu.com/item/"+ URLEncoder.encode(key, "UTF-8"));
+            result.add(key);
+        System.out.println("links in : " + (System.currentTimeMillis() - start));
         return result;
     }
 
