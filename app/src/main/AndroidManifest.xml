@@ -3,8 +3,8 @@
     package="com.java.g39">
 
     <!-- 应用签名微信：tsinghua_g39 -->
-    <!-- 应用appId微信：wx51dfba91db58907c -->
-    <!-- 应用secret微信：403afc88507a13e2ef909f23ab67af4b -->
+    <!-- 应用appId微信：wx671e6c77306f9200 -->
+    <!-- 应用secret微信：b642b5569b52657159af56082f930651 -->
     <!-- 应用签名微博：caaf693c1c7fbd76a2d404bcaa234063 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
