@@ -2,10 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.java.g39">
 
-    <!-- 应用签名微信：tsinghua_g39 -->
     <!-- 应用appId微信：wx671e6c77306f9200 -->
     <!-- 应用secret微信：b642b5569b52657159af56082f930651 -->
-    <!-- 应用签名微博：caaf693c1c7fbd76a2d404bcaa234063 -->
+    <!-- 应用签名微博：11b6221bfaf2a0c58cd9aea8d2d2487b -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -58,6 +57,12 @@
         <meta-data
             android:name="weixin_key"
             android:value="@string/weixin_key" />
+        <meta-data
+            android:name="sina_weibo_redirecturi"
+            android:value="@string/sina_weibo_redirecturi" />
+        <meta-data
+            android:name="sina_weibo_key"
+            android:value="@string/sina_weibo_key" />
         <!-- 微信分享注册 -->
         <activity
             android:name=".main.wxapi.WXEntryActivity"
