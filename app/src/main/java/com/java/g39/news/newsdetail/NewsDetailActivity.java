@@ -144,12 +144,13 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         }
 
         findViewById(R.id.text_reload).setOnClickListener((View view) -> mPresenter.subscribe());
+
+        mPresenter.subscribe();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mPresenter.subscribe();
     }
 
     @Override

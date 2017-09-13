@@ -80,13 +80,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        mPresenter.subscribe();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mPresenter.subscribe();
     }
 
     @Override
@@ -109,6 +108,7 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
 
         mSearchItem = menu.findItem(R.id.action_search);
+        mSearchItem.setVisible(R.id.nav_news == mPresenter.getCurrentNavigation());
         mSearchView = (SearchView) mSearchItem.getActionView();
         mSearchView.setOnCloseListener(() -> {
             if (!mKeyword.isEmpty()) {
@@ -145,10 +145,6 @@ public class MainActivity extends AppCompatActivity
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
-        mToolbar.setTitle(item.getTitle());
-        mSearchItem.setVisible(item.getItemId() == R.id.nav_news);
-        mSearchView.clearFocus();
-        mSearchView.setQuery(mKeyword, false);
         mPresenter.switchNavigation(item.getItemId());
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -172,8 +168,20 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent, options);
     }
 
+    public void switchTo(int id, String title) {
+        mToolbar.setTitle(title);
+        if (mSearchItem != null) {
+            mSearchItem.setVisible(R.id.nav_news == id);
+        }
+        if (mSearchView != null) {
+            mSearchView.clearFocus();
+            mSearchView.setQuery(mKeyword, false);
+        }
+    }
+
     @Override
     public void switchToNews() {
+        switchTo(R.id.nav_news, "新闻");
         if (mNews == null)
             mNews = NewsFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mNews).commit();
@@ -181,6 +189,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void switchToFavorites() {
+        switchTo(R.id.nav_favorites, "收藏");
         if (mFavorites == null)
             mFavorites = FavoritesFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mFavorites).commit();
@@ -188,6 +197,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void switchToSettings() {
+        switchTo(R.id.nav_settings, "设置");
         if (mSettings == null)
             mSettings = SettingsFragment.newInstance();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mSettings).commit();
@@ -195,6 +205,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void switchToAbout() {
+        switchTo(R.id.nav_about, "关于");
         if (mAbout == null)
             mAbout = new AboutFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, mAbout).commit();
