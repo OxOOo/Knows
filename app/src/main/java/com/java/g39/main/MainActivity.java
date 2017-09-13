@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity
     private static final String RESTART_BY_MODE = "RESTART_BY_MODE";
 
     private Toolbar mToolbar;
+    private NavigationView mNavigationView;
     private MainContract.Presenter mPresenter;
     private Fragment mNews, mFavorites, mSettings, mAbout;
     private MenuItem mSearchItem;
@@ -78,8 +79,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -177,6 +178,7 @@ public class MainActivity extends AppCompatActivity
             mSearchView.clearFocus();
             mSearchView.setQuery(mKeyword, false);
         }
+        mNavigationView.setCheckedItem(id);
     }
 
     @Override
