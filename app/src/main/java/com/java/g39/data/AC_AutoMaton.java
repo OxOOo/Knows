@@ -33,6 +33,10 @@ class AC_AutoMaton {
     //加入一个关键词-数量二元组
     public void add(String key,int value)
     {
+        final int VALUE2=1300;
+        final int MIN_VALUE=10;
+        if(value<=MIN_VALUE)return;
+        if(key.length()<=2 && value<VALUE2)return;
         map.put(key, value);
         keys.add(key);
     }
@@ -59,7 +63,7 @@ class AC_AutoMaton {
         for(String key : emits)
         {
             int v = map.get(key);
-            if(!set.contains(key) && v<1300)
+            if(!set.contains(key))
             {
                 //Log.d("ACM",key+" "+String.format("%d",v));
                 set.add(key);
