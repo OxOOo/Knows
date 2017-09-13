@@ -283,8 +283,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
 
     @Override
     public void onStartLoading() {
-        findViewById(R.id.layout_error).setVisibility(View.GONE);
-        findViewById(R.id.layout_content).setVisibility(View.GONE);
+        findViewById(R.id.layout_error).setVisibility(View.INVISIBLE);
+        findViewById(R.id.layout_content).setVisibility(View.INVISIBLE);
         findViewById(R.id.progress_bar).setVisibility(View.VISIBLE);
     }
 
@@ -294,8 +294,13 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mFavoriteBtn.setClickable(false);
         mSpeechBtn.setClickable(false);
         mShareBtn.setClickable(false);
-        findViewById(R.id.progress_bar).setVisibility(View.GONE);
-        findViewById(R.id.layout_content).setVisibility(View.GONE);
+        findViewById(R.id.progress_bar).setVisibility(View.INVISIBLE);
+        findViewById(R.id.layout_content).setVisibility(View.INVISIBLE);
         findViewById(R.id.layout_error).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setImageVisible(boolean visible) {
+        findViewById(R.id.image_layout).setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

@@ -35,6 +35,12 @@ public interface NewsDetailContract {
          * 获取新闻详情失败
          */
         void onError();
+
+        /**
+         * 设置图片可见性
+         * @param visible 图片是否可见
+         */
+        void setImageVisible(boolean visible);
     }
 
     interface Presenter extends BasePresenter {
