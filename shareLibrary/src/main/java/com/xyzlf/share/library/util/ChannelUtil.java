@@ -54,7 +54,7 @@ public class ChannelUtil {
      * @return boolean
      */
     public static boolean isWeiboInstall(Context context) {
-        return isAppInstall(context, ShareConstant.SINA_WEIBO_PACKAGE_NAME);
+        return isAppInstall(context, ShareConstant.SINA_WEIBO_PACKAGE_NAME)||isAppInstall(context, ShareConstant.SINA_WEIBO_PACKAGE_NAME2);
     }
     /**
      * @param context context

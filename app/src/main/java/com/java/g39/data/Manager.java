@@ -109,6 +109,7 @@ public class Manager {
                 for(String key: fs.getWordPV().keySet()) {
                     ac.add(key, getWordPV().get(key));
                 }
+                ac.fix();
                 return true;
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
