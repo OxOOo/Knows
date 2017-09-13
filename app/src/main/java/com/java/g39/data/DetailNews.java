@@ -51,7 +51,7 @@ public class DetailNews extends SimpleNews {
     /**
      * @return 返回所有有必要添加超链接的词，以及其对应的超链接
      */
-    Map<String,String> getKeywordHyperlink() throws UnsupportedEncodingException {
+    Map<String,String> getKeywordHyperlink(AC_AutoMaton ac) throws UnsupportedEncodingException {
         Map<String,String> result = new HashMap<String,String>();
         Pattern p = Pattern.compile("\\s(\\S+?)(/PER|/LOC)");
         for(String s : seggedPListOfContent)

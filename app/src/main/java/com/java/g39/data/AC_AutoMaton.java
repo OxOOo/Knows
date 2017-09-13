@@ -10,10 +10,10 @@ import org.ahocorasick.trie.Trie;
  */
 
 
-public class AC_AutoMaton{
+class AC_AutoMaton {
     private class KeyValue
     {
-        public KeyValue(String k,int v)
+         KeyValue(String k,int v)
         {
             key=k;
             value=v;

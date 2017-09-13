@@ -18,10 +18,13 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        long start = System.currentTimeMillis();
         Manager.I.waitForInit()
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean aBoolean) throws Exception {
+                        System.out.println("waitForInit | " + (System.currentTimeMillis() - start));
+
                         Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                         SplashActivity.this.startActivity(mainIntent);
                         SplashActivity.this.finish();

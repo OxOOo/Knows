@@ -28,6 +28,7 @@ import java.util.concurrent.Exchanger;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleSource;
@@ -63,12 +64,14 @@ public class Manager {
 
     private FS fs;
     private Config config;
+    private AC_AutoMaton ac;
     private FlowableTransformer<SimpleNews, SimpleNews> liftAllSimple;
     private FlowableTransformer<DetailNews, DetailNews> liftAllDetail;
 
     private Manager(final Context context) throws IOException {
         this.fs = new FS(context);
         this.config = new Config(context);
+        this.ac = new AC_AutoMaton();
         this.liftAllSimple = new FlowableTransformer<SimpleNews, SimpleNews>() {
             @Override
             public Publisher<SimpleNews> apply(@NonNull Flowable<SimpleNews> upstream) {
@@ -103,6 +106,9 @@ public class Manager {
             @Override
             public Boolean call() throws Exception {
                 fs.waitForInit();
+                for(String key: fs.getWordPV().keySet()) {
+                    ac.add(key, getWordPV().get(key));
+                }
                 return true;
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -117,7 +123,7 @@ public class Manager {
     }
 
     /**
-     * 获取新闻
+     * 获取新闻,如果是由于关键词过滤掉了全部，则List<SimpleNews>包含DetailNews.NULL
      * @param pageNo
      * @param pageSize
      * @param category
@@ -410,7 +416,7 @@ public class Manager {
                     .flatMap(new Function<Integer, Publisher<Map.Entry<String,String>>>() {
                         @Override
                         public Publisher<Map.Entry<String,String>> apply(@NonNull Integer integer) throws Exception {
-                            return Flowable.fromIterable(detailNews.getKeywordHyperlink().entrySet());
+                            return Flowable.fromIterable(detailNews.getKeywordHyperlink(ac).entrySet());
                         }
                     })
                     .filter(new Predicate<Map.Entry<String, String>>() {
