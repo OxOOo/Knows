@@ -29,6 +29,7 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     private String mKeyword;
     private int mPageNo = 1;
     private boolean mLoading = false;
+    private long mLastFetchStart;
 
     public NewsListPresenter(NewsListContract.View view, int category, String keyword) {
         this.mView = view;
@@ -93,9 +94,9 @@ public class NewsListPresenter implements NewsListContract.Presenter {
     }
 
     private void fetchNews() {
-        mLoading = true;
         final long start = System.currentTimeMillis();
-
+        mLoading = true;
+        mLastFetchStart = start;
         Single<List<SimpleNews>> single = null;
         if (mKeyword.trim().length() > 0) {
             single = Manager.I.searchNews(mKeyword, mPageNo, PAGE_SIZE, mCategory);
@@ -109,6 +110,8 @@ public class NewsListPresenter implements NewsListContract.Presenter {
             @Override
             public void accept(List<SimpleNews> simpleNewses) throws Exception {
                 System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size());
+                if (start != mLastFetchStart) return;
+
                 mLoading = false;
                 if (mKeyword.trim().length() != 0 || mCategory > 0) {
                     mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
