@@ -1,5 +1,7 @@
 package com.java.g39.data;
 
+import android.util.Log;
+
 import java.util.*;
 
 import org.ahocorasick.trie.Emit;
@@ -42,8 +44,9 @@ class AC_AutoMaton {
         {
             String key=e.getKeyword();
             int v = map.get(e.getKeyword());
-            if(!set.contains(key))
+            if(!set.contains(key) && v<1300)
             {
+                //Log.d("ACM",key+" "+String.format("%d",v));
                 set.add(key);
                 sortList.add(new KeyValue(key,v));
             }

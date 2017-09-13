@@ -59,9 +59,12 @@ public class DetailNews extends SimpleNews {
             Matcher m = p.matcher(s);
             while (m.find()) {
                 String key=m.group(1);
-                result.put(key, "https://baike.baidu.com/item/"+ URLEncoder.encode(key, "UTF-8"));
+                if(key.length()>1)
+                    result.put(key, "https://baike.baidu.com/item/"+ URLEncoder.encode(key, "UTF-8"));
             }
         }
+        for(String key : ac.find(news_Content))
+            result.put(key, "https://baike.baidu.com/item/"+ URLEncoder.encode(key, "UTF-8"));
         return result;
     }
 
