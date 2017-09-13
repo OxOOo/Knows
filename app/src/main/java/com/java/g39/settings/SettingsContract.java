@@ -21,10 +21,6 @@ public interface SettingsContract {
 
         void showTextMode(boolean is_text_mode);
 
-        void setAllCategories(List<Config.Category> list);
-
-        void setAvailableCategories(List<Config.Category> list);
-
         /**
          * 弹窗
          * @param title 标题
@@ -44,8 +40,6 @@ public interface SettingsContract {
         void switchNightMode();
 
         void switchTextMode();
-
-        void switchAvailableCategory(int idx);
 
         /**
          * 清除缓存

@@ -22,10 +22,14 @@ public class Config {
     public interface NightModeChangeListener {
         void onChange();
     }
-    public class Category {
+    public static class Category {
         public String title;
         public int idx;
         Category(String title, int idx) { this.title = title; this.idx = idx; }
+
+        public static Category getRecommentCategory() {
+            return new Category(Constant.CATEGORYS[0], 0);
+        }
     }
 
     private String path;
@@ -95,6 +99,34 @@ public class Config {
             if (!available_categories.contains(x))
                 list.add(new Category(Constant.CATEGORYS[x], x));
         return list;
+    }
+
+    /**
+     * 添加分类
+     * @param idx
+     * @return 分类
+     */
+    public Category addCategory(Integer idx) {
+        if (!available_categories.contains(idx)) {
+            available_categories.add(idx);
+            saveConfig();
+            return new Category(Constant.CATEGORYS[idx], idx);
+        }
+        return null;
+    }
+
+    /**
+     * 删除分类
+     * @param idx
+     * @return 是否成功
+     */
+    public boolean removeCategory(Integer idx) {
+        if (available_categories.contains(idx)) {
+            available_categories.remove(idx);
+            saveConfig();
+            return true;
+        }
+        return false;
     }
 
     /**

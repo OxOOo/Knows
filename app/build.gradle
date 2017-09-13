@@ -47,6 +47,8 @@ dependencies {
     compile('com.xyzlf.share:sharesdk:0.0.9') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
+    compile 'com.beloo.widget:ChipsLayoutManager:0.3.7@aar'
+    compile 'com.github.pchmn:MaterialChipsInput:1.0.8'
     compile 'net.opacapp:multiline-collapsingtoolbar:1.4.0'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.android.support:appcompat-v7:25.3.1'

@@ -28,8 +28,6 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     public void subscribe() {
         mView.showNightMode(mConfig.isNightMode());
         mView.showTextMode(mConfig.isTextMode());
-        mView.setAllCategories(mConfig.allCategories());
-        mView.setAvailableCategories(mConfig.availableCategories());
     }
 
     @Override
@@ -45,11 +43,6 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     @Override
     public void switchTextMode() {
         mConfig.setTextMode(!mConfig.isTextMode());
-    }
-
-    @Override
-    public void switchAvailableCategory(int idx) {
-        mConfig.switchAvailable(idx);
     }
 
     @Override
