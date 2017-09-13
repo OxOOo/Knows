@@ -25,8 +25,7 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
 
     @Override
     public void subscribe() {
-        if (Manager.I.getConfig().isTextMode())
-            mView.setImageVisible(false);
+        mView.setImageVisible(!Manager.I.getConfig().isNightMode());
         Manager.I.fetchDetailNews(mNews_ID)
                 .subscribe(new Consumer<DetailNews>() {
                     @Override
