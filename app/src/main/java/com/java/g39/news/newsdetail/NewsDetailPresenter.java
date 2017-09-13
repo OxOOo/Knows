@@ -20,13 +20,12 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
         this.mNews_ID = news_ID;
         this.mView = view;
         view.setPresenter(this);
-        Manager.I.touchRead(mNews_ID);
     }
 
     @Override
     public void subscribe() {
-        if (Manager.I.getConfig().isTextMode())
-            mView.setImageVisible(false);
+        Manager.I.touchRead(mNews_ID);
+        mView.setImageVisible(!Manager.I.getConfig().isTextMode());
         Manager.I.fetchDetailNews(mNews_ID)
                 .subscribe(new Consumer<DetailNews>() {
                     @Override

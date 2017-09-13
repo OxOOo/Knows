@@ -152,7 +152,7 @@ public class Manager {
                 fs.insertSimple(simpleNews, category);
                 return simpleNews;
             }
-        }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+        }).compose(this.liftAllSimple).toList().map(new BlacklistFilter<SimpleNews>()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     /**
@@ -446,6 +446,26 @@ public class Manager {
                     }).subscribeOn(Schedulers.io());
 
             return detailNews;
+        }
+    }
+    private class BlacklistFilter<T extends SimpleNews> implements Function<List<T>, List<T>> {
+
+        @Override
+        public List<T> apply(@NonNull List<T> Ts) throws Exception {
+            List<T> new_Ts = new ArrayList<T>();
+            for(T t: Ts) {
+                boolean flag = true;
+                for(String item: config.getBlacklist())
+                    if (t.news_Title.contains(item)) {
+                        flag = false;
+                        break;
+                    }
+                if (flag) new_Ts.add(t);
+            }
+            if (new_Ts.size() == 0 && Ts.size() != 0) {
+                new_Ts.add((T)DetailNews.NULL);
+            }
+            return new_Ts;
         }
     }
 }

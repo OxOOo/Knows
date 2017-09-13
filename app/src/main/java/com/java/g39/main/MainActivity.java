@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -55,11 +56,13 @@ public class MainActivity extends AppCompatActivity
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
         mPresenter.setConfigNightModeChangeListener(() -> { // 白天/夜晚主题切换
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-            intent.putExtra(RESTART_BY_MODE, true);
-            MainActivity.this.startActivity(intent);
-            overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
-            MainActivity.this.finish();
+            new Handler().postDelayed(() -> {
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                intent.putExtra(RESTART_BY_MODE, true);
+                MainActivity.this.startActivity(intent);
+                overridePendingTransition(R.anim.in_anim, R.anim.out_anim);
+                MainActivity.this.finish();
+            }, 300);
         });
 
         setContentView(R.layout.activity_main);
