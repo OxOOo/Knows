@@ -16,17 +16,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:text="@string/setting_view"
-            android:textColor="@color/colorDetail" />
+            android:textColor="@color/colorDetail"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="16dp"
-            android:background="@color/colorCard"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="2dp"
-            app:contentPadding="8dp">
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,8 +37,8 @@
                 <Switch
                     android:id="@+id/switch_night"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_margin="4dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="8dp"
                     android:layout_weight="1"
                     android:drawableLeft="@android:drawable/ic_menu_help"
                     android:text="@string/action_night"
@@ -47,14 +48,13 @@
                 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:layout_marginLeft="36dp"
                     android:background="@color/colorBackground" />
 
                 <Switch
                     android:id="@+id/switch_text"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_margin="4dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="8dp"
                     android:layout_weight="1"
                     android:drawableLeft="@android:drawable/ic_menu_help"
                     android:text="@string/action_text"
@@ -68,17 +68,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:text="@string/setting_other"
-            android:textColor="@color/colorDetail" />
+            android:textColor="@color/colorDetail"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:background="@color/colorCard"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="2dp"
-            app:contentPadding="8dp">
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="2dp"
+            app:cardElevation="2dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -87,19 +88,26 @@
 
                 <Button
                     android:id="@+id/button_clear"
-                    style="@style/Widget.AppCompat.Button"
+                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_margin="4dp"
+                    android:gravity="center_vertical"
                     android:text="@string/action_clean"
                     android:textSize="16sp" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/colorBackground" />
+
                 <Button
                     android:id="@+id/button_update"
-                    style="@style/Widget.AppCompat.Button"
+                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_margin="4dp"
+                    android:gravity="center_vertical"
                     android:text="@string/action_update"
                     android:textSize="16sp" />
 
@@ -110,15 +118,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:text="@string/setting_tags"
-            android:textColor="@color/colorDetail" />
+            android:textColor="@color/colorDetail"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="4dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="2dp"
             app:cardElevation="2dp"
-            app:contentPadding="8dp">
+            app:contentPadding="16dp">
 
             <GridLayout
                 android:id="@+id/categoriesLayout"
