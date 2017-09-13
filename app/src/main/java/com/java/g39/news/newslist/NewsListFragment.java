@@ -66,6 +66,9 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         args.putInt("category", category);
         args.putString("keyword", keyword);
         fragment.setArguments(args);
+
+        NewsListPresenter presenter = new NewsListPresenter(fragment, category, keyword);
+
         return fragment;
     }
 
@@ -92,7 +95,6 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
             this.mPresenter.openNewsDetailUI(news, options.toBundle());
         });
 
-        mPresenter = new NewsListPresenter(this, mCategory, mKeyword);
         mPresenter.subscribe();
     }
 

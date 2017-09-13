@@ -39,7 +39,7 @@ public class NewsFragment extends Fragment {
 
     public void setKeyword(String keyword) {
         mKeyword = keyword;
-        mPagerAdapter.setKeyword(keyword);
+        mPagerAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -56,7 +56,7 @@ public class NewsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager(), Constant.CATEGORY_COUNT, mKeyword);
+        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager());
     }
 
     @Override
@@ -72,46 +72,41 @@ public class NewsFragment extends Fragment {
         for (int i = 0; i < Constant.CATEGORY_COUNT; i++)
             mTabLayout.addTab(mTabLayout.newTab());
         mTabLayout.setupWithViewPager(mViewPager);
-        for (int i = 0; i < Constant.CATEGORY_COUNT; i++) {
-            mTabLayout.getTabAt(i).setText(Constant.CATEGORYS[i]);
-        }
 
         return view;
     }
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
 
-        private List<NewsListFragment> mFragments = new ArrayList<NewsListFragment>();
-        private String mKeyword;
-
-        public MyPagerAdapter(FragmentManager fm, int size, String keyword) {
+        public MyPagerAdapter(FragmentManager fm) {
             super(fm);
-            mKeyword = keyword;
-            for (int i = 0; i < size; i++)
-                mFragments.add(null);
         }
 
-        public void setKeyword(String keyword) {
-            mKeyword = keyword;
-            for (NewsListFragment f : mFragments)
-                if (f != null) f.setKeyword(keyword);
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return Constant.CATEGORYS[position];
         }
 
         @Override
         public Fragment getItem(int position) {
-            try {
-                System.out.println(position);
-                if (mFragments.get(position) == null || !mKeyword.equals(mFragments.get(position).getKeyword()))
-                    mFragments.set(position, NewsListFragment.newInstance(position, mKeyword));
-                return mFragments.get(position);
-            } catch (Exception e) {
-                return new Fragment();
-            }
+            return NewsListFragment.newInstance(position, mKeyword);
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            NewsListFragment f = (NewsListFragment) super.instantiateItem(container, position);
+            f.setKeyword(mKeyword);
+            return f;
         }
 
         @Override
         public int getCount() {
             return Constant.CATEGORY_COUNT;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
