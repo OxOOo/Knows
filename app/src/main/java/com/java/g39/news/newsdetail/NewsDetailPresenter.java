@@ -24,7 +24,6 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
 
     @Override
     public void subscribe() {
-        Manager.I.touchRead(mNews_ID);
         mView.setImageVisible(!Manager.I.getConfig().isTextMode());
         Manager.I.fetchDetailNews(mNews_ID)
                 .subscribe(new Consumer<DetailNews>() {
@@ -34,6 +33,7 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
                             mView.setImageVisible(false);
                             mView.onError();
                         } else {
+                            Manager.I.touchRead(mNews_ID);
                             mView.setNewsDetail(detailNews);
                             mView.setImageVisible(!Manager.I.getConfig().isTextMode());
                         }

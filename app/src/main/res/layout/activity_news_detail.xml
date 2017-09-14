@@ -67,57 +67,45 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="6dp">
+            android:padding="8dp">
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/bottom_favorite"
                 android:layout_width="@dimen/bottom_button_width"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/bottom_button_width"
                 android:layout_weight="1"
-                android:drawablePadding="3dp"
-                android:drawableTop="@drawable/selector_favorite"
-                android:gravity="center"
-                android:text="@string/action_favorite"
-                android:textColor="@color/colorDetail" />
+                android:src="@drawable/selector_favorite" />
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/bottom_speech"
                 android:layout_width="@dimen/bottom_button_width"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/bottom_button_width"
                 android:layout_weight="1"
-                android:drawablePadding="3dp"
-                android:drawableTop="@drawable/selector_favorite"
-                android:gravity="center"
-                android:text="@string/action_speech"
-                android:textColor="@color/colorDetail" />
+                android:src="@drawable/selector_speaker" />
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <TextView
+            <ImageView
                 android:id="@+id/bottom_share"
                 android:layout_width="@dimen/bottom_button_width"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/bottom_button_width"
                 android:layout_weight="1"
-                android:drawablePadding="3dp"
-                android:drawableTop="?attr/actionModeShareDrawable"
-                android:gravity="center"
-                android:text="@string/action_share"
-                android:textColor="@color/colorDetail" />
+                android:src="@drawable/ic_share" />
 
             <Space
                 android:layout_width="0dp"
@@ -139,7 +127,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/selector_favorite"
+        android:src="@drawable/selector_favorite_white"
         android:stateListAnimator="@drawable/anim_fab"
         app:elevation="6dp"
         app:layout_anchor="@id/appbar"
