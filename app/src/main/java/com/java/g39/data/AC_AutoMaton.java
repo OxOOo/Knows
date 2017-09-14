@@ -48,9 +48,9 @@ class AC_AutoMaton {
         int tot=0;
         for(String s : keys)
             keys_[tot++]=s;
+        keys=null;
         trie.createTrie(keys_);
         trie.getFailure();
-        keys=null;
     }
 
     //查询文本中和AC自动机匹配的全部词条，并按优先级排序
