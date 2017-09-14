@@ -8,10 +8,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -32,10 +34,10 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     private SettingsContract.Presenter mPresenter;
     private Switch mNightSwitch;
     private Switch mTextSwitch;
-    private Button mAddButton;
+    private Button mAddTagButton, mAddKeywordButton;
 
-    private RecyclerView mTagsView;
-    private TagsAdapter mTagsAdapter;
+    private RecyclerView mTagsView, mBlacklistView;
+    private ChipsAdapter mTagsAdapter, mBlacklistAdapter;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -54,8 +56,19 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mTagsAdapter = new TagsAdapter();
         mPresenter = new SettingsPresenter(this);
+        mTagsAdapter = new ChipsAdapter<Config.Category>(mPresenter.getTags(), 0) {
+            @Override
+            String getChipsTitle(final Config.Category chip) {
+                return chip.title;
+            }
+        };
+        mBlacklistAdapter = new ChipsAdapter<String>(mPresenter.getBlacklist()) {
+            @Override
+            String getChipsTitle(final String chip) {
+                return chip;
+            }
+        };
     }
 
     @Override
@@ -75,10 +88,11 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
 
         mNightSwitch = (Switch) view.findViewById(R.id.switch_night);
         mTextSwitch = (Switch) view.findViewById(R.id.switch_text);
-        mAddButton = (Button) view.findViewById(R.id.button_add_tag);
+        mAddTagButton = (Button) view.findViewById(R.id.button_add_tag);
+        mAddKeywordButton = (Button) view.findViewById(R.id.button_add_keyword);
         mNightSwitch.setOnClickListener((View v) -> mPresenter.switchNightMode());
         mTextSwitch.setOnClickListener((View v) -> mPresenter.switchTextMode());
-        mAddButton.setOnClickListener((View v) -> {
+        mAddTagButton.setOnClickListener((View v) -> {
             List<Config.Category> list = Manager.I.getConfig().unavailableCategories();
             if (list.isEmpty()) return;
             String[] array = new String[list.size()];
@@ -87,23 +101,64 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("请选择要添加的首页标签").setNegativeButton("取消", null);
-            builder.setItems(array, (DialogInterface dialog, int which) -> {
-                mTagsAdapter.addTag(list.get(which).idx);
-            });
+            builder.setItems(array, (DialogInterface dialog, int which) -> mPresenter.addTag(list.get(which)));
             builder.create().show();
         });
+        mAddKeywordButton.setOnClickListener((View v) -> {
+            EditText input = new EditText(getContext());
+            input.setSingleLine(true);
+            input.setTextAlignment(EditText.TEXT_ALIGNMENT_CENTER);
+            input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
 
-        mAddButton.setEnabled(mTagsAdapter.getItemCount() < Constant.CATEGORY_COUNT);
-        mTagsAdapter.setOnTagsCountChangeListener((int count) -> mAddButton.setEnabled(count < Constant.CATEGORY_COUNT));
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            AlertDialog dialog = builder.setTitle("请输入要屏蔽的关键词")
+                    .setPositiveButton("确定", null)
+                    .setNegativeButton("取消", null)
+                    .setView(input).create();
+            dialog.show();
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener((View) -> {
+                final String str = input.getText().toString().trim().toLowerCase();
+                final String regex = "^[a-z0-9\u4e00-\u9fa5]+$";
 
-        ChipsLayoutManager chipsLayoutManager = ChipsLayoutManager.newBuilder(getContext())
+                if (str.isEmpty())
+                    onShowToast("关键词不能为空");
+                else if (!str.matches(regex))
+                    onShowToast("关键词只能包含汉字、字母和数字");
+                else {
+                    mPresenter.addKeyword(str);
+                    dialog.dismiss();
+                }
+            });
+        });
+
+        mAddTagButton.setEnabled(mTagsAdapter.getItemCount() < Constant.CATEGORY_COUNT);
+        mTagsAdapter.setOnTagsCountChangeListener((int count) -> mAddTagButton.setEnabled(count < Constant.CATEGORY_COUNT));
+        mTagsAdapter.setOnRemoveChipListener((View v, int position) -> {
+            Config.Category tag = (Config.Category) mTagsAdapter.getChip(position);
+            mPresenter.removeTag(tag, position);
+        });
+        mBlacklistAdapter.setOnRemoveChipListener((View v, int position) -> {
+            String keyword = (String) mBlacklistAdapter.getChip(position);
+            mPresenter.removeKeyword(keyword, position);
+        });
+
+        ChipsLayoutManager tagsLayoutManager = ChipsLayoutManager.newBuilder(getContext())
                 .setRowStrategy(ChipsLayoutManager.STRATEGY_CENTER)
                 .withLastRow(true)
                 .build();
         mTagsView = (RecyclerView) view.findViewById(R.id.tags_view);
-        mTagsView.setLayoutManager(chipsLayoutManager);
+        mTagsView.setLayoutManager(tagsLayoutManager);
         mTagsView.setItemAnimator(new DefaultItemAnimator());
         mTagsView.setAdapter(mTagsAdapter);
+
+        ChipsLayoutManager blacklistLayoutManager = ChipsLayoutManager.newBuilder(getContext())
+                .setRowStrategy(ChipsLayoutManager.STRATEGY_CENTER)
+                .withLastRow(true)
+                .build();
+        mBlacklistView = (RecyclerView) view.findViewById(R.id.blacklist_view);
+        mBlacklistView.setLayoutManager(blacklistLayoutManager);
+        mBlacklistView.setItemAnimator(new DefaultItemAnimator());
+        mBlacklistView.setAdapter(mBlacklistAdapter);
 
         return view;
     }
@@ -121,6 +176,26 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     @Override
     public void start(Intent intent, Bundle options) {
         startActivity(intent, options);
+    }
+
+    @Override
+    public void onAddTag(Config.Category tag) {
+        mTagsAdapter.addChip(tag);
+    }
+
+    @Override
+    public void onRemoveTag(Config.Category tag, int position) {
+        mTagsAdapter.removeChip(position);
+    }
+
+    @Override
+    public void onAddKeyword(String keyword) {
+        mBlacklistAdapter.addChip(keyword);
+    }
+
+    @Override
+    public void onRemoveKeyword(String keyword, int position) {
+        mBlacklistAdapter.removeChip(position);
     }
 
     @Override

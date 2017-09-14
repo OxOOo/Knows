@@ -457,7 +457,7 @@ public class Manager {
             for(T t: Ts) {
                 boolean flag = true;
                 for(String item: config.getBlacklist())
-                    if (t.news_Title.contains(item)) {
+                    if (t.news_Title.toLowerCase().contains(item)) {
                         flag = false;
                         break;
                     }
