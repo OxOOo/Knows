@@ -44,14 +44,14 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setData(List<SimpleNews> data) {
-        mData = data;
+        mData = new ArrayList<SimpleNews>(data);
         this.notifyDataSetChanged();
     }
 
     public void appendData(List<SimpleNews> data) {
         int pos = mData.size();
         mData.addAll(data);
-        this.notifyItemRangeChanged(pos, mData.size());
+        this.notifyItemRangeChanged(pos, getItemCount());
     }
 
     public void removeItem(int position) {
@@ -70,7 +70,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setFooterVisible(boolean visible) {
-        mIsShowFooter = visible;
+        if (mIsShowFooter != visible) {
+            mIsShowFooter = visible;
+            if (mIsShowFooter)
+                this.notifyItemInserted(mData.size());
+            else
+                this.notifyItemRemoved(mData.size());
+        }
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

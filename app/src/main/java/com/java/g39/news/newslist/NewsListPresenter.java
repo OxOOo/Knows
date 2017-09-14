@@ -109,15 +109,23 @@ public class NewsListPresenter implements NewsListContract.Presenter {
         single.subscribe(new Consumer<List<SimpleNews>>() {
             @Override
             public void accept(List<SimpleNews> simpleNewses) throws Exception {
-                System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size());
+                System.out.println(System.currentTimeMillis() - start + " | " + mCategory + " | " + simpleNewses.size() + " | " + mPageNo);
                 if (start != mLastFetchStart) return;
 
                 mLoading = false;
                 if (mKeyword.trim().length() != 0 || mCategory > 0) {
-                    mView.onSuccess(simpleNewses.size() == 0); // TODO check if load completed
+                    mView.onSuccess(simpleNewses.size() == 0);
+                    if (simpleNewses.size() == 1 && simpleNewses.get(0) == DetailNews.NULL) {
+                        simpleNewses.clear();
+                        requireMoreNews();
+                    }
+
                     // TODO onError
                     if (mPageNo == 1) mView.setNewsList(simpleNewses);
                     else mView.appendNewsList(simpleNewses);
+
+                    if (mPageNo == 1 && simpleNewses.size() > 0 && simpleNewses.size() < 10)
+                        requireMoreNews();
                 } else {
                     if (mPageNo > 1 || simpleNewses.size() == 0) {
                         mView.onSuccess(true);

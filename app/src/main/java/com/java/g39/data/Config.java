@@ -66,13 +66,24 @@ public class Config {
         saveConfig();
     }
 
-    public void insertBlacklist(String x) {
-        if (!blacklist.contains(x)) blacklist.add(x);
-        saveConfig();
+    public boolean insertBlacklist(String x) {
+        if (!blacklist.contains(x)) {
+            blacklist.add(x);
+            saveConfig();
+            return true;
+        }
+        return false;
     }
-    public void removeBlacklist(String x) {
-        if (!blacklist.contains(x)) blacklist.remove(x);
+
+    public boolean removeBlacklist(String x) {
+        if (blacklist.contains(x)) {
+            blacklist.remove(x);
+            saveConfig();
+            return true;
+        }
+        return false;
     }
+
     public List<String> getBlacklist() {
         return blacklist;
     }
@@ -91,10 +102,12 @@ public class Config {
 
     /**
      * 已选的分类
+     * @param withFirst 是否包含第一个分类
      * @return
      */
-    public List<Category> availableCategories() {
+    public List<Category> availableCategories(boolean withFirst) {
         List<Category> list = new ArrayList<>();
+        if (withFirst) list.add(Category.getRecommentCategory());
         for(int x: available_categories) {
             list.add(new Category(Constant.CATEGORYS[x], x));
         }
@@ -115,26 +128,26 @@ public class Config {
 
     /**
      * 添加分类
-     * @param idx
-     * @return 分类
+     * @param category 分类
+     * @return 是否成功
      */
-    public Category addCategory(Integer idx) {
-        if (!available_categories.contains(idx)) {
-            available_categories.add(idx);
+    public boolean addCategory(Category category) {
+        if (!available_categories.contains(category.idx)) {
+            available_categories.add(category.idx);
             saveConfig();
-            return new Category(Constant.CATEGORYS[idx], idx);
+            return true;
         }
-        return null;
+        return false;
     }
 
     /**
      * 删除分类
-     * @param idx
+     * @param category 分类
      * @return 是否成功
      */
-    public boolean removeCategory(Integer idx) {
-        if (available_categories.contains(idx)) {
-            available_categories.remove(idx);
+    public boolean removeCategory(Category category) {
+        if (available_categories.contains(category.idx)) {
+            available_categories.remove((Integer)category.idx);
             saveConfig();
             return true;
         }
