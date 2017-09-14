@@ -46,7 +46,10 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     }
 
     public void setKeyword(String keyword) {
-        mPresenter.setKeyword(keyword);
+        mKeyword = keyword;
+        Bundle args = this.getArguments();
+        args.putString("keyword", keyword);
+        this.setArguments(args);
     }
 
     public String getKeyword() {
@@ -66,9 +69,6 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         args.putInt("category", category);
         args.putString("keyword", keyword);
         fragment.setArguments(args);
-
-        NewsListPresenter presenter = new NewsListPresenter(fragment, category, keyword);
-
         return fragment;
     }
 
@@ -78,6 +78,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         mLastClickPosition = -1;
         mCategory = getArguments().getInt("category");
         mKeyword = getArguments().getString("keyword");
+        mPresenter = new NewsListPresenter(this, mCategory, mKeyword);
 
         mAdapter = new NewsAdapter(getContext());
         mAdapter.setOnItemClickListener((View itemView, int position) -> {
@@ -104,7 +105,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         // FIXME notify other view page
 //        if (mLastClickPosition >= 0) // 在离线情况下，点击不代表已读
 //            mAdapter.notifyItemChanged(mLastClickPosition);
-        if (mLastClickPosition >= 0)
+        if (mLastClickPosition >= 0 && mPresenter != null)
             mPresenter.fetchNewsRead(mLastClickPosition, mAdapter.getNews(mLastClickPosition));
     }
 

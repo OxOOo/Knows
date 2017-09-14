@@ -44,14 +44,14 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setData(List<SimpleNews> data) {
-        mData = data;
+        mData = new ArrayList<SimpleNews>(data);
         this.notifyDataSetChanged();
     }
 
     public void appendData(List<SimpleNews> data) {
         int pos = mData.size();
         mData.addAll(data);
-        this.notifyItemRangeChanged(pos, mData.size());
+        this.notifyItemRangeChanged(pos, getItemCount());
     }
 
     public void removeItem(int position) {
@@ -70,7 +70,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void setFooterVisible(boolean visible) {
-        mIsShowFooter = visible;
+        if (mIsShowFooter != visible) {
+            mIsShowFooter = visible;
+            if (mIsShowFooter)
+                this.notifyItemInserted(mData.size());
+            else
+                this.notifyItemRemoved(mData.size());
+        }
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -99,11 +105,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             item.mImage.setImageBitmap(null);
             item.setBackgroundColor(mContext.getResources().getColor(news.has_read ? R.color.colorCardRead : R.color.colorCard));
             item.mCurrentPosition = position;
+            final long start = System.currentTimeMillis();
             news.single_picture_url
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<String>() {
                         @Override
                         public void accept(String s) throws Exception {
+                            System.out.println("single_picture_url : " + (System.currentTimeMillis() - start));
                             if (item.mCurrentPosition == position)
                                 ImageLoader.displayImage(s, item.mImage);
                             else

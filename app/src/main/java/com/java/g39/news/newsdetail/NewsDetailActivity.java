@@ -41,6 +41,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
 
     private NewsDetailContract.Presenter mPresenter;
     private DetailNews mNews;
+    private boolean mError;
 
     private TextView mTag, mDetail, mContent;
     private ImageView mImage;
@@ -92,6 +93,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         boolean news_is_favorited = getIntent().getBooleanExtra(NEWS_IS_FAVORITED, false);
 
         mPresenter = new NewsDetailPresenter(this, news_ID);
+        mError = false;
 
         setContentView(R.layout.activity_news_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -150,6 +152,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
 
     @Override
     protected void onResume() {
+        findViewById(R.id.progress_bar).setVisibility(mNews != null || mError ? View.INVISIBLE : View.VISIBLE);
         super.onResume();
     }
 
@@ -223,6 +226,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     @Override
     public void setNewsDetail(DetailNews news) {
         mNews = news;
+        mError = false;
         mTag.setText(news.newsClassTag);
         mDetail.setText((news.news_Author.isEmpty() ? news.news_Source : news.news_Author) + "　" + news.formatTime());
         mFab.setSelected(news.is_favorite);
@@ -273,8 +277,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
         mFavoriteBtn.setClickable(true);
         mSpeechBtn.setClickable(true);
         mShareBtn.setClickable(true);
-        findViewById(R.id.progress_bar).setVisibility(View.GONE);
-        findViewById(R.id.layout_error).setVisibility(View.GONE);
+        findViewById(R.id.progress_bar).setVisibility(View.INVISIBLE);
+        findViewById(R.id.layout_error).setVisibility(View.INVISIBLE);
         findViewById(R.id.layout_content).setVisibility(View.VISIBLE);
     }
 
@@ -292,6 +296,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
 
     @Override
     public void onError() {
+        mError = true;
         mFab.setClickable(false);
         mFavoriteBtn.setClickable(false);
         mSpeechBtn.setClickable(false);

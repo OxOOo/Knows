@@ -20,11 +20,13 @@
     <string name="setting_view">外观</string>
     <string name="setting_other">其他</string>
     <string name="setting_tags">首页标签</string>
+    <string name="setting_blacklist">关键词屏蔽</string>
     <string name="about_us">关于我们</string>
     <string name="action_night">夜间模式</string>
     <string name="action_text">无图模式</string>
     <string name="action_clean">清空缓存</string>
     <string name="action_update">检查更新</string>
+    <string name="action_add_tag">添加</string>
 
     <string name="about_addr">https://git.oschina.net/_yuguo_tianqing/Knows</string>
     <string name="about_author">Group 39</string>

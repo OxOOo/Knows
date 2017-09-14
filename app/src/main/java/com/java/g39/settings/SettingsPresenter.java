@@ -7,6 +7,8 @@ import com.java.g39.data.Config;
 import com.java.g39.data.ImageLoader;
 import com.java.g39.data.Manager;
 
+import java.util.List;
+
 import io.reactivex.functions.Consumer;
 
 /**
@@ -28,8 +30,6 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     public void subscribe() {
         mView.showNightMode(mConfig.isNightMode());
         mView.showTextMode(mConfig.isTextMode());
-        mView.setAllCategories(mConfig.allCategories());
-        mView.setAvailableCategories(mConfig.availableCategories());
     }
 
     @Override
@@ -45,11 +45,6 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     @Override
     public void switchTextMode() {
         mConfig.setTextMode(!mConfig.isTextMode());
-    }
-
-    @Override
-    public void switchAvailableCategory(int idx) {
-        mConfig.switchAvailable(idx);
     }
 
     @Override
@@ -69,5 +64,41 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     @Override
     public void checkUpdate() {
         mView.onShowAlertDialog("您已经是最新版", "当前版本：V1.0.0");
+    }
+
+    @Override
+    public List<Config.Category> getTags() {
+        return mConfig.availableCategories(true);
+    }
+
+    @Override
+    public void addTag(Config.Category tag) {
+        if (mConfig.addCategory(tag))
+            mView.onAddTag(tag);
+    }
+
+    @Override
+    public void removeTag(Config.Category tag, int position) {
+        if (mConfig.removeCategory(tag))
+            mView.onRemoveTag(tag, position);
+    }
+
+    @Override
+    public List<String> getBlacklist() {
+        return mConfig.getBlacklist();
+    }
+
+    @Override
+    public void addKeyword(String keyword) {
+        if (mConfig.insertBlacklist(keyword))
+            mView.onAddKeyword(keyword);
+        else
+            mView.onShowToast("该关键词已存在");
+    }
+
+    @Override
+    public void removeKeyword(String keyword, int position) {
+        if (mConfig.removeBlacklist(keyword))
+            mView.onRemoveKeyword(keyword, position);
     }
 }

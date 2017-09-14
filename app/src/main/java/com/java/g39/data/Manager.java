@@ -66,6 +66,7 @@ public class Manager {
     private FS fs;
     private Config config;
     private AC_AutoMaton ac;
+    private Thread ac_thread;
     private FlowableTransformer<SimpleNews, SimpleNews> liftAllSimple;
     private FlowableTransformer<DetailNews, DetailNews> liftAllDetail;
 
@@ -103,14 +104,25 @@ public class Manager {
     }
 
     public Single<Boolean> waitForInit() {
+        ac_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for(String key: fs.getWordPV().keySet()) {
+                        ac.add(key, fs.getWordPV().get(key));
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ac.fix();
+            }
+        });
+        ac_thread.start();
+
         return Single.fromCallable(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 fs.waitForInit();
-                for(String key: fs.getWordPV().keySet()) {
-                    ac.add(key, getWordPV().get(key));
-                }
-                ac.fix();
                 return true;
             }
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
@@ -118,10 +130,6 @@ public class Manager {
 
     public Config getConfig() {
         return config;
-    }
-
-    Map<String, Integer> getWordPV() {
-        return fs.getWordPV();
     }
 
     /**
@@ -204,6 +212,12 @@ public class Manager {
             @Override
             public Publisher<? extends SimpleNews> apply(@NonNull List<SimpleNews> simpleNewses) throws Exception {
                 return Flowable.fromIterable(simpleNewses);
+            }
+        }).map(new Function<SimpleNews, SimpleNews>() {
+            @Override
+            public SimpleNews apply(@NonNull SimpleNews simpleNews) throws Exception {
+                simpleNews.from_search = true;
+                return simpleNews;
             }
         }).compose(this.liftAllSimple).toList().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
@@ -374,6 +388,10 @@ public class Manager {
 
                     String picture_url = fs.fetchPictureUrl(t.news_ID);
 
+                    if (picture_url == null && t.from_search) {
+                        picture_url = fs.randomPictureUrl();
+                    }
+
                     if (picture_url == null) { // 搜索
                         DetailNews news = fs.fetchDetail(t.news_ID);
                         try {
@@ -418,6 +436,7 @@ public class Manager {
                     .flatMap(new Function<Integer, Publisher<String>>() {
                         @Override
                         public Publisher<String> apply(@NonNull Integer integer) throws Exception {
+                            if (ac_thread != null && ac_thread.isAlive()) ac_thread.join();
                             return Flowable.fromIterable(detailNews.getKeywordHyperlink(ac));
                         }
                     })
@@ -457,7 +476,7 @@ public class Manager {
             for(T t: Ts) {
                 boolean flag = true;
                 for(String item: config.getBlacklist())
-                    if (t.news_Title.contains(item)) {
+                    if (t.news_Title.toLowerCase().contains(item)) {
                         flag = false;
                         break;
                     }
