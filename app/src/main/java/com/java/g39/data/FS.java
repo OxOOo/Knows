@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -38,8 +39,10 @@ import java.util.TreeMap;
 class FS {
     private SQLiteDatabase db, sdb;
     private String db_path, sdb_path;
-    private Thread sdb_thread, word_pv_thread;
+    private Thread sdb_thread, word_pv_thread, picture_list_thread;
     private Map<String, Integer> word_pv;
+    private List<String> picture_list;
+    private Random rand = new Random();
 
     private static final String TABLE_NAME_SIMPLE = "news_simple";
     private static final String TABLE_NAME_DETAIL = "news_detail";
@@ -62,6 +65,7 @@ class FS {
 
         createSDBThread(context);
         createWordPVThread(context);
+        createPictureListThread(context);
 
         // dropTables(); // FIXME
         createTables();
@@ -70,9 +74,11 @@ class FS {
     void waitForInit() throws InterruptedException {
         if (sdb_thread != null && sdb_thread.isAlive()) sdb_thread.join();
         if (word_pv_thread != null && word_pv_thread.isAlive()) word_pv_thread.join();
+        if (picture_list_thread != null && picture_list_thread.isAlive()) picture_list_thread.join();
     }
 
-    Map<String, Integer> getWordPV() {
+    Map<String, Integer> getWordPV() throws InterruptedException {
+        if (word_pv_thread != null && word_pv_thread.isAlive()) word_pv_thread.join();
         return word_pv;
     }
 
@@ -142,6 +148,28 @@ class FS {
             }
         });
         word_pv_thread.start();
+    }
+
+    private void createPictureListThread(final Context context) {
+        picture_list_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                picture_list = new ArrayList<>();
+                if (sdb_thread.isAlive()) try {
+                    sdb_thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                String cmd = String.format("SELECT * FROM `%s`", TABLE_NAME_PICTURE);
+                Cursor cursor = sdb.rawQuery(cmd, null);
+                cursor = sdb.rawQuery(cmd, null);
+                while (cursor.moveToNext()) {
+                    picture_list.add(cursor.getString(cursor.getColumnIndex(KEY_PICTURE)));
+                }
+                cursor.close();
+            }
+        });
+        picture_list_thread.start();
     }
 
     void createTables() {
@@ -314,6 +342,10 @@ class FS {
         }
 
         return url;
+    }
+
+    synchronized String randomPictureUrl() {
+        return picture_list.get(rand.nextInt(picture_list.size()));
     }
 
     void setLinkValue(String word, Boolean value) {
