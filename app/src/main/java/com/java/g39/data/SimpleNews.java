@@ -32,10 +32,14 @@ public class SimpleNews {
     public boolean from_search = false; // 是否是搜索
 
     public String formatTime() {
-        if (news_Time.length() == 14) {
-            return news_Time.substring(0, 4) + "-" + news_Time.substring(4, 6) + "-" + news_Time.substring(6, 8);
-        } else {
-            return news_ID.substring(0, 4) + "-" + news_ID.substring(4, 6) + "-" + news_ID.substring(6, 8);
+        try {
+            if (news_Time.length() == 14) {
+                return news_Time.substring(0, 4) + "-" + news_Time.substring(4, 6) + "-" + news_Time.substring(6, 8);
+            } else {
+                return news_ID.substring(0, 4) + "-" + news_ID.substring(4, 6) + "-" + news_ID.substring(6, 8);
+            }
+        } catch(Exception e) {
+            return "0000-00-00";
         }
     }
 }
