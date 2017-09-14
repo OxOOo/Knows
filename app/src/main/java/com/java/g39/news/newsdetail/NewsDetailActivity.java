@@ -48,8 +48,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
     private FloatingActionButton mFab;
     private NestedScrollView mScrollView;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private View mBottomView;
-    private TextView mFavoriteBtn, mSpeechBtn, mShareBtn;
+    private View mBottomView, mFavoriteBtn, mSpeechBtn, mShareBtn;
     private Speech mSpeaker;
 
     private void onFavoite() {
@@ -124,9 +123,9 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
             }
         });
 
-        mFavoriteBtn = (TextView) findViewById(R.id.bottom_favorite);
-        mSpeechBtn = (TextView) findViewById(R.id.bottom_speech);
-        mShareBtn = (TextView) findViewById(R.id.bottom_share);
+        mFavoriteBtn = findViewById(R.id.bottom_favorite);
+        mSpeechBtn = findViewById(R.id.bottom_speech);
+        mShareBtn = findViewById(R.id.bottom_share);
         mFavoriteBtn.setOnClickListener((View view) -> onFavoite());
         mSpeechBtn.setOnClickListener((View view) -> onSpeech());
         mShareBtn.setOnClickListener((View view) -> onShare());
