@@ -77,6 +77,7 @@
                 android:cropToPadding="false"
                 android:paddingLeft="72dp"
                 android:paddingRight="72dp"
+                android:paddingTop="72dp"
                 app:srcCompat="@mipmap/error" />
 
             <TextView
@@ -87,15 +88,14 @@
                 android:textAlignment="center"
                 android:textSize="16dp" />
 
-            <TextView
-                android:id="@+id/text_reload"
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/button_reload"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="@string/reload_tips"
-                android:textColor="@drawable/selector_text"
-                android:textSize="16sp" />
+                android:layout_gravity="center"
+                android:text="@string/reload_tips" />
+
         </LinearLayout>
 
     </FrameLayout>

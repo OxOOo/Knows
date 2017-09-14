@@ -145,7 +145,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
             ImageLoader.displayImage(news_picture_url, mImage);
         }
 
-        findViewById(R.id.text_reload).setOnClickListener((View view) -> mPresenter.subscribe());
+        findViewById(R.id.button_reload).setOnClickListener((View view) -> mPresenter.subscribe());
 
         mPresenter.subscribe();
     }
@@ -308,6 +308,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailC
 
     @Override
     public void setImageVisible(boolean visible) {
-        findViewById(R.id.image_layout).setVisibility(visible ? View.VISIBLE : View.GONE);
+        findViewById(R.id.image_layout).setVisibility(visible && !mError ? View.VISIBLE : View.GONE);
     }
 }
