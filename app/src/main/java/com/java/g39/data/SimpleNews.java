@@ -29,8 +29,13 @@ public class SimpleNews {
     public boolean is_favorite = false; // 是否已收藏
 
     public boolean from_disk; // 是否是从磁盘上读取的
+    public boolean from_search = false; // 是否是搜索
 
     public String formatTime() {
-        return news_Time.length() != 14 ? "0000-00-00" : news_Time.substring(0, 4) + "-" + news_Time.substring(4, 6) + "-" + news_Time.substring(6, 8);
+        if (news_Time.length() == 14) {
+            return news_Time.substring(0, 4) + "-" + news_Time.substring(4, 6) + "-" + news_Time.substring(6, 8);
+        } else {
+            return news_ID.substring(0, 4) + "-" + news_ID.substring(4, 6) + "-" + news_ID.substring(6, 8);
+        }
     }
 }
