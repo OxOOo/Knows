@@ -25,13 +25,13 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="QingQing News"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorNavTitle" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Make life much more fun"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorNavTitle" />
 
 </LinearLayout>

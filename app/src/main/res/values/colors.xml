@@ -5,6 +5,8 @@
     <color name="colorPrimaryDark">#ee9900</color>
     <color name="colorAccent">#FF3322</color>
 
+    <color name="colorNavTitle">#be5900</color>
+
     <color name="colorTabSelectedText">#FFFFFF</color>
     <color name="colorTabText">#994400</color>
 
