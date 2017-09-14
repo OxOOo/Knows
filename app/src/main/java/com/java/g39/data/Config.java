@@ -12,6 +12,11 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenyu on 2017/9/12.
@@ -34,6 +39,7 @@ public class Config {
 
     private String path;
 
+    private Scheduler save_thread = Schedulers.newThread();
     private NightModeChangeListener mode_listener = null;
     private boolean night_mode; // 夜间模式
     private boolean text_mode; // 无图模式/文字模式
@@ -199,24 +205,32 @@ public class Config {
     }
 
     void saveConfig() {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("night_mode", night_mode);
-            obj.put("text_mode", text_mode);
-            JSONArray available_categories_array = new JSONArray();
-            for(int x: available_categories)
-                available_categories_array.put(x);
-            obj.put("available_categories", available_categories_array);
-            JSONArray blacklist_array = new JSONArray();
-            for(String x: blacklist)
-                blacklist_array.put(x);
-            obj.put("blacklist", blacklist_array);
 
-            OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(path));
-            w.write(obj.toString());
-            w.close();
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        Single.fromCallable(new Callable<Boolean>() {
+
+            @Override
+            public Boolean call() throws Exception {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("night_mode", night_mode);
+                    obj.put("text_mode", text_mode);
+                    JSONArray available_categories_array = new JSONArray();
+                    for(int x: available_categories)
+                        available_categories_array.put(x);
+                    obj.put("available_categories", available_categories_array);
+                    JSONArray blacklist_array = new JSONArray();
+                    for(String x: blacklist)
+                        blacklist_array.put(x);
+                    obj.put("blacklist", blacklist_array);
+
+                    OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(path));
+                    w.write(obj.toString());
+                    w.close();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        }).subscribeOn(save_thread).subscribe();
     }
 }

@@ -463,7 +463,7 @@ public class Manager {
                                 rst.put(e, "https://baike.baidu.com/item/"+ URLEncoder.encode(e, "UTF-8"));
                             return rst;
                         }
-                    }).subscribeOn(Schedulers.io());
+                    }).subscribeOn(Schedulers.computation());
 
             return detailNews;
         }
