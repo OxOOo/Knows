@@ -6,6 +6,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="search">搜索</string>
+    <string name="search_not_found">找不到相关内容</string>
 
     <string name="nav_news_title">新闻</string>
     <string name="nav_favorites_title">收藏</string>

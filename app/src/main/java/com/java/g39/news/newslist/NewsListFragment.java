@@ -14,6 +14,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.java.g39.R;
@@ -40,6 +41,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     private RecyclerView mRecyclerView;
     private NewsAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
+    private View mTextEmpty;
 
     public NewsListFragment() {
         // Required empty public constructor
@@ -119,6 +121,9 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_list, container, false);
 
+        mTextEmpty = view.findViewById(R.id.text_empty);
+        mTextEmpty.setVisibility(mAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+
         mSwipeRefreshWidget = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_widget);
         mSwipeRefreshWidget.setColorSchemeColors(getResources().getColor(colorPrimary.resourceId));
         mSwipeRefreshWidget.setOnRefreshListener(() -> {
@@ -172,6 +177,7 @@ public class NewsListFragment extends Fragment implements NewsListContract.View 
     @Override
     public void setNewsList(List<SimpleNews> list) {
         mAdapter.setData(list);
+        mTextEmpty.setVisibility(mAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
     @Override

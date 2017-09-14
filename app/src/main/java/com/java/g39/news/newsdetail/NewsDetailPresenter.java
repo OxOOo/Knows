@@ -34,8 +34,8 @@ public class NewsDetailPresenter implements NewsDetailContract.Presenter {
                             mView.setImageVisible(false);
                             mView.onError();
                         } else {
-                            mView.setImageVisible(!Manager.I.getConfig().isTextMode());
                             mView.setNewsDetail(detailNews);
+                            mView.setImageVisible(!Manager.I.getConfig().isTextMode());
                         }
                     }
                 });

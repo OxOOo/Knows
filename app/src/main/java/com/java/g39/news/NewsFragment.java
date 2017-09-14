@@ -12,7 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.java.g39.R;
-import com.java.g39.data.Constant;
+import com.java.g39.data.Config;
+import com.java.g39.data.Manager;
 import com.java.g39.news.newslist.NewsListFragment;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class NewsFragment extends Fragment {
     private ViewPager mViewPager;
     private String mKeyword = "";
     private MyPagerAdapter mPagerAdapter;
+    private List<Config.Category> mCategories = new ArrayList<Config.Category>();
 
     public NewsFragment() {
         // Required empty public constructor
@@ -56,7 +58,9 @@ public class NewsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager());
+
+        mCategories = Manager.I.getConfig().availableCategories(true);
+        mPagerAdapter = new MyPagerAdapter(getChildFragmentManager(), mCategories);
     }
 
     @Override
@@ -65,12 +69,13 @@ public class NewsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_news_page, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOffscreenPageLimit(3);
 
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-        for (int i = 0; i < Constant.CATEGORY_COUNT; i++)
+        for (int i = 0; i < mCategories.size(); i++)
             mTabLayout.addTab(mTabLayout.newTab());
+
+        mViewPager.setAdapter(mPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
 
         return view;
@@ -78,18 +83,21 @@ public class NewsFragment extends Fragment {
 
     private class MyPagerAdapter extends FragmentStatePagerAdapter {
 
-        public MyPagerAdapter(FragmentManager fm) {
+        private List<Config.Category> mCategories;
+
+        public MyPagerAdapter(FragmentManager fm, List<Config.Category> list) {
             super(fm);
+            mCategories = list;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return Constant.CATEGORYS[position];
+            return mCategories.get(position).title;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return NewsListFragment.newInstance(position, mKeyword);
+            return NewsListFragment.newInstance(mCategories.get(position).idx, mKeyword);
         }
 
         @Override
@@ -101,7 +109,7 @@ public class NewsFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return Constant.CATEGORY_COUNT;
+            return mCategories.size();
         }
 
         @Override
