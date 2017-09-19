@@ -1,0 +1,1 @@
+app/src/main/assets/sample.db filter=lfs diff=lfs merge=lfs -text
